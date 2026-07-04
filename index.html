@@ -86,7 +86,7 @@
             <!-- 📢 टॉप एडस्टेरा विज्ञापन स्लॉट -->
             <div class="ad-slot-container" id="ad-top-slot">
                 <div class="ad-placeholder">
-                    <p>📢 PREMIUM AD SPACE</p>
+                    <p>📢 PREMIUM AD SPACE (728x90)</p>
                     <p style="font-size: 10px;">Your Advertisement Here - Contact ads@mendezcommunity.com</p>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                 <label class="opt-card">
                     <input type="radio" name="mendez-core" value="silver" checked>
                     <div class="opt-info">
-                        <div class="opt-name" id="silver-name">🥈 Silver Task</div>
+                        <div class="opt-name" id="silver-name" onclick="goToSilverTask()">🥈 Silver Task - AD REVENUE</div>
                         <div class="opt-reward" id="silver-reward">Loading Rewards...</div>
                     </div>
                 </label>
@@ -132,7 +132,7 @@
             <!-- 📢 बॉटम एडस्टेरा विज्ञापन स्लॉट -->
             <div class="ad-slot-container" id="ad-bottom-slot">
                 <div class="ad-placeholder">
-                    <p>📢 PARTNER OFFERS</p>
+                    <p>📢 PARTNER OFFERS (300x250)</p>
                     <p style="font-size: 10px;">Business Solutions & Digital Marketing Services</p>
                 </div>
             </div>
@@ -213,7 +213,7 @@
                 geoStatus.innerText = "🇺🇸 Secured Node: USA Node Detected (US English)";
                 geoStatus.style.color = "#00ffcc";
                 document.getElementById("div1-title").innerText = "Division 1: Core Focus Plan";
-                document.getElementById("silver-name").innerText = "🥈 Silver Focus Program";
+                document.getElementById("silver-name").innerText = "🥈 Silver Task - AD REVENUE";
                 document.getElementById("gold-name").innerText = "🥇 Gold Executive Program";
             } else if (randomCountry === "NP") {
                 currentCurrency = "NPR "; 
@@ -223,7 +223,7 @@
                 geoStatus.innerText = "🇳🇵 Secured Node: Nepal Node Detected (नेपाली भाषा)";
                 geoStatus.style.color = "#ffaa00";
                 document.getElementById("div1-title").innerText = "डिवीजन १: मुख्य अनुशासन मिसन";
-                document.getElementById("silver-name").innerText = "🥈 सिल्भर दैनिक स्टाइपेन्ड";
+                document.getElementById("silver-name").innerText = "🥈 सिल्भर - विज्ञापन रिवेन्यु";
                 document.getElementById("gold-name").innerText = "🥇 गोल्ड भिआइपी करियर मिसन";
             } else {
                 currentCurrency = "₹"; 
@@ -236,12 +236,17 @@
             
             walletDisplay.innerText = currentCurrency + "0.00";
             document.getElementById("welcome-banner").innerText = "Welcome Back, Warrior: " + name;
-            document.getElementById("silver-reward").innerText = "Earn " + currentCurrency + silverVal + " / Day (3 Min Trial Coach Included)";
+            document.getElementById("silver-reward").innerText = "Earn " + currentCurrency + silverVal + " / Day (Watch Ads & Complete Tasks)";
             document.getElementById("gold-reward").innerText = "Earn " + currentCurrency + goldVal + " / Day (10 Min VIP Coach Included)";
             document.getElementById("vip-reward").innerText = "Earn Extra " + currentCurrency + vipVal + " / Day (Premium Surveys & AI Tasks)";
         }
 
-        // ⏱️ 3-सेकंड का हार्ड वीडियो कॉल कट-ऑफ ताला
+        // 🎯 Silver Task पर जाएँ
+        function goToSilverTask() {
+            window.location.href = 'silver-task.html';
+        }
+
+        // ⏱️ 3-सेक��ड का हार्ड वीडियो कॉल कट-ऑफ ताला
         function startMendezFreeTrial() {
             alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ्त ट्रायल शुरू!)");
             
