@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mendez Community - Cyber Fortress V2</title>
+    <title>Mendez Community - Cyber Fortress V2 (FIXED)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; user-select: none; }
         .mendez-dashboard { max-width: 480px; margin: auto; background: #0a0a0a; padding: 25px; border-radius: 20px; border: 1px solid #1a1a1a; box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; }
         
         /* 🛡️ एंटी-हैक सुरक्षा पट्टी */
-        .security-ribbon { background: linear-gradient(90deg, #ff3333, #ffcc00); color: #000; font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800; text-align: center; padding: 5px; border-radius: 5px; margin-bottom: 20px; }
+        .security-ribbon { background: linear-gradient(90deg, #ff3333, #ffcc00); color: #000; font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800; text-align: center; padding: 8px; border-radius: 6px; margin-bottom: 15px; letter-spacing: 1px; }
         
         .header-title { text-align: center; font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 24px; font-weight: 800; letter-spacing: 2px; }
         .header-sub { text-align: center; font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
@@ -20,7 +21,7 @@
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
         .form-control { width: 100%; padding: 15px; background: #111; border: 1px solid #222; border-radius: 8px; color: #fff; font-size: 14px; box-sizing: border-box; }
-        .form-control:focus { border-color: #ffcc00; outline: none; }
+        .form-control:focus { border-color: #ffcc00; outline: none; box-shadow: 0 0 10px rgba(255,204,0,0.3); }
 
         /* 📱 पुराना मुख्य लग्ज़री डैशबोर्ड (शुरुआत में लॉक रहेगा) */
         .dashboard-hub { display: none; }
@@ -33,23 +34,27 @@
         .div-box { background: #0d0d0d; border: 1px solid #222; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .div-title { font-family: 'Orbitron', sans-serif; font-size: 12px; color: #ffcc00; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; border-left: 3px solid #ffcc00; padding-left: 10px; }
         
-        .opt-card { background: #121212; padding: 15px; border-radius: 8px; border: 1px solid #1c1c1c; margin-bottom: 10px; display: flex; align-items: center; cursor: pointer; }
+        .opt-card { background: #121212; padding: 15px; border-radius: 8px; border: 1px solid #1c1c1c; margin-bottom: 10px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s; }
+        .opt-card:hover { border-color: #ffcc00; background: #151515; }
         .opt-card input { margin-right: 15px; accent-color: #ffcc00; transform: scale(1.3); }
         .opt-info { flex-grow: 1; }
-        .opt-name { font-size: 14px; font-weight: 600; color: #fff; }
+        .opt-name { font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; transition: color 0.3s; }
+        .opt-name:hover { color: #ffcc00; }
         .opt-reward { font-size: 12px; color: #ffcc00; margin-top: 3px; font-weight: bold; }
         
-        /* 📢 एडस्टेरा विज्ञापन स्लॉट्स */
-        .ad-slot-container { background: #070707; border: 1px dashed #444; padding: 15px; text-align: center; font-size: 12px; color: #666; letter-spacing: 1px; border-radius: 8px; margin: 15px 0; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        /* 📢 एडस्टेरा विज्ञापन स्लॉट्स - सुधरा हुआ */
+        .ad-slot-container { background: #070707; border: 2px dashed #ff6600; padding: 20px; text-align: center; font-size: 12px; color: #ff9900; letter-spacing: 1px; border-radius: 8px; margin: 20px 0; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .ad-placeholder { text-align: center; }
+        .ad-placeholder p { margin: 5px 0; line-height: 1.5; }
         
         /* मास्टर बटन */
-        .launch-btn { background: #ffcc00; color: #000; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
-        .launch-btn:hover { background: #ffdd33; transform: scale(1.02); }
+        .launch-btn { background: #ffcc00; color: #000; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; width: 100%; padding: 16px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-top: 15px; }
+        .launch-btn:hover { background: #ffdd33; transform: scale(1.02); box-shadow: 0 0 20px rgba(255,204,0,0.4); }
         .launch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* 🤖 द वार्डन सुरक्षा विजेट */
-        .warden-box { background: #140404; border: 1px solid #ff3333; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; box-shadow: 0 0 15px rgba(255,51,51,0.2); }
-        .warden-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ff3333; font-weight: bold; text-transform: uppercase; }
+        .warden-box { background: #140404; border: 2px solid #ff3333; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; box-shadow: 0 0 15px rgba(255,51,51,0.3); }
+        .warden-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ff3333; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         .warden-text { font-size: 12px; color: #ffcccc; margin-top: 6px; line-height: 1.5; }
 
         #auth-gate-panel { display: block; }
@@ -80,18 +85,9 @@
         <div class="dashboard-hub" id="dashboard-panel">
             <!-- 📢 टॉप एडस्टेरा विज्ञापन स्लॉट -->
             <div class="ad-slot-container" id="ad-top-slot">
-                <div style="text-align: center;">
-                    <!-- Adsterra Banner 728x90 -->
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : 'YOUR_ADSTERRA_KEY_HERE',
-                            'format' : 'iframe',
-                            'height' : 90,
-                            'width' : 728,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="//www.topcpmformat.com/YOUR_ADSTERRA_ID/invoke.js"></script>
+                <div class="ad-placeholder">
+                    <p>📢 PREMIUM AD SPACE</p>
+                    <p style="font-size: 10px;">Your Advertisement Here - Contact ads@mendezcommunity.com</p>
                 </div>
             </div>
             
@@ -108,7 +104,7 @@
                 <label class="opt-card">
                     <input type="radio" name="mendez-core" value="silver" checked>
                     <div class="opt-info">
-                        <div class="opt-name" id="silver-name" onclick="window.open('Silver task html', '_self')">🥈 Silver Task</div>
+                        <div class="opt-name" id="silver-name">🥈 Silver Task</div>
                         <div class="opt-reward" id="silver-reward">Loading Rewards...</div>
                     </div>
                 </label>
@@ -135,18 +131,9 @@
             
             <!-- 📢 बॉटम एडस्टेरा विज्ञापन स्लॉट -->
             <div class="ad-slot-container" id="ad-bottom-slot">
-                <div style="text-align: center;">
-                    <!-- Adsterra Banner 300x250 -->
-                    <script type="text/javascript">
-                        atOptions = {
-                            'key' : 'YOUR_ADSTERRA_KEY_HERE',
-                            'format' : 'iframe',
-                            'height' : 250,
-                            'width' : 300,
-                            'params' : {}
-                        };
-                    </script>
-                    <script type="text/javascript" src="//www.topcpmformat.com/YOUR_ADSTERRA_ID/invoke.js"></script>
+                <div class="ad-placeholder">
+                    <p>📢 PARTNER OFFERS</p>
+                    <p style="font-size: 10px;">Business Solutions & Digital Marketing Services</p>
                 </div>
             </div>
             
@@ -183,6 +170,13 @@
                 return;
             }
 
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(rawEmail)) {
+                alert("कृपया एक मान्य ईमेल पता दर्ज करें।");
+                return;
+            }
+
             const deviceID = getDeviceFingerprint();
             
             // 🔒 लोकल स्टोरेज एंटी-चीट डेटाबेस चेक
@@ -191,7 +185,7 @@
                 document.getElementById("auth-gate-panel").style.display = "none";
                 const wardenBox = document.getElementById("warden-alert");
                 wardenBox.style.display = "block";
-                document.getElementById("warden-msg").innerHTML = "<strong style='color:#ff3333;'>DEVICE BANNED (धोखाधड़ी का प्रयास)!</strong><br>आपके डिवाइस को प्रणाली से प्रतिबंधित कर दिया गया है। कृपया संपर्क करें: support@mendezcommunity.com";
+                document.getElementById("warden-msg").innerHTML = "<strong style='color:#ff3333;'>DEVICE BANNED (धोखाधड़ी का प्रयास)!</strong><br>आपके डिवाइस पर कई खातों का संदेह है। कृपया सपोर्ट से संपर्क करें।";
                 return;
             }
 
@@ -216,7 +210,7 @@
                 silverVal = 5.00; 
                 goldVal = 12.00; 
                 vipVal = 15.00;
-                geoStatus.innerText = "Secured Node: USA Node Detected (US English)";
+                geoStatus.innerText = "🇺🇸 Secured Node: USA Node Detected (US English)";
                 geoStatus.style.color = "#00ffcc";
                 document.getElementById("div1-title").innerText = "Division 1: Core Focus Plan";
                 document.getElementById("silver-name").innerText = "🥈 Silver Focus Program";
@@ -226,7 +220,7 @@
                 silverVal = 32; 
                 goldVal = 64; 
                 vipVal = 104;
-                geoStatus.innerText = "Secured Node: Nepal Node Detected (नेपाली भाषा)";
+                geoStatus.innerText = "🇳🇵 Secured Node: Nepal Node Detected (नेपाली भाषा)";
                 geoStatus.style.color = "#ffaa00";
                 document.getElementById("div1-title").innerText = "डिवीजन १: मुख्य अनुशासन मिसन";
                 document.getElementById("silver-name").innerText = "🥈 सिल्भर दैनिक स्टाइपेन्ड";
@@ -236,7 +230,7 @@
                 silverVal = 65; 
                 goldVal = 150; 
                 vipVal = 310;
-                geoStatus.innerText = "Secured Node: India Node Detected (हिंदी/हिंग्लिश)";
+                geoStatus.innerText = "🇮🇳 Secured Node: India Node Detected (हिंदी/हिंग्लिश)";
                 geoStatus.style.color = "#00ff00";
             }
             
@@ -249,7 +243,7 @@
 
         // ⏱️ 3-सेकंड का हार्ड वीडियो कॉल कट-ऑफ ताला
         function startMendezFreeTrial() {
-            alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ़्त ट्रायल)");
+            alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ्त ट्रायल शुरू!)");
             
             setTimeout(function() {
                 const coachBtn = document.getElementById("coach-btn");
@@ -261,11 +255,11 @@
                 // 'द वार्डन' एआई का गाइडेंस एक्टिवेशन
                 const wardenBox = document.getElementById("warden-alert");
                 wardenBox.style.display = "block";
-                document.getElementById("warden-msg").innerText = "Mendez Community के मुफ़्त ट्रायल की दैनिक सीमा समाप्त हो चुकी है। अपग्रेड करें या कल फिर से कोशिश करें।";
+                document.getElementById("warden-msg").innerText = "Mendez Community के मुफ़्त ट्रायल की दैनिक सीमा समाप्त हो चुकी है। कृपया प्रीमियम प्लान में अपग्रेड करें!";
             }, 3000);
         }
 
-        // 💰 रीयल-टाइम वॉलेट काउंटर और 30-सेकंड टाइमर ताला लॉजिक
+        // 💰 रीयल-टाइम वॉलेट काउंटर और 5-सेकंड टाइमर ताला लॉजिक
         function triggerLiveCounter(slotId, amount) {
             const slotElement = document.getElementById(slotId);
             if (!slotElement) return;
