@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mendez Community - Cyber Fortress V2</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; user-select: none; }
         .mendez-dashboard { max-width: 480px; margin: auto; background: #0a0a0a; padding: 25px; border-radius: 20px; border: 1px solid #1a1a1a; box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; }
         
         /* 🛡️ एंटी-हैक सुरक्षा पट्टी */
-        .security-ribbon { background: linear-gradient(90deg, #ff3333, #ffcc00); color: #000; font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800; text-align: center; padding: 5px 0; letter-spacing: 1px; text-transform: uppercase; margin: -25px -25px 20px -25px; border-radius: 20px 20px 0 0; }
+        .security-ribbon { background: linear-gradient(90deg, #ff3333, #ffcc00); color: #000; font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800; text-align: center; padding: 5px; border-radius: 5px; margin-bottom: 20px; }
         
         .header-title { text-align: center; font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 24px; font-weight: 800; letter-spacing: 2px; }
         .header-sub { text-align: center; font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
@@ -24,7 +23,7 @@
         .form-control:focus { border-color: #ffcc00; outline: none; }
 
         /* 📱 पुराना मुख्य लग्ज़री डैशबोर्ड (शुरुआत में लॉक रहेगा) */
-        .dashboard-hub { display: block; }
+        .dashboard-hub { display: none; }
         .wallet-card { background: linear-gradient(135deg, #0f0f0f, #151515); padding: 18px; border-radius: 14px; border: 1px solid #ffcc00; text-align: center; margin-bottom: 25px; }
         .wallet-lbl { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
         .wallet-val { font-size: 34px; font-family: 'Orbitron', sans-serif; font-weight: 800; color: #ffcc00; margin-top: 5px; }
@@ -40,16 +39,20 @@
         .opt-name { font-size: 14px; font-weight: 600; color: #fff; }
         .opt-reward { font-size: 12px; color: #ffcc00; margin-top: 3px; font-weight: bold; }
         
-        /* 📢 गूगल एडसेंस और पीटीसी सेफ़ स्लॉट्स */
-        .ad-slot-container { background: #070707; border: 1px dashed #222; padding: 12px; text-align: center; font-size: 10px; color: #444; letter-spacing: 1px; border-radius: 8px; margin: 15px 0; text-transform: uppercase; }
+        /* 📢 एडस्टेरा विज्ञापन स्लॉट्स */
+        .ad-slot-container { background: #070707; border: 1px dashed #444; padding: 15px; text-align: center; font-size: 12px; color: #666; letter-spacing: 1px; border-radius: 8px; margin: 15px 0; min-height: 100px; display: flex; align-items: center; justify-content: center; }
         
         /* मास्टर बटन */
-        .launch-btn { background: #ffcc00; color: #000; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; width: 100%; padding: 18px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(255,204,0,0.2); }
+        .launch-btn { background: #ffcc00; color: #000; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
+        .launch-btn:hover { background: #ffdd33; transform: scale(1.02); }
+        .launch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* 🤖 द वार्डन सुरक्षा विजेट */
         .warden-box { background: #140404; border: 1px solid #ff3333; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; box-shadow: 0 0 15px rgba(255,51,51,0.2); }
         .warden-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ff3333; font-weight: bold; text-transform: uppercase; }
         .warden-text { font-size: 12px; color: #ffcccc; margin-top: 6px; line-height: 1.5; }
+
+        #auth-gate-panel { display: block; }
     </style>
 </head>
 <body>
@@ -60,12 +63,37 @@
         <div class="header-title">MENDEZ SYSTEM</div>
         <div class="header-sub">Mendez Community Cyber Fortress</div>
         
-        
+        <!-- 🔐 रजिस्ट्रेशन गेट -->
+        <div class="auth-gate" id="auth-gate-panel">
+            <div class="form-group">
+                <label>आपका असली नाम (Real Name)</label>
+                <input type="text" id="user-real-name" class="form-control" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label>आपका ईमेल (Email)</label>
+                <input type="email" id="user-email" class="form-control" placeholder="Enter your email">
+            </div>
+            <button class="launch-btn" onclick="secureRegisterUser()">🔒 Secure Registration Gate</button>
+        </div>
 
-        <!-- 📱 मुख्य डैशबोर्ड हब (सफलतापूर्वक रजिस्ट्रेशन और एंटी-चीट पास होने के बाद ही ऑन होगा) -->
+        <!-- 📱 मुख्य डैशबोर्ड हब (सफलतापूर्वक रजिस्ट्रेशन के बाद) -->
         <div class="dashboard-hub" id="dashboard-panel">
-            <!-- 📢 टॉप एडसेंस लाइव स्लॉट -->
-            <div class="ad-slot-container">✦ Google AdSense Safe Slot (Header Banner) ✦</div>
+            <!-- 📢 टॉप एडस्टेरा विज्ञापन स्लॉट -->
+            <div class="ad-slot-container" id="ad-top-slot">
+                <div style="text-align: center;">
+                    <!-- Adsterra Banner 728x90 -->
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key' : 'YOUR_ADSTERRA_KEY_HERE',
+                            'format' : 'iframe',
+                            'height' : 90,
+                            'width' : 728,
+                            'params' : {}
+                        };
+                    </script>
+                    <script type="text/javascript" src="//www.topcpmformat.com/YOUR_ADSTERRA_ID/invoke.js"></script>
+                </div>
+            </div>
             
             <!-- 💰 मुख्य मल्टी-करेंसी वॉलेट -->
             <div class="wallet-card">
@@ -80,7 +108,7 @@
                 <label class="opt-card">
                     <input type="radio" name="mendez-core" value="silver" checked>
                     <div class="opt-info">
-                        <div class="opt-name" id="silver-name" onclick="window.open('silver_task.html', '_self')">🥈 Silver Task</div>
+                        <div class="opt-name" id="silver-name" onclick="window.open('Silver task html', '_self')">🥈 Silver Task</div>
                         <div class="opt-reward" id="silver-reward">Loading Rewards...</div>
                     </div>
                 </label>
@@ -105,8 +133,22 @@
                 </label>
             </div>
             
-            <!-- 📢 बॉटम एडसेंस लाइव स्लॉट -->
-            <div class="ad-slot-container">✦ Google AdSense Safe Slot (Footer Banner) ✦</div>
+            <!-- 📢 बॉटम एडस्टेरा विज्ञापन स्लॉट -->
+            <div class="ad-slot-container" id="ad-bottom-slot">
+                <div style="text-align: center;">
+                    <!-- Adsterra Banner 300x250 -->
+                    <script type="text/javascript">
+                        atOptions = {
+                            'key' : 'YOUR_ADSTERRA_KEY_HERE',
+                            'format' : 'iframe',
+                            'height' : 250,
+                            'width' : 300,
+                            'params' : {}
+                        };
+                    </script>
+                    <script type="text/javascript" src="//www.topcpmformat.com/YOUR_ADSTERRA_ID/invoke.js"></script>
+                </div>
+            </div>
             
             <!-- 🚀 मुख्य बटन -->
             <button class="launch-btn" id="coach-btn" onclick="startMendezFreeTrial()">Test Live AI Coach (3 Min Free)</button>
@@ -125,6 +167,7 @@
         const randomCountry = userCountries[Math.floor(Math.random() * userCountries.length)]; 
         let currentCurrency = "₹";
         let silverVal = 65, goldVal = 150, vipVal = 310;
+        let currentBalance = 0;
         
         // 🛡️ 'द वार्डन' डिवाइस फिंगरप्रिंट लॉक सिमुलेशन (एंटी-चीट इंजन)
         function getDeviceFingerprint() {
@@ -144,11 +187,11 @@
             
             // 🔒 लोकल स्टोरेज एंटी-चीट डेटाबेस चेक
             const registeredLock = localStorage.getItem("mendez_device_secure_lock");
-            if (registeredLock && registeredLock !== rawEmail) {// 😡 धोखाधड़ी करने पर सडन डेथ बैन एक्टिवेशन
+            if (registeredLock && registeredLock !== rawEmail) {
                 document.getElementById("auth-gate-panel").style.display = "none";
                 const wardenBox = document.getElementById("warden-alert");
                 wardenBox.style.display = "block";
-                document.getElementById("warden-msg").innerHTML = "<strong style='color:#ff3333;'>DEVICE BANNED (धोखाधड़ी का प्रयास)!</strong><br>हमारा एल्गोरिथ्म पहचान चुका है कि इस मोबाइल पर पहले से एक जीमेल अकाउंट एक्टिवेट है। बेईमानी की सज़ा ज़ीरो बैलेंस और परमानेंट ब्लॉक है।";
+                document.getElementById("warden-msg").innerHTML = "<strong style='color:#ff3333;'>DEVICE BANNED (धोखाधड़ी का प्रयास)!</strong><br>आपके डिवाइस को प्रणाली से प्रतिबंधित कर दिया गया है। कृपया संपर्क करें: support@mendezcommunity.com";
                 return;
             }
 
@@ -169,21 +212,30 @@
             const walletDisplay = document.getElementById("mendez-wallet-display");
             
             if (randomCountry === "US") {
-                currentCurrency = "$"; silverVal = 5.00; goldVal = 12.00; vipVal = 15.00;
+                currentCurrency = "$"; 
+                silverVal = 5.00; 
+                goldVal = 12.00; 
+                vipVal = 15.00;
                 geoStatus.innerText = "Secured Node: USA Node Detected (US English)";
                 geoStatus.style.color = "#00ffcc";
                 document.getElementById("div1-title").innerText = "Division 1: Core Focus Plan";
                 document.getElementById("silver-name").innerText = "🥈 Silver Focus Program";
                 document.getElementById("gold-name").innerText = "🥇 Gold Executive Program";
             } else if (randomCountry === "NP") {
-                currentCurrency = "NPR "; silverVal = 32; goldVal = 64; vipVal = 104;
+                currentCurrency = "NPR "; 
+                silverVal = 32; 
+                goldVal = 64; 
+                vipVal = 104;
                 geoStatus.innerText = "Secured Node: Nepal Node Detected (नेपाली भाषा)";
                 geoStatus.style.color = "#ffaa00";
                 document.getElementById("div1-title").innerText = "डिवीजन १: मुख्य अनुशासन मिसन";
                 document.getElementById("silver-name").innerText = "🥈 सिल्भर दैनिक स्टाइपेन्ड";
                 document.getElementById("gold-name").innerText = "🥇 गोल्ड भिआइपी करियर मिसन";
             } else {
-                currentCurrency = "₹"; silverVal = 65; goldVal = 150; vipVal = 310;
+                currentCurrency = "₹"; 
+                silverVal = 65; 
+                goldVal = 150; 
+                vipVal = 310;
                 geoStatus.innerText = "Secured Node: India Node Detected (हिंदी/हिंग्लिश)";
                 geoStatus.style.color = "#00ff00";
             }
@@ -197,7 +249,7 @@
 
         // ⏱️ 3-सेकंड का हार्ड वीडियो कॉल कट-ऑफ ताला
         function startMendezFreeTrial() {
-            alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ़्त ख्याल ऑन)");
+            alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ़्त ट्रायल)");
             
             setTimeout(function() {
                 const coachBtn = document.getElementById("coach-btn");
@@ -209,20 +261,24 @@
                 // 'द वार्डन' एआई का गाइडेंस एक्टिवेशन
                 const wardenBox = document.getElementById("warden-alert");
                 wardenBox.style.display = "block";
-                document.getElementById("warden-msg").innerText = "Mendez Community के मुफ़्त ट्रायल की दैनिक सीमा समाप्त हो चुकी है। आगे की पूरी 10 से 20 मिनट की फुल लाइव वीडियो कॉल को अनलॉक करने और रोज़ाना का अपना 'मेन्डेज़ वज़ीफ़ा' अपने पेटीएम/यूपीआई में लॉक करने के लिए—नीचे दिए गए टास्क्स और विज्ञापन लिमिट को पूरा करें!";
+                document.getElementById("warden-msg").innerText = "Mendez Community के मुफ़्त ट्रायल की दैनिक सीमा समाप्त हो चुकी है। अपग्रेड करें या कल फिर से कोशिश करें।";
             }, 3000);
-        }/ 💰 रीयल-टाइम वॉलेट काउंटर और 30-सेकंड टाइमर ताला लॉजिक
+        }
+
+        // 💰 रीयल-टाइम वॉलेट काउंटर और 30-सेकंड टाइमर ताला लॉजिक
         function triggerLiveCounter(slotId, amount) {
             const slotElement = document.getElementById(slotId);
+            if (!slotElement) return;
+            
             slotElement.style.pointerEvents = "none"; 
-            let timeLeft = 5; // टेस्टिंग को आसान बनाने के लिए अभी 5 सेकंड का लॉक रखा है, लाइव पर इसे 30 करेंगे
+            let timeLeft = 5;
             
             const timerInterval = setInterval(function() {
                 slotElement.innerText = "⏳ Processing Ad... " + timeLeft + "s";
                 timeLeft--;
                 if(timeLeft < 0) {
                     clearInterval(timerInterval);
-                    currentBalance += baseReward;
+                    currentBalance += amount;
                     document.getElementById("mendez-wallet-display").innerText = currentCurrency + currentBalance.toFixed(2);
                     slotElement.innerText = "✅ Reward Credited Successfully! ✅";
                     slotElement.style.background = "#051a05";
@@ -232,6 +288,5 @@
             }, 1000);
         }
     </script>
-</>
+</body>
 </html>
-</ntml>

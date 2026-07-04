@@ -1,23 +1,427 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Avatar Feature Task</title>
-<script>
-  setTimeout(function() {
-    // 3 मिनट बाद यहाँ एडस्टेरा का कोड ट्रिगर होगा
-    alert("3 मिनट का फ्री सेशन समाप्त. टास्क पूरा करें 10 मिनट के लिए.");
-  }, 180000); // 3 मिनट = 180,000 मिलीसेकंड्स
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Feature Task - Mendez Community</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  function grantAccess() {
-    // टास्क पूरा होने पर, टाइमर 10 मिनट के लिए बढ़ाएँ
-    alert("टास्क पूरा हुआ! अब आपको 10 मिनट का एक्सेस मिला है.");
-  }
-</script>
+        body {
+            background: linear-gradient(135deg, #050505, #0a0a0a);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffcc00;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timer-box {
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #ffcc00;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px rgba(255,204,0,0.1);
+        }
+
+        .timer-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .timer-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            color: #ffcc00;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255,204,0,0.5);
+        }
+
+        .timer-status {
+            font-size: 13px;
+            color: #00ffcc;
+            font-weight: 600;
+        }
+
+        .avatar-section {
+            background: #0f0f0f;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .avatar-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .avatar-description {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .avatar-feature-list {
+            text-align: left;
+            font-size: 12px;
+            color: #aaa;
+            background: #050505;
+            border-left: 3px solid #ffcc00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .avatar-feature-list li {
+            margin-bottom: 8px;
+            list-style: none;
+        }
+
+        .avatar-feature-list li:before {
+            content: "✓ ";
+            color: #00ff00;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* एडस्टेरा विज्ञापन स्लॉट */
+        .ad-slot {
+            background: #070707;
+            border: 2px dashed #444;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 270px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-placeholder {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #ffdd33;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: #222;
+            color: #fff;
+            border: 1px solid #333;
+        }
+
+        .btn-secondary:hover {
+            background: #333;
+            border-color: #444;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #1a1a1a;
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .earnings-summary {
+            background: #0f0f0f;
+            border: 1px solid #ffcc00;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .earnings-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .earnings-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            color: #ffcc00;
+            font-weight: 800;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .timer-display {
+                font-size: 36px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>आपका अवतार फीचर यहाँ है</h1>
-  <p>यहाँ आप 3 मिनट तक फ्री चैट कर सकते हैं.</p>
-  <!-- एडस्टेरा या अन्य विज्ञापन कोड यहाँ डालें -->
-  <button onclick="grantAccess()">टास्क पूरा किया (पैसे/समय पाएँ)</button>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 Avatar Feature</h1>
+            <p>Complete Task & Earn Rewards</p>
+        </div>
+
+        <div class="status-badge" id="statusBadge">🟢 FREE SESSION ACTIVE</div>
+
+        <!-- ⏱️ टाइमर डिस्प्ले -->
+        <div class="timer-box">
+            <div class="timer-label">Session Time Remaining</div>
+            <div class="timer-display" id="timerDisplay">03:00</div>
+            <div class="timer-status" id="timerStatus">Free access for 3 minutes</div>
+        </div>
+
+        <!-- 🎭 अवतार सेक्शन -->
+        <div class="avatar-section">
+            <div class="avatar-icon">🤖</div>
+            <h2 style="font-size: 18px; margin-bottom: 10px; color: #ffcc00;">AI Avatar Assistant</h2>
+            <p class="avatar-description">
+                आपका व्यक्तिगत AI अवतार सहायक जो आपको कार्य पूरा करने में मदद करेगा।
+            </p>
+            <ul class="avatar-feature-list">
+                <li>30 मिनट का प्रीमियम सुविधा</li>
+                <li>तत्काल कार्य समर्थन</li>
+                <li>टॉक-टू-टेक्स्ट संवाद</li>
+                <li>पूरा होने पर तुरंत भुगतान</li>
+            </ul>
+        </div>
+
+        <!-- 📢 एडस्टेरा बैनर विज्ञापन (300x250) -->
+        <div class="ad-slot">
+            <div class="ad-placeholder">
+                <!-- Adsterra Advertisement Code Here -->
+                <!-- Replace 'YOUR_ADSTERRA_KEY' with your actual Adsterra key -->
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : 'YOUR_ADSTERRA_KEY',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="//www.topcpmformat.com/YOUR_ADSTERRA_ID/invoke.js"></script>
+                <!-- Fallback content if ad fails to load -->
+                <span id="ad-fallback">Adsterra Premium Banner 300x250</span>
+            </div>
+        </div>
+
+        <!-- 💰 कमाई सारांश -->
+        <div class="earnings-summary">
+            <div class="earnings-label">Estimated Earnings</div>
+            <div class="earnings-amount" id="earningsDisplay">₹65.00</div>
+            <p style="font-size: 11px; color: #888; margin-top: 8px;">Complete the task to receive payment</p>
+        </div>
+
+        <!-- बटन ग्रुप -->
+        <div class="button-group">
+            <button class="btn btn-primary" id="completeBtn" onclick="completeTask()">
+                ✅ COMPLETE TASK
+            </button>
+            <button class="btn btn-secondary" onclick="goBack()">
+                ← GO BACK
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let timeRemaining = 180; // 3 minutes in seconds
+        let sessionActive = true;
+        let taskCompleted = false;
+        let baseReward = 65;
+
+        // ⏱️ टाइमर शुरू करो
+        function startTimer() {
+            const timerInterval = setInterval(function() {
+                if (timeRemaining > 0 && sessionActive) {
+                    timeRemaining--;
+                    updateTimerDisplay();
+                } else if (timeRemaining === 0 && sessionActive) {
+                    sessionActive = false;
+                    endSession();
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        // टाइमर डिस्प्ले अपडेट करो
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const timeString = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = timeString;
+
+            // रंग बदलो जब समय कम हो
+            if (timeRemaining <= 30) {
+                document.getElementById('timerDisplay').style.color = '#ff3333';
+                document.getElementById('timerStatus').style.color = '#ff3333';
+                document.getElementById('timerStatus').innerText = '⚠️ समय समाप्त होने वाला है!';
+            }
+        }
+
+        // कार्य पूरा करो
+        function completeTask() {
+            if (!sessionActive) {
+                alert('❌ आपका मुफ़्त सेशन समाप्त हो गया है। कृपया अपग्रेड करें।');
+                return;
+            }
+
+            if (taskCompleted) {
+                alert('✅ कार्य पहले से पूरा हो चुका है!');
+                return;
+            }
+
+            taskCompleted = true;
+            const completeBtn = document.getElementById('completeBtn');
+            completeBtn.innerText = '⏳ PROCESSING...';
+            completeBtn.disabled = true;
+
+            // Simulate processing
+            setTimeout(function() {
+                alert('🎉 बधाई है! आपका कार्य पूरा हुआ!\n\n💰 ₹' + baseReward + ' आपके खाते में जोड़े जाएंगे।\n\n⏱️ अब आपको 10 मिनट का विस्तारित एक्सेस मिला है।');
+                
+                // Extend timer
+                timeRemaining = 600; // 10 minutes
+                sessionActive = true;
+                
+                completeBtn.innerText = '✅ TASK COMPLETED';
+                completeBtn.style.background = '#00ff00';
+                completeBtn.style.color = '#000';
+                
+                document.getElementById('statusBadge').innerText = '🟠 EXTENDED SESSION ACTIVE (10 MIN)';
+                document.getElementById('statusBadge').style.background = '#1a1a1a';
+                document.getElementById('statusBadge').style.borderColor = '#ff9800';
+                document.getElementById('statusBadge').style.color = '#ff9800';
+                
+                document.getElementById('timerStatus').innerText = '⏱️ विस्तारित एक्सेस सक्रिय';
+                document.getElementById('timerDisplay').style.color = '#ffcc00';
+            }, 2000);
+        }
+
+        // सेशन समाप्त करो
+        function endSession() {
+            document.getElementById('statusBadge').innerText = '🔴 SESSION EXPIRED';
+            document.getElementById('statusBadge').style.background = '#1a0000';
+            document.getElementById('statusBadge').style.borderColor = '#ff3333';
+            document.getElementById('statusBadge').style.color = '#ff3333';
+
+            document.getElementById('timerStatus').innerText = '❌ मुफ़्त सेशन समाप्त हो गया है!';
+            document.getElementById('completeBtn').disabled = true;
+            document.getElementById('completeBtn').innerText = 'SESSION EXPIRED - UPGRADE NOW';
+            
+            alert('⏰ आपका 3 मिनट का मुफ़्त सेशन समाप्त हो गया है।\n\n🚀 अपग्रेड करने के लिए Mendez Community में वापस जाएं!');
+        }
+
+        // पीछे जाओ
+        function goBack() {
+            window.history.back();
+        }
+
+        // Page load पर टाइमर शुरू करो
+        window.addEventListener('load', function() {
+            startTimer();
+            updateTimerDisplay();
+        });
+    </script>
 </body>
 </html>
