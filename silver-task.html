@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mendez Silver Task - Ad Revenue Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; padding: 15px; user-select: none; }
+        
+        .container { max-width: 480px; margin: auto; background: #0a0a0a; padding: 20px; border-radius: 15px; border: 1px solid #1a1a1a; }
+        
+        .header { text-align: center; margin-bottom: 20px; }
+        .header-title { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 22px; font-weight: 800; letter-spacing: 2px; }
+        .header-sub { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+        
+        .earnings-box { background: linear-gradient(135deg, #0f0f0f, #151515); border: 2px solid #00ff00; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .earnings-label { font-size: 12px; color: #888; text-transform: uppercase; }
+        .earnings-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00ff00; margin: 10px 0; }
+        .earnings-per-minute { font-size: 11px; color: #00cccc; }
+        
+        /* 📢 विज्ञापन स्लॉट - बहुत बड़े */
+        .ad-slot { background: #0d0d0d; border: 2px dashed #ff6600; padding: 25px; border-radius: 12px; margin: 20px 0; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
+        
+        .ad-slot::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,102,0,0.08) 10px, rgba(255,102,0,0.08) 20px); 
+            pointer-events: none; 
+        }
+        
+        .ad-content { position: relative; z-index: 1; }
+        .ad-label { font-size: 12px; color: #ff9900; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .ad-size { font-size: 28px; font-family: 'Orbitron', sans-serif; font-weight: 800; color: #ff6600; }
+        .ad-text { font-size: 10px; color: #999; margin-top: 8px; line-height: 1.4; }
+        
+        /* कार्य सूची */
+        .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
+        .task-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ffcc00; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-left: 3px solid #ffcc00; padding-left: 8px; }
+        
+        .task-item { background: #121212; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00ff00; padding-left: 12px; font-size: 12px; }
+        .task-reward { color: #ffcc00; font-weight: bold; float: right; }
+        
+        /* बटन */
+        .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: #ffcc00; color: #000; }
+        .btn-primary:hover { background: #ffdd33; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
+        .btn-secondary { background: #222; color: #fff; }
+        .btn-secondary:hover { background: #333; }
+        
+        /* टाइमर */
+        .timer-section { background: #140404; border: 2px solid #ff3333; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; }
+        .timer-label { font-size: 11px; color: #ff3333; text-transform: uppercase; font-weight: bold; }
+        .timer-display { font-size: 48px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ff3333; margin: 10px 0; letter-spacing: 3px; }
+        
+        /* सफलता संदेश */
+        .success-msg { background: #051a05; border: 2px solid #00ff00; padding: 12px; border-radius: 8px; color: #00ff00; text-align: center; font-size: 12px; margin: 10px 0; display: none; }
+        
+        .back-btn { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-title">🥈 SILVER TASK</div>
+            <div class="header-sub">Ad Revenue Earning Zone</div>
+        </div>
+        
+        <!-- 💰 कमाई का डिस्प्ले -->
+        <div class="earnings-box">
+            <div class="earnings-label">Your Earnings This Session</div>
+            <div class="earnings-amount" id="total-earnings">₹0.00</div>
+            <div class="earnings-per-minute" id="per-minute">₹0.00 / minute</div>
+        </div>
+        
+        <!-- ⏱️ टाइमर -->
+        <div class="timer-section" id="timer-section" style="display:none;">
+            <div class="timer-label">⏳ Task Active Timer</div>
+            <div class="timer-display" id="timer-display">05:00</div>
+        </div>
+        
+        <!-- 📢 विज्ञापन #1 - बहुत बड़ा -->
+        <div class="ad-slot" id="ad-slot-1">
+            <div class="ad-content">
+                <div class="ad-label">📢 Premium Advertisement Zone</div>
+                <div class="ad-size">728×90</div>
+                <div class="ad-text">
+                    Your Banner Ad Here<br>
+                    High Traffic - Premium Position<br>
+                    Contact: ads@mendezcommunity.com
+                </div>
+            </div>
+        </div>
+        
+        <!-- 🎯 टास्क करें -->
+        <div class="task-list">
+            <div class="task-title">📋 Silver Tasks - Watch & Earn</div>
+            
+            <div class="task-item">
+                ✅ Watch Ad #1 (30 sec)
+                <span class="task-reward">₹2</span>
+            </div>
+            
+            <div class="task-item">
+                ✅ Watch Ad #2 (30 sec)
+                <span class="task-reward">₹2</span>
+            </div>
+            
+            <div class="task-item">
+                ✅ Watch Ad #3 (45 sec)
+                <span class="task-reward">₹3</span>
+            </div>
+            
+            <div class="task-item">
+                ✅ Complete Survey (2 min)
+                <span class="task-reward">₹10</span>
+            </div>
+            
+            <div class="task-item">
+                ✅ Click & Read Article (1 min)
+                <span class="task-reward">₹5</span>
+            </div>
+        </div>
+        
+        <!-- 📢 विज्ञापन #2 - बड़ा -->
+        <div class="ad-slot" id="ad-slot-2">
+            <div class="ad-content">
+                <div class="ad-label">📢 Partner Advertisement</div>
+                <div class="ad-size">300×250</div>
+                <div class="ad-text">
+                    Business Solutions Here<br>
+                    Digital Marketing Services
+                </div>
+            </div>
+        </div>
+        
+        <!-- 🚀 कमाई बटन -->
+        <button class="btn btn-primary" onclick="startSilverTask()">▶️ Start Silver Tasks Now</button>
+        <button class="btn btn-secondary" onclick="watchAdAndEarn()">👁️ Watch Ad & Earn ₹1</button>
+        
+        <!-- सफलता संदेश -->
+        <div class="success-msg" id="success-msg">✅ Task Completed! You earned ₹2</div>
+        
+        <!-- 📢 विज्ञापन #3 - माध्यम -->
+        <div class="ad-slot" id="ad-slot-3">
+            <div class="ad-content">
+                <div class="ad-label">📢 Promoted Content</div>
+                <div class="ad-size">468×60</div>
+                <div class="ad-text">
+                    Special Offers & Deals
+                </div>
+            </div>
+        </div>
+        
+        <!-- वापस जाएँ -->
+        <button class="btn btn-secondary back-btn" onclick="goBack()">← Back to Dashboard</button>
+    </div>
+
+    <script>
+        let totalEarnings = 0;
+        let earnPerMinute = 0;
+        
+        function startSilverTask() {
+            const timerSection = document.getElementById("timer-section");
+            timerSection.style.display = "block";
+            
+            let timeLeft = 300; // 5 minutes
+            let earnedAmount = 0;
+            
+            const timerInterval = setInterval(function() {
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                document.getElementById("timer-display").innerText = 
+                    String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+                
+                // हर 30 सेकंड में ₹2 कमाए (विज्ञापन देखने से)
+                if (timeLeft % 30 === 0 && timeLeft > 0) {
+                    earnedAmount += 2;
+                    totalEarnings += 2;
+                    updateEarnings();
+                    showSuccess("✅ Ad watched! Earned ₹2");
+                }
+                
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval);
+                    timerSection.style.display = "none";
+                    
+                    // बोनस
+                    totalEarnings += 5;
+                    updateEarnings();
+                    alert(`🎉 Silver Task Completed!\n\nTotal Earned: ₹${totalEarnings.toFixed(2)}\nBonus: ₹5\n\nThank you for watching our ads!`);
+                }
+            }, 1000);
+        }
+        
+        function watchAdAndEarn() {
+            const successMsg = document.getElementById("success-msg");
+            totalEarnings += 1;
+            updateEarnings();
+            
+            successMsg.style.display = "block";
+            successMsg.innerText = "✅ Ad Watched! You earned ₹1";
+            
+            setTimeout(() => {
+                successMsg.style.display = "none";
+            }, 2000);
+        }
+        
+        function updateEarnings() {
+            document.getElementById("total-earnings").innerText = "₹" + totalEarnings.toFixed(2);
+            earnPerMinute = (totalEarnings / ((300 - 0) / 60)).toFixed(2);
+            document.getElementById("per-minute").innerText = "₹" + earnPerMinute + " / minute";
+        }
+        
+        function showSuccess(message) {
+            const msg = document.getElementById("success-msg");
+            msg.innerText = message;
+            msg.style.display = "block";
+            setTimeout(() => {
+                msg.style.display = "none";
+            }, 1500);
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+</html>
