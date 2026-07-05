@@ -45,16 +45,19 @@
         .back-btn { margin-top: 20px; }
         
         /* Modal Popup */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); overflow-y: auto; }
         .modal-content { background-color: #0a0a0a; margin: 5% auto; padding: 20px; border: 2px solid #ffcc00; width: 90%; max-width: 500px; border-radius: 15px; }
         .close { color: #ffcc00; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
         .close:hover { color: #ff3333; }
         .modal-header { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 18px; font-weight: 800; margin-bottom: 15px; text-align: center; }
         .modal-body { text-align: center; margin: 20px 0; }
-        .modal-ad-container { background: #121212; border: 1px solid #222; padding: 15px; border-radius: 10px; min-height: 300px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+        .modal-ad-container { background: #121212; border: 2px solid #00ff00; padding: 20px; border-radius: 10px; min-height: 200px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
         .modal-btn { width: 100%; padding: 12px; margin: 8px 0; background: #00ff00; color: #000; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
         .modal-btn:hover { background: #00dd00; }
         .timer-countdown { font-size: 24px; font-family: 'Orbitron', sans-serif; color: #ff3333; font-weight: 800; margin: 10px 0; }
+        
+        /* Monetag Ad Container */
+        .monetag-ad { background: #1a1a1a; padding: 15px; border-radius: 8px; min-height: 150px; margin: 15px 0; border: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -62,7 +65,7 @@
     <div class="container">
         <div class="header">
             <div class="header-title">🥈 SILVER TASK</div>
-            <div class="header-sub">Ad Revenue Earning Zone - Adsterra Powered</div>
+            <div class="header-sub">Ad Revenue Earning Zone - Monetag Powered</div>
         </div>
         
         <!-- 💰 कमाई का डिस्प्ले -->
@@ -83,17 +86,17 @@
             <div class="task-title">📋 Silver Tasks - Watch & Earn</div>
             
             <div class="task-item">
-                ✅ Watch Adsterra Ad #1 (30 sec)
+                ✅ Watch Monetag Ad #1 (30 sec)
                 <span class="task-reward">₹2</span>
             </div>
             
             <div class="task-item">
-                ✅ Watch Adsterra Ad #2 (30 sec)
+                ✅ Watch Monetag Ad #2 (30 sec)
                 <span class="task-reward">₹2</span>
             </div>
             
             <div class="task-item">
-                ✅ Watch Adsterra Ad #3 (45 sec)
+                ✅ Watch Monetag Ad #3 (45 sec)
                 <span class="task-reward">₹3</span>
             </div>
             
@@ -127,13 +130,15 @@
             <span class="close" onclick="closeAdModal1()">&times;</span>
             <div class="modal-header">👁️ Watch Advertisement #1</div>
             <div class="modal-body">
-                <p style="color: #888; font-size: 12px;">Publisher ID: 3363609</p>
+                <p style="color: #888; font-size: 12px;">Zone ID: 11242429 | Powered by Monetag</p>
                 <div class="timer-countdown" id="adTimer1">30</div>
-                <div class="modal-ad-container" id="adContainer1">
-                    <div style="text-align: center;">
-                        <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Adsterra Advertisement Loading...</p>
-                        <p style="color: #666; font-size: 11px;">Please watch this ad for 30 seconds</p>
-                        <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Wait for completion...</div>
+                <div class="modal-ad-container">
+                    <div id="monetag-ad-1" class="monetag-ad">
+                        <div style="text-align: center;">
+                            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Monetag Advertisement</p>
+                            <p style="color: #666; font-size: 11px;">Please watch this ad for 30 seconds</p>
+                            <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Ad Loading...</div>
+                        </div>
                     </div>
                 </div>
                 <button class="modal-btn" onclick="closeAdModal1()" id="adBtn1" disabled>⏳ Wait 30 seconds...</button>
@@ -147,13 +152,15 @@
             <span class="close" onclick="closeAdModal2()">&times;</span>
             <div class="modal-header">👁️ Watch Premium Advertisement</div>
             <div class="modal-body">
-                <p style="color: #888; font-size: 12px;">Publisher ID: 3363609 - Premium</p>
+                <p style="color: #888; font-size: 12px;">Zone ID: 11242429 | Premium Monetag</p>
                 <div class="timer-countdown" id="adTimer2">45</div>
-                <div class="modal-ad-container" id="adContainer2">
-                    <div style="text-align: center;">
-                        <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Premium Adsterra Advertisement Loading...</p>
-                        <p style="color: #666; font-size: 11px;">Please watch this premium ad for 45 seconds</p>
-                        <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Wait for completion...</div>
+                <div class="modal-ad-container">
+                    <div id="monetag-ad-2" class="monetag-ad">
+                        <div style="text-align: center;">
+                            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Premium Monetag Advertisement</p>
+                            <p style="color: #666; font-size: 11px;">Please watch this premium ad for 45 seconds</p>
+                            <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Ad Loading...</div>
+                        </div>
                     </div>
                 </div>
                 <button class="modal-btn" onclick="closeAdModal2()" id="adBtn2" disabled>⏳ Wait 45 seconds...</button>
@@ -167,19 +174,24 @@
             <span class="close" onclick="closeAdModal3()">&times;</span>
             <div class="modal-header">👁️ Watch Extended Advertisement</div>
             <div class="modal-body">
-                <p style="color: #888; font-size: 12px;">Publisher ID: 3363609 - Extended</p>
+                <p style="color: #888; font-size: 12px;">Zone ID: 11242429 | Extended Monetag</p>
                 <div class="timer-countdown" id="adTimer3">60</div>
-                <div class="modal-ad-container" id="adContainer3">
-                    <div style="text-align: center;">
-                        <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Extended Adsterra Advertisement Loading...</p>
-                        <p style="color: #666; font-size: 11px;">Please watch this extended ad for 60 seconds</p>
-                        <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Wait for completion...</div>
+                <div class="modal-ad-container">
+                    <div id="monetag-ad-3" class="monetag-ad">
+                        <div style="text-align: center;">
+                            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Extended Monetag Advertisement</p>
+                            <p style="color: #666; font-size: 11px;">Please watch this extended ad for 60 seconds</p>
+                            <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Ad Loading...</div>
+                        </div>
                     </div>
                 </div>
                 <button class="modal-btn" onclick="closeAdModal3()" id="adBtn3" disabled>⏳ Wait 60 seconds...</button>
             </div>
         </div>
     </div>
+
+    <!-- Monetag Script -->
+    <script async src="https://monetag.com/showads/pub-11242429.js"></script>
 
     <script>
         let totalEarnings = 0;
@@ -188,6 +200,7 @@
         // Ad Popup 1 - ₹2
         function openAdPopup() {
             document.getElementById("adModal1").style.display = "block";
+            loadMonetag('monetag-ad-1');
             startAdTimer(30, "adTimer1", "adBtn1", "adModal1", 2);
         }
 
@@ -198,6 +211,7 @@
         // Ad Popup 2 - ₹5
         function openAdPopup2() {
             document.getElementById("adModal2").style.display = "block";
+            loadMonetag('monetag-ad-2');
             startAdTimer(45, "adTimer2", "adBtn2", "adModal2", 5);
         }
 
@@ -208,11 +222,19 @@
         // Ad Popup 3 - ₹3
         function openAdPopup3() {
             document.getElementById("adModal3").style.display = "block";
+            loadMonetag('monetag-ad-3');
             startAdTimer(60, "adTimer3", "adBtn3", "adModal3", 3);
         }
 
         function closeAdModal3() {
             document.getElementById("adModal3").style.display = "none";
+        }
+
+        // Load Monetag Ad
+        function loadMonetag(elementId) {
+            if (window.monetag) {
+                window.monetag.showAds(document.getElementById(elementId));
+            }
         }
 
         // Ad Timer Logic
