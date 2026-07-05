@@ -20,10 +20,6 @@
         .earnings-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00ff00; margin: 10px 0; }
         .earnings-per-minute { font-size: 11px; color: #00cccc; }
         
-        /* 📢 विज्ञापन स्लॉट */
-        .ad-slot { background: #0d0d0d; border: 2px solid #ff6600; padding: 15px; border-radius: 12px; margin: 20px 0; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .ad-label { font-size: 11px; color: #ff9900; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        
         /* कार्य सूची */
         .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
         .task-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ffcc00; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-left: 3px solid #ffcc00; padding-left: 8px; }
@@ -48,8 +44,17 @@
         
         .back-btn { margin-top: 20px; }
         
-        /* Adsterra Ad Container */
-        #ad-container-1, #ad-container-2, #ad-container-3 { min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        /* Modal Popup */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); }
+        .modal-content { background-color: #0a0a0a; margin: 5% auto; padding: 20px; border: 2px solid #ffcc00; width: 90%; max-width: 500px; border-radius: 15px; }
+        .close { color: #ffcc00; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: #ff3333; }
+        .modal-header { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 18px; font-weight: 800; margin-bottom: 15px; text-align: center; }
+        .modal-body { text-align: center; margin: 20px 0; }
+        .modal-ad-container { background: #121212; border: 1px solid #222; padding: 15px; border-radius: 10px; min-height: 300px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+        .modal-btn { width: 100%; padding: 12px; margin: 8px 0; background: #00ff00; color: #000; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
+        .modal-btn:hover { background: #00dd00; }
+        .timer-countdown { font-size: 24px; font-family: 'Orbitron', sans-serif; color: #ff3333; font-weight: 800; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -57,7 +62,7 @@
     <div class="container">
         <div class="header">
             <div class="header-title">🥈 SILVER TASK</div>
-            <div class="header-sub">Ad Revenue Earning Zone - Powered by Adsterra</div>
+            <div class="header-sub">Ad Revenue Earning Zone - Adsterra Powered</div>
         </div>
         
         <!-- 💰 कमाई का डिस्प्ले -->
@@ -73,104 +78,171 @@
             <div class="timer-display" id="timer-display">05:00</div>
         </div>
         
-        <!-- 📢 विज्ञापन #1 - 728×90 Banner -->
-        <div class="ad-slot">
-            <div class="ad-label">📢 Premium Advertisement #1 (728×90)</div>
-            <div id="ad-container-1">
-                <!-- Adsterra 728x90 Banner -->
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '3363609',
-                        'format' : 'iframe',
-                        'height' : 90,
-                        'width' : 728,
-                        'params' : {}
-                    };
-                    document.write('<scr' + 'ipt type="text/javascript" src="//www.topcpmformat.com/3363609/invoke.js"></scr' + 'ipt>');
-                </script>
-            </div>
-        </div>
-        
         <!-- 🎯 टास्क करें -->
         <div class="task-list">
             <div class="task-title">📋 Silver Tasks - Watch & Earn</div>
             
             <div class="task-item">
-                ✅ Watch Ad #1 (30 sec)
+                ✅ Watch Adsterra Ad #1 (30 sec)
                 <span class="task-reward">₹2</span>
             </div>
             
             <div class="task-item">
-                ✅ Watch Ad #2 (30 sec)
+                ✅ Watch Adsterra Ad #2 (30 sec)
                 <span class="task-reward">₹2</span>
             </div>
             
             <div class="task-item">
-                ✅ Watch Ad #3 (45 sec)
+                ✅ Watch Adsterra Ad #3 (45 sec)
                 <span class="task-reward">₹3</span>
             </div>
             
             <div class="task-item">
-                ✅ Complete Survey (2 min)
+                ✅ Watch Premium Ads (2 min)
                 <span class="task-reward">₹10</span>
             </div>
             
             <div class="task-item">
-                ✅ Click & Read Article (1 min)
+                ✅ Continuous Ad Viewing (1 min)
                 <span class="task-reward">₹5</span>
-            </div>
-        </div>
-        
-        <!-- 📢 विज्ञापन #2 - 300×250 Rectangle -->
-        <div class="ad-slot">
-            <div class="ad-label">📢 Premium Advertisement #2 (300×250)</div>
-            <div id="ad-container-2">
-                <!-- Adsterra 300x250 Rectangle -->
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '3363609',
-                        'format' : 'iframe',
-                        'height' : 250,
-                        'width' : 300,
-                        'params' : {}
-                    };
-                    document.write('<scr' + 'ipt type="text/javascript" src="//www.topcpmformat.com/3363609/invoke.js"></scr' + 'ipt>');
-                </script>
             </div>
         </div>
         
         <!-- 🚀 कमाई बटन -->
         <button class="btn btn-primary" onclick="startSilverTask()">▶️ Start Silver Tasks Now</button>
-        <button class="btn btn-secondary" onclick="watchAdAndEarn()">👁️ Watch Ad & Earn ₹1</button>
+        <button class="btn btn-secondary" onclick="openAdPopup()">👁️ Watch Ad & Earn ₹2</button>
+        <button class="btn btn-secondary" onclick="openAdPopup2()">👁️ Watch Premium Ad & Earn ₹5</button>
+        <button class="btn btn-secondary" onclick="openAdPopup3()">👁️ Watch Extended Ad & Earn ₹3</button>
         
         <!-- सफलता संदेश -->
         <div class="success-msg" id="success-msg">✅ Task Completed! You earned ₹2</div>
-        
-        <!-- 📢 विज्ञापन #3 - 468×60 Banner -->
-        <div class="ad-slot">
-            <div class="ad-label">📢 Premium Advertisement #3 (468×60)</div>
-            <div id="ad-container-3">
-                <!-- Adsterra 468x60 Banner -->
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '3363609',
-                        'format' : 'iframe',
-                        'height' : 60,
-                        'width' : 468,
-                        'params' : {}
-                    };
-                    document.write('<scr' + 'ipt type="text/javascript" src="//www.topcpmformat.com/3363609/invoke.js"></scr' + 'ipt>');
-                </script>
-            </div>
-        </div>
         
         <!-- वापस जाएँ -->
         <button class="btn btn-secondary back-btn" onclick="goBack()">← Back to Dashboard</button>
     </div>
 
+    <!-- Ad Popup Modal 1 -->
+    <div id="adModal1" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdModal1()">&times;</span>
+            <div class="modal-header">👁️ Watch Advertisement #1</div>
+            <div class="modal-body">
+                <p style="color: #888; font-size: 12px;">Publisher ID: 3363609</p>
+                <div class="timer-countdown" id="adTimer1">30</div>
+                <div class="modal-ad-container" id="adContainer1">
+                    <div style="text-align: center;">
+                        <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Adsterra Advertisement Loading...</p>
+                        <p style="color: #666; font-size: 11px;">Please watch this ad for 30 seconds</p>
+                        <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Wait for completion...</div>
+                    </div>
+                </div>
+                <button class="modal-btn" onclick="closeAdModal1()" id="adBtn1" disabled>⏳ Wait 30 seconds...</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Popup Modal 2 -->
+    <div id="adModal2" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdModal2()">&times;</span>
+            <div class="modal-header">👁️ Watch Premium Advertisement</div>
+            <div class="modal-body">
+                <p style="color: #888; font-size: 12px;">Publisher ID: 3363609 - Premium</p>
+                <div class="timer-countdown" id="adTimer2">45</div>
+                <div class="modal-ad-container" id="adContainer2">
+                    <div style="text-align: center;">
+                        <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Premium Adsterra Advertisement Loading...</p>
+                        <p style="color: #666; font-size: 11px;">Please watch this premium ad for 45 seconds</p>
+                        <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Wait for completion...</div>
+                    </div>
+                </div>
+                <button class="modal-btn" onclick="closeAdModal2()" id="adBtn2" disabled>⏳ Wait 45 seconds...</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Popup Modal 3 -->
+    <div id="adModal3" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdModal3()">&times;</span>
+            <div class="modal-header">👁️ Watch Extended Advertisement</div>
+            <div class="modal-body">
+                <p style="color: #888; font-size: 12px;">Publisher ID: 3363609 - Extended</p>
+                <div class="timer-countdown" id="adTimer3">60</div>
+                <div class="modal-ad-container" id="adContainer3">
+                    <div style="text-align: center;">
+                        <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Extended Adsterra Advertisement Loading...</p>
+                        <p style="color: #666; font-size: 11px;">Please watch this extended ad for 60 seconds</p>
+                        <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Wait for completion...</div>
+                    </div>
+                </div>
+                <button class="modal-btn" onclick="closeAdModal3()" id="adBtn3" disabled>⏳ Wait 60 seconds...</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let totalEarnings = 0;
         let earnPerMinute = 0;
+        
+        // Ad Popup 1 - ₹2
+        function openAdPopup() {
+            document.getElementById("adModal1").style.display = "block";
+            startAdTimer(30, "adTimer1", "adBtn1", "adModal1", 2);
+        }
+
+        function closeAdModal1() {
+            document.getElementById("adModal1").style.display = "none";
+        }
+
+        // Ad Popup 2 - ₹5
+        function openAdPopup2() {
+            document.getElementById("adModal2").style.display = "block";
+            startAdTimer(45, "adTimer2", "adBtn2", "adModal2", 5);
+        }
+
+        function closeAdModal2() {
+            document.getElementById("adModal2").style.display = "none";
+        }
+
+        // Ad Popup 3 - ₹3
+        function openAdPopup3() {
+            document.getElementById("adModal3").style.display = "block";
+            startAdTimer(60, "adTimer3", "adBtn3", "adModal3", 3);
+        }
+
+        function closeAdModal3() {
+            document.getElementById("adModal3").style.display = "none";
+        }
+
+        // Ad Timer Logic
+        function startAdTimer(duration, timerElement, btnElement, modalElement, reward) {
+            let timeLeft = duration;
+            const timerDisplay = document.getElementById(timerElement);
+            const btn = document.getElementById(btnElement);
+
+            const interval = setInterval(() => {
+                timerDisplay.innerText = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerDisplay.innerText = "✅ Complete!";
+                    btn.disabled = false;
+                    btn.innerText = `✅ Claim ₹${reward} Reward`;
+                    btn.style.background = "#00ff00";
+                    
+                    // Auto claim after 2 seconds
+                    setTimeout(() => {
+                        totalEarnings += reward;
+                        updateEarnings();
+                        showSuccess(`✅ Ad Watched! You earned ₹${reward}`);
+                        document.getElementById(modalElement).style.display = "none";
+                    }, 2000);
+                }
+                
+                timeLeft--;
+            }, 1000);
+        }
         
         function startSilverTask() {
             const timerSection = document.getElementById("timer-section");
@@ -207,19 +279,6 @@
             }, 1000);
         }
         
-        function watchAdAndEarn() {
-            const successMsg = document.getElementById("success-msg");
-            totalEarnings += 1;
-            updateEarnings();
-            
-            successMsg.style.display = "block";
-            successMsg.innerText = "✅ Ad Watched! You earned ₹1";
-            
-            setTimeout(() => {
-                successMsg.style.display = "none";
-            }, 2000);
-        }
-        
         function updateEarnings() {
             document.getElementById("total-earnings").innerText = "₹" + totalEarnings.toFixed(2);
             earnPerMinute = (totalEarnings / ((300 - 0) / 60)).toFixed(2);
@@ -232,11 +291,22 @@
             msg.style.display = "block";
             setTimeout(() => {
                 msg.style.display = "none";
-            }, 1500);
+            }, 2000);
         }
         
         function goBack() {
             window.history.back();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            let modal1 = document.getElementById("adModal1");
+            let modal2 = document.getElementById("adModal2");
+            let modal3 = document.getElementById("adModal3");
+            
+            if (event.target == modal1) modal1.style.display = "none";
+            if (event.target == modal2) modal2.style.display = "none";
+            if (event.target == modal3) modal3.style.display = "none";
         }
     </script>
 
