@@ -20,21 +20,9 @@
         .earnings-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00ff00; margin: 10px 0; }
         .earnings-per-minute { font-size: 11px; color: #00cccc; }
         
-        /* 📢 विज्ञापन स्लॉट - बहुत बड़े */
-        .ad-slot { background: #0d0d0d; border: 2px dashed #ff6600; padding: 25px; border-radius: 12px; margin: 20px 0; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
-        
-        .ad-slot::before { 
-            content: ''; 
-            position: absolute; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,102,0,0.08) 10px, rgba(255,102,0,0.08) 20px); 
-            pointer-events: none; 
-        }
-        
-        .ad-content { position: relative; z-index: 1; }
-        .ad-label { font-size: 12px; color: #ff9900; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .ad-size { font-size: 28px; font-family: 'Orbitron', sans-serif; font-weight: 800; color: #ff6600; }
-        .ad-text { font-size: 10px; color: #999; margin-top: 8px; line-height: 1.4; }
+        /* 📢 विज्ञापन स्लॉट */
+        .ad-slot { background: #0d0d0d; border: 2px solid #ff6600; padding: 15px; border-radius: 12px; margin: 20px 0; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .ad-label { font-size: 11px; color: #ff9900; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         
         /* कार्य सूची */
         .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
@@ -59,6 +47,9 @@
         .success-msg { background: #051a05; border: 2px solid #00ff00; padding: 12px; border-radius: 8px; color: #00ff00; text-align: center; font-size: 12px; margin: 10px 0; display: none; }
         
         .back-btn { margin-top: 20px; }
+        
+        /* Adsterra Ad Container */
+        #ad-container-1, #ad-container-2, #ad-container-3 { min-height: 100px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -66,7 +57,7 @@
     <div class="container">
         <div class="header">
             <div class="header-title">🥈 SILVER TASK</div>
-            <div class="header-sub">Ad Revenue Earning Zone</div>
+            <div class="header-sub">Ad Revenue Earning Zone - Powered by Adsterra</div>
         </div>
         
         <!-- 💰 कमाई का डिस्प्ले -->
@@ -82,16 +73,21 @@
             <div class="timer-display" id="timer-display">05:00</div>
         </div>
         
-        <!-- 📢 विज्ञापन #1 - बहुत बड़ा -->
-        <div class="ad-slot" id="ad-slot-1">
-            <div class="ad-content">
-                <div class="ad-label">📢 Premium Advertisement Zone</div>
-                <div class="ad-size">728×90</div>
-                <div class="ad-text">
-                    Your Banner Ad Here<br>
-                    High Traffic - Premium Position<br>
-                    Contact: ads@mendezcommunity.com
-                </div>
+        <!-- 📢 विज्ञापन #1 - 728×90 Banner -->
+        <div class="ad-slot">
+            <div class="ad-label">📢 Premium Advertisement #1 (728×90)</div>
+            <div id="ad-container-1">
+                <!-- Adsterra 728x90 Banner -->
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '3363609',
+                        'format' : 'iframe',
+                        'height' : 90,
+                        'width' : 728,
+                        'params' : {}
+                    };
+                    document.write('<scr' + 'ipt type="text/javascript" src="//www.topcpmformat.com/3363609/invoke.js"></scr' + 'ipt>');
+                </script>
             </div>
         </div>
         
@@ -125,15 +121,21 @@
             </div>
         </div>
         
-        <!-- 📢 विज्ञापन #2 - बड़ा -->
-        <div class="ad-slot" id="ad-slot-2">
-            <div class="ad-content">
-                <div class="ad-label">📢 Partner Advertisement</div>
-                <div class="ad-size">300×250</div>
-                <div class="ad-text">
-                    Business Solutions Here<br>
-                    Digital Marketing Services
-                </div>
+        <!-- 📢 विज्ञापन #2 - 300×250 Rectangle -->
+        <div class="ad-slot">
+            <div class="ad-label">📢 Premium Advertisement #2 (300×250)</div>
+            <div id="ad-container-2">
+                <!-- Adsterra 300x250 Rectangle -->
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '3363609',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                    document.write('<scr' + 'ipt type="text/javascript" src="//www.topcpmformat.com/3363609/invoke.js"></scr' + 'ipt>');
+                </script>
             </div>
         </div>
         
@@ -144,14 +146,21 @@
         <!-- सफलता संदेश -->
         <div class="success-msg" id="success-msg">✅ Task Completed! You earned ₹2</div>
         
-        <!-- 📢 विज्ञापन #3 - माध्यम -->
-        <div class="ad-slot" id="ad-slot-3">
-            <div class="ad-content">
-                <div class="ad-label">📢 Promoted Content</div>
-                <div class="ad-size">468×60</div>
-                <div class="ad-text">
-                    Special Offers & Deals
-                </div>
+        <!-- 📢 विज्ञापन #3 - 468×60 Banner -->
+        <div class="ad-slot">
+            <div class="ad-label">📢 Premium Advertisement #3 (468×60)</div>
+            <div id="ad-container-3">
+                <!-- Adsterra 468x60 Banner -->
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '3363609',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                    };
+                    document.write('<scr' + 'ipt type="text/javascript" src="//www.topcpmformat.com/3363609/invoke.js"></scr' + 'ipt>');
+                </script>
             </div>
         </div>
         
