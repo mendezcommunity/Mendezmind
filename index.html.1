@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mendez Mind — Tasks</title>
+  <style>
+    :root {
+      --bg: #0f1b16;
+      --card: #16271f;
+      --green: #22c55e;
+      --green-soft: #4ade80;
+      --text: #e8f5ee;
+      --muted: #9fb3a8;
+      --border: #1f3a2c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -10%, #16332a, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    .brand {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--green-soft);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 26px; margin-bottom: 8px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+    .task-list { display: flex; flex-direction: column; gap: 14px; }
+    .task {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: #0c1812;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .12s ease, border-color .2s ease, background .2s ease;
+    }
+    .task:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+      background: #10241a;
+    }
+    .task-info { display: flex; flex-direction: column; gap: 2px; }
+    .task-title { font-weight: 700; font-size: 16px; }
+    .task-desc { font-size: 13px; color: var(--muted); }
+    .task-reward {
+      font-weight: 800;
+      color: var(--green);
+      font-size: 18px;
+      white-space: nowrap;
+    }
+    .arrow { color: var(--muted); font-size: 20px; margin-left: 12px; }
+    .task:hover .arrow { color: var(--green); transform: translateX(3px); }
+    .arrow { transition: transform .15s ease, color .2s ease; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="brand">Mendez Mind</div>
+    <h1>रिवॉर्ड टास्क</h1>
+    <p class="sub">नीचे दिए गए टास्क में से कोई भी चुनें और रिवॉर्ड कमाएँ।</p>
+
+    <div class="task-list">
+      <a class="task" href="silver_task.html">
+        <div class="task-info">
+          <span class="task-title">Silver Task</span>
+          <span class="task-desc">45 सेकंड का टास्क पूरा करें</span>
+        </div>
+        <span class="task-reward">₹5.00</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </main>
+</body>
+    </html>
+    
