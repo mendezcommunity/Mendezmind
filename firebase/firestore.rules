@@ -1,31 +1,31 @@
 rules_version = '2';
-
-// =============================================================================
-// Mendez Verified Reward Wallet — Firestore Security Rules
-//
-// KEY PRINCIPLE: The public web client can READ a wallet balance but can NEVER
-// write to it. All crediting happens ONLY inside the Cloud Function (postback),
-// which uses the Admin SDK and bypasses these rules. This is what makes the
-// balance "verified" — the browser cannot fake or inflate it.
-// =============================================================================
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Wallet balances: readable by anyone (so the front-end can display the
-    // real verified balance), but NOT writable by any client. Writes are done
-    // exclusively by the Cloud Function via the Admin SDK.
+    // ── wallets ──────────────────────────────────────────────────────────────
+    // Anyone can read their own wallet (by userId doc key).
+    // NO client writes — all writes go through Cloud Functions only.
     match /wallets/{userId} {
-      allow read: if true;
-      allow write: if false;   // clients can never credit themselves
+      allow read:  if true;   // front-end reads balance by userId
+      allow write: if false;  // Cloud Functions only
     }
 
-    // Processed postback transactions (idempotency ledger): fully server-only.
-    // Never readable or writable from the client.
-    match /postback_tx/{txId} {
-      allow read, write: if false;
+    // ── withdrawalRequests ───────────────────────────────────────────────────
+    // Users can read their own withdrawal requests (filtered by userId field).
+    // NO client writes — requestWithdrawal Cloud Function handles all writes.
+    match /withdrawalRequests/{docId} {
+      allow read:  if true;   // client reads own history via withdrawalHistory endpoint
+      allow write: if false;  // Cloud Functions only
     }
 
-    // Deny everything else by default.
+    // ── processedTx (idempotency ledger) ────────────────────────────────────
+    // Server-only — no client access.
+    match /processedTx/{txId} {
+      allow read:  if false;
+      allow write: if false;
+    }
+
+    // ── all other collections ────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
