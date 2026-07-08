@@ -1,212 +1,188 @@
-# Mendez Community — Firebase Backend + Admin Panel Setup Guide
+# Mendez Community — Firebase Backend
 
-> **Updated:** 2026-07-08 — Added admin panel security hardening (hash gate, rate limiting, session timeout).
+## Overview
+
+This folder contains the complete Firebase backend for the Mendez Community website:
+- **S2S Postback** — credits `verifiedRewardPoints` on network-verified ad conversions
+- **Verified Reward Wallet** — read-only balance endpoint for the front-end
+- **Withdrawal Request System** — user-submitted payout requests (PayPal)
+- **Admin Panel** — server-side authenticated admin UI (Firebase Hosting)
 
 ---
 
-## Architecture Overview
+## 🔐 Admin Panel — Firebase Hosting (Server-Side Auth)
+
+### Why Firebase Hosting instead of GitHub Pages?
+
+| Feature | GitHub Pages (old) | Firebase Hosting (new) |
+|---|---|---|
+| Auth type | Client-side JS (bypassable) | **Server-side** (true HTTP auth) |
+| Cookie security | Client-readable | **HttpOnly, Secure, SameSite=Strict** |
+| Rate limiting | sessionStorage only | **Firestore-backed** (persists across devices) |
+| Secret exposure | Hash gate visible in source | **Never sent to client** |
+| CDN caching | Public CDN | **Private, no-store headers** |
+
+### Access URL (after deploy)
+```
+https://YOUR-PROJECT.web.app/admin
+```
+No hash needed — the server handles auth before serving any HTML.
+
+### How it works
+1. Browser visits `/admin` → `adminAuth` Cloud Function intercepts
+2. No valid `__session` cookie → server returns **login form HTML** (no panel HTML in source)
+3. Admin submits correct `ADMIN_SECRET` → server creates session token in Firestore, sets **HttpOnly `__session` cookie**, redirects to `/admin`
+4. Valid cookie → server returns **full admin panel HTML**
+5. Wrong secret → rate limit recorded in Firestore; after 5 failures → 15-min lockout
+6. Session expires after 30 min of inactivity (sliding window)
+
+---
+
+## 📁 File Structure
 
 ```
-Ad Network (Monetag/Adsterra)
-        │  S2S Postback (verified conversion)
-        ▼
-Firebase Cloud Function: /postback
-        │  atomic credit
-        ▼
-Firestore: wallets/{userId}.verifiedRewardPoints
-        │  read
-        ▼
-silver-task.html: "Verified Reward Balance"
-        │  withdrawal request
-        ▼
-Firebase Cloud Function: /requestWithdrawal
-        │  pending doc
-        ▼
-Firestore: withdrawalRequests/{reqId}
-        │  admin reviews
-        ▼
-admin.html#auth → adminApproveWithdrawal / adminRejectWithdrawal
-        │  PayPal Payouts API (if configured)
-        ▼
-User's PayPal account
+firebase/
+├── functions/
+│   ├── index.js          <- All 9 Cloud Functions (including adminAuth)
+│   └── package.json      <- Node.js dependencies
+├── firebase.json         <- Hosting + Functions + Firestore config
+├── firestore.rules       <- Security rules
+└── README.md             <- This file
 ```
 
 ---
 
-## Step 1 — Create Firebase Project
+## 🚀 Deployment Steps
 
-1. Go to [console.firebase.google.com](https://console.firebase.google.com)
-2. Click **Add project** → name it (e.g. `mendezmind`)
-3. Enable **Firestore Database** → Start in **production mode**
-4. Upgrade to **Blaze plan** (required for Cloud Functions)
-
----
-
-## Step 2 — Install Firebase CLI
-
+### Prerequisites
 ```bash
 npm install -g firebase-tools
 firebase login
-cd /path/to/your/repo
-firebase use --add   # select your project
 ```
 
----
-
-## Step 3 — Set Secrets
-
+### Step 1 — Initialize Firebase project
 ```bash
-# Required: ad network postback verification
+cd firebase/
+firebase use --add
+# Select your Firebase project
+```
+
+### Step 2 — Set secrets
+```bash
 firebase functions:secrets:set POSTBACK_SECRET
-# Enter any long random string (e.g. openssl rand -hex 32)
+# Enter: any long random string (e.g. openssl rand -hex 32)
 
-# Required: admin panel authentication
 firebase functions:secrets:set ADMIN_SECRET
-# Enter a strong password you'll use to log into admin.html
+# Enter: your admin password (keep this safe!)
 
-# Optional: PayPal auto-payout
 firebase functions:secrets:set PAYPAL_CLIENT_ID
+# Enter: your PayPal Business app Client ID (optional, for auto-payouts)
+
 firebase functions:secrets:set PAYPAL_SECRET
-# Get these from developer.paypal.com → My Apps & Credentials
+# Enter: your PayPal Business app Secret (optional)
 ```
 
----
-
-## Step 4 — Deploy
-
+### Step 3 — Create public/ directory for Firebase Hosting
 ```bash
-cd firebase
-npm install --prefix functions
-firebase deploy --only firestore:rules,functions
+mkdir -p public
+# Copy your main site files to public/
+# The /admin route is handled by adminAuth Cloud Function (no file needed in public/)
+cp ../silver-task.html public/
+cp ../index.html public/
 ```
 
-After deploy, you'll see URLs like:
+### Step 4 — Deploy
+```bash
+firebase deploy --only firestore:rules,functions,hosting
 ```
-Function URL (postback):              https://us-central1-YOUR-PROJECT.cloudfunctions.net/postback
-Function URL (balance):               https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
-Function URL (requestWithdrawal):     https://us-central1-YOUR-PROJECT.cloudfunctions.net/requestWithdrawal
-Function URL (adminListWithdrawals):  https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals
-Function URL (adminApproveWithdrawal):https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal
-Function URL (adminRejectWithdrawal): https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal
-Function URL (setSalaryCycle):        https://us-central1-YOUR-PROJECT.cloudfunctions.net/setSalaryCycle
-Function URL (withdrawalHistory):     https://us-central1-YOUR-PROJECT.cloudfunctions.net/withdrawalHistory
+
+After deploy you will see:
 ```
+functions[adminAuth(us-central1)]: Successful create operation.
+functions[adminListWithdrawals(us-central1)]: Successful create operation.
+...
+Hosting URL: https://YOUR-PROJECT.web.app
+```
+
+### Step 5 — Copy Cloud Function URLs
+From the deploy output, copy the URLs for each function and paste into:
+- `postback` URL → Monetag/Adsterra S2S postback field in their dashboards
+- `balance` URL → `BALANCE_ENDPOINT` in silver-task.html
+- `requestWithdrawal` URL → `WITHDRAWAL_ENDPOINT` in silver-task.html
+- `adminListWithdrawals` URL → `LIST_ENDPOINT` in admin panel ADMIN_CONFIG
+- `adminApproveWithdrawal` URL → `APPROVE_ENDPOINT` in admin panel ADMIN_CONFIG
+- `adminRejectWithdrawal` URL → `REJECT_ENDPOINT` in admin panel ADMIN_CONFIG
+
+### Step 6 — Access admin panel
+```
+https://YOUR-PROJECT.web.app/admin
+```
+Enter your `ADMIN_SECRET` and sign in. No hash or URL tricks needed.
 
 ---
 
-## Step 5 — Configure silver-task.html
+## Cloud Functions Reference (9 endpoints)
 
-Open `silver-task.html` and find the `WALLET_CONFIG` block. Replace placeholders:
-
-```js
-const WALLET_CONFIG = {
-  BALANCE_ENDPOINT:    "https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance",
-  WITHDRAWAL_ENDPOINT: "https://us-central1-YOUR-PROJECT.cloudfunctions.net/requestWithdrawal",
-  HISTORY_ENDPOINT:    "https://us-central1-YOUR-PROJECT.cloudfunctions.net/withdrawalHistory",
-  CYCLE_ENDPOINT:      "https://us-central1-YOUR-PROJECT.cloudfunctions.net/setSalaryCycle",
-  SUBID_PARAM:         "ymid",   // Monetag uses ymid; Adsterra uses subid
-};
-```
-
----
-
-## Step 6 — Configure admin.html
-
-Open `admin.html` and find the `ADMIN_CONFIG` block. Replace placeholders:
-
-```js
-const ADMIN_CONFIG = {
-  LIST_ENDPOINT:    "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals",
-  APPROVE_ENDPOINT: "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal",
-  REJECT_ENDPOINT:  "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal",
-};
-```
-
----
-
-## Step 7 — Configure Ad Network S2S Postback
-
-### Monetag
-- Dashboard → Sites/Zones → your zone → **Postback URL**
-- Set: `https://us-central1-YOUR-PROJECT.cloudfunctions.net/postback?userId={ymid}&txId={click_id}&payout={payout}&secret=YOUR_POSTBACK_SECRET`
-- In silver-task.html smartlink, append `?ymid={userId}` (already done via UUID logic)
-
-### Adsterra
-- Dashboard → Websites → your site → **Postback URL**
-- Set: `https://us-central1-YOUR-PROJECT.cloudfunctions.net/postback?userId={subid}&txId={click_id}&payout={payout}&secret=YOUR_POSTBACK_SECRET`
-
----
-
-## Step 8 — Access Admin Panel (SECURITY HARDENED)
-
-### How to open the admin panel
-
-The admin panel is protected by a **hash gate**. Without the correct URL hash, the page shows a fake 404.
-
-**Correct URL:**
-```
-https://mendezcommunity.github.io/Mendezmind/admin.html#auth
-```
-
-**Never share** the plain URL `admin.html` — always include `#auth`.
-
-### Security features implemented
-
-| Feature | Details |
-|---|---|
-| **Hash gate** | Without `#auth` in URL → shows fake 404 page |
-| **Rate limiting** | 5 failed login attempts → 15-minute lockout (sessionStorage) |
-| **Session timeout** | Auto-logout after 30 minutes of inactivity |
-| **noindex/nofollow** | Search engines cannot index or archive the page |
-| **Referrer-Policy: no-referrer** | No referrer header sent on navigation |
-| **No public links** | admin.html is not linked from index.html or silver-task.html |
-| **Backend verification** | ADMIN_SECRET verified against Cloud Function (not hardcoded) |
-| **Demo mode** | If URLs not configured, shows sample data (no real data exposed) |
-
-### Login steps
-
-1. Open: `https://mendezcommunity.github.io/Mendezmind/admin.html#auth`
-2. Enter your **ADMIN_SECRET** (the one you set in Firebase secrets)
-3. Click **Sign In**
-4. View pending withdrawal requests → click **Approve** or **Reject**
-
-### Limitations (honest note)
-
-GitHub Pages is **static hosting** — it cannot enforce server-side HTTP Basic Auth or IP allowlisting. The security measures above are client-side hardening:
-- A determined attacker who views page source can see the JavaScript logic
-- For true server-side protection, move the admin panel to **Firebase Hosting** with a Cloud Functions auth middleware, or use a private URL only you know
-
----
-
-## Cloud Function Endpoints Reference
-
-| Endpoint | Method | Auth | Description |
-|---|---|---|---|
-| `/postback` | GET | POSTBACK_SECRET query param | Receives S2S postback from ad network, credits wallet |
-| `/balance` | GET | none (userId query param) | Returns verifiedRewardPoints for a userId |
-| `/requestWithdrawal` | POST | none (userId in body) | User submits withdrawal request |
-| `/adminListWithdrawals` | GET | x-admin-secret header | Lists withdrawal requests (filterable by status) |
-| `/adminApproveWithdrawal` | POST | x-admin-secret header | Approves request, triggers PayPal payout |
-| `/adminRejectWithdrawal` | POST | x-admin-secret header | Rejects request, refunds user points |
-| `/setSalaryCycle` | POST | none (userId in body) | Sets user's salary cycle (15 or 25 days) |
-| `/withdrawalHistory` | GET | none (userId query param) | Returns user's withdrawal history |
+| # | Function | Method | Auth | Purpose |
+|---|---|---|---|---|
+| 1 | `postback` | GET | POSTBACK_SECRET | S2S postback from Monetag/Adsterra |
+| 2 | `balance` | GET | userId param | Read wallet balance |
+| 3 | `requestWithdrawal` | POST | userId in body | Submit withdrawal request |
+| 4 | `adminApproveWithdrawal` | POST | ADMIN_SECRET | Approve + optional PayPal payout |
+| 5 | `setSalaryCycle` | POST | userId in body | Set 15/25-day cycle |
+| 6 | `withdrawalHistory` | GET | userId param | User's withdrawal history |
+| 7 | `adminListWithdrawals` | GET | ADMIN_SECRET | List all requests (filterable by status) |
+| 8 | `adminRejectWithdrawal` | POST | ADMIN_SECRET | Reject + refund points atomically |
+| 9 | `adminAuth` | GET/POST | ADMIN_SECRET (server-side) | Firebase Hosting auth middleware |
 
 ---
 
 ## Firestore Collections
 
-| Collection | Document | Fields |
+| Collection | Purpose | Client write? |
 |---|---|---|
-| `wallets` | `{userId}` | verifiedRewardPoints, pendingClicks, joinedAt, tier, salaryCycle, lastPayoutAt, firstPayoutCompletedAt, paypalEmail, lastUpdated |
-| `withdrawalRequests` | `{auto-id}` | userId, paypalEmail, amountUSD, pointsDeducted, tier, salaryCycle, status, requestedAt, approvedAt, rejectedAt, rejectReason, paypalBatchId |
-| `processedTx` | `{txId}` | processedAt (idempotency — prevents duplicate postback credits) |
+| `wallets/{userId}` | Reward points, tier, cycle | No |
+| `processedTx/{txid}` | Idempotency for postbacks | No |
+| `withdrawalRequests/{id}` | Payout requests | No |
+| `adminSessions/{token}` | Server-side session tokens | No |
+| `adminRateLimit/{ip}` | Failed login tracking | No |
+
+---
+
+## Monetag S2S Postback URL
+```
+https://us-central1-YOUR-PROJECT.cloudfunctions.net/postback?secret=YOUR_POSTBACK_SECRET&userId={ymid}&payout={payout}&txid={clickid}&status={status}
+```
+
+## Adsterra S2S Postback URL
+```
+https://us-central1-YOUR-PROJECT.cloudfunctions.net/postback?secret=YOUR_POSTBACK_SECRET&userId={subid}&payout={revenue}&txid={click_id}&status=1
+```
 
 ---
 
 ## Honest Notes
 
-- **Payouts come from real ad revenue only** — not from fabricated funds
-- **Verified Reward Balance = 0** until real S2S postbacks arrive from the ad network
-- **Withdrawal requests are not guaranteed** — admin reviews and approves based on available revenue
-- **PayPal Payouts API** requires a PayPal Business account with Payouts enabled (apply at developer.paypal.com)
-- **CPM may be slightly lower** with clean/mainstream ad categories, but user trust improves
+- Payouts come from real ad revenue only — no guaranteed salary or fabricated funds.
+- Verified Reward Balance stays 0 until real S2S postbacks arrive from the ad network.
+- PayPal Payouts API requires a PayPal Business account with Payouts enabled.
+  Without credentials, admin can approve manually and send via PayPal dashboard.
+- GitHub Pages fallback: admin.html on GitHub Pages still works with client-side
+  hardening (hash gate + rate limit). Firebase Hosting is the recommended secure option.
+
+---
+
+## GitHub Pages Fallback (admin.html)
+
+The admin.html on GitHub Pages remains available as a fallback:
+- Access via: https://mendezcommunity.github.io/Mendezmind/admin.html#auth
+- Client-side rate limiting (5 attempts / 15-min lockout in sessionStorage)
+- Session timeout (30 min inactivity)
+- noindex/nofollow meta tags
+
+For production use, Firebase Hosting is strongly recommended for true server-side security.
+
+---
+
+Last updated: 2026-07-08 — Added Firebase Hosting server-side auth (adminAuth),
+adminListWithdrawals, adminRejectWithdrawal endpoints, firebase.json Hosting config.
