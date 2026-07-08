@@ -3,287 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mendez Community - Cyber Fortress V2 (FIXED)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Mendez Community &mdash; Premium Rewards Platform</title>
+    <meta name="description" content="Mendez Community — a premium, honest rewards platform. Earn verified reward points from real sponsor engagement and request PayPal withdrawals from actual ad revenue.">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; user-select: none; }
-        .mendez-dashboard { max-width: 480px; margin: auto; background: #0a0a0a; padding: 25px; border-radius: 20px; border: 1px solid #1a1a1a; box-shadow: 0 15px 40px rgba(0,0,0,0.9); position: relative; }
-        
-        /* 🛡️ एंटी-हैक सुरक्षा पट्टी */
-        .security-ribbon { background: linear-gradient(90deg, #ff3333, #ffcc00); color: #000; font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800; text-align: center; padding: 8px; border-radius: 6px; margin-bottom: 15px; letter-spacing: 1px; }
-        
-        .header-title { text-align: center; font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 24px; font-weight: 800; letter-spacing: 2px; }
-        .header-sub { text-align: center; font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
-        
-        /* 🔐 कड़क रजिस्ट्रेशन गेट लॉक */
-        .auth-gate { display: block; background: #0d0d0d; padding: 20px; border-radius: 12px; border: 1px solid #222; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
-        .form-control { width: 100%; padding: 15px; background: #111; border: 1px solid #222; border-radius: 8px; color: #fff; font-size: 14px; box-sizing: border-box; }
-        .form-control:focus { border-color: #ffcc00; outline: none; box-shadow: 0 0 10px rgba(255,204,0,0.3); }
+        /* ================= LUXURY DESIGN SYSTEM v12 (2026-07-08) =================
+           Honest premium redesign. Dark obsidian theme + gold/amber accents,
+           glass-morphism, splash loader, animated aurora hero, micro-interactions.
+           HONESTY: removed fake "AES-256 IP-Lock", fake "DEVICE BANNED" fraud
+           alerts, and fake geo-based salary numbers (₹65/₹150/₹310). Rewards are
+           described honestly — credited ONLY after verified ad views (server-side).
+           No auto-fire ads, no forced views, no guaranteed cash.
+        ========================================================================= */
+        :root{
+            --bg:#060606; --bg2:#0b0b0d; --panel:rgba(20,20,24,0.62);
+            --panel-solid:#101013; --line:rgba(212,175,55,0.16);
+            --gold:#e8c66a; --gold-2:#f4d98b; --gold-deep:#b8912f;
+            --ink:#f4f1e8; --muted:#9a968c; --muted-2:#6c6a63;
+            --green:#4fd39a; --radius:20px;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{
+            background:var(--bg); color:var(--ink);
+            font-family:'Inter',sans-serif; line-height:1.6;
+            overflow-x:hidden; -webkit-font-smoothing:antialiased;
+        }
+        ::selection{background:rgba(232,198,106,0.28);color:#fff;}
 
-        /* 📱 पुराना मुख्य लग्ज़री डैशबोर्ड (शुरुआत में लॉक रहेगा) */
-        .dashboard-hub { display: none; }
-        .wallet-card { background: linear-gradient(135deg, #0f0f0f, #151515); padding: 18px; border-radius: 14px; border: 1px solid #ffcc00; text-align: center; margin-bottom: 25px; }
-        .wallet-lbl { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .wallet-val { font-size: 34px; font-family: 'Orbitron', sans-serif; font-weight: 800; color: #ffcc00; margin-top: 5px; }
-        .geo-indicator { font-size: 11px; color: #00ffcc; margin-top: 5px; text-transform: uppercase; font-weight: bold; }
+        /* ---------- Splash loader ---------- */
+        #splash{
+            position:fixed; inset:0; z-index:9999; background:#060606;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:22px; transition:opacity .7s ease, visibility .7s ease;
+        }
+        #splash.hidden{opacity:0; visibility:hidden;}
+        .splash-monogram{
+            font-family:'Playfair Display',serif; font-weight:900; font-size:52px;
+            color:var(--gold); letter-spacing:2px;
+            text-shadow:0 0 34px rgba(232,198,106,0.35); animation:pulseGlow 1.8s ease-in-out infinite;
+        }
+        .splash-ring{
+            width:46px; height:46px; border-radius:50%;
+            border:2px solid rgba(232,198,106,0.18); border-top-color:var(--gold);
+            animation:spin .9s linear infinite;
+        }
+        .splash-txt{font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--muted-2);}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @keyframes pulseGlow{0%,100%{opacity:.78;transform:scale(1);}50%{opacity:1;transform:scale(1.05);}}
 
-        /* 🏛️ पुराना टू-डिवीजन टास्किंग हब डिज़ाईन */
-        .div-box { background: #0d0d0d; border: 1px solid #222; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .div-title { font-family: 'Orbitron', sans-serif; font-size: 12px; color: #ffcc00; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; border-left: 3px solid #ffcc00; padding-left: 10px; }
-        
-        .opt-card { background: #121212; padding: 15px; border-radius: 8px; border: 1px solid #1c1c1c; margin-bottom: 10px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s; }
-        .opt-card:hover { border-color: #ffcc00; background: #151515; }
-        .opt-card input { margin-right: 15px; accent-color: #ffcc00; transform: scale(1.3); }
-        .opt-info { flex-grow: 1; }
-        .opt-name { font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; transition: color 0.3s; }
-        .opt-name:hover { color: #ffcc00; }
-        .opt-reward { font-size: 12px; color: #ffcc00; margin-top: 3px; font-weight: bold; }
-        
-        /* 📢 एडस्टेरा विज्ञापन स्लॉट्स - सुधरा हुआ */
-        .ad-slot-container { background: #070707; border: 2px dashed #ff6600; padding: 20px; text-align: center; font-size: 12px; color: #ff9900; letter-spacing: 1px; border-radius: 8px; margin: 20px 0; min-height: 100px; display: flex; align-items: center; justify-content: center; }
-        .ad-placeholder { text-align: center; }
-        .ad-placeholder p { margin: 5px 0; line-height: 1.5; }
-        
-        /* मास्टर बटन */
-        .launch-btn { background: #ffcc00; color: #000; font-family: 'Inter', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; width: 100%; padding: 16px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-top: 15px; }
-        .launch-btn:hover { background: #ffdd33; transform: scale(1.02); box-shadow: 0 0 20px rgba(255,204,0,0.4); }
-        .launch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* ---------- Aurora background ---------- */
+        .aurora{position:fixed; inset:0; z-index:-2; overflow:hidden; background:radial-gradient(1200px 600px at 50% -10%, #17140c 0%, #060606 55%);}
+        .aurora span{position:absolute; border-radius:50%; filter:blur(90px); opacity:.5; animation:float 16s ease-in-out infinite;}
+        .aurora .a1{width:420px;height:420px;background:rgba(184,145,47,0.20);top:-120px;left:-80px;}
+        .aurora .a2{width:360px;height:360px;background:rgba(232,198,106,0.12);bottom:-100px;right:-60px;animation-delay:-5s;}
+        .aurora .a3{width:300px;height:300px;background:rgba(79,211,154,0.07);top:40%;left:55%;animation-delay:-9s;}
+        @keyframes float{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-30px) scale(1.08);}66%{transform:translate(-20px,20px) scale(.95);}}
+        .grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
 
-        /* 🤖 द वार्डन सुरक्षा विजेट */
-        .warden-box { background: #140404; border: 2px solid #ff3333; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; box-shadow: 0 0 15px rgba(255,51,51,0.3); }
-        .warden-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ff3333; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .warden-text { font-size: 12px; color: #ffcccc; margin-top: 6px; line-height: 1.5; }
+        /* ---------- Reveal on scroll ---------- */
+        .reveal{opacity:0; transform:translateY(26px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);}
+        .reveal.in{opacity:1; transform:none;}
 
-        #auth-gate-panel { display: block; }
+        .wrap{max-width:520px; margin:0 auto; padding:20px 16px 60px;}
 
-        /* 🛡️ Ad-quality safety notice */
-        .ad-safety-notice { background: #071410; border: 1px solid #00cc66; padding: 12px; border-radius: 8px; color: #9ad; font-size: 11px; line-height: 1.6; margin: 15px 0; }
-        .ad-safety-notice strong { color: #7fdcaa; }
+        /* ---------- Top bar ---------- */
+        .topbar{display:flex; align-items:center; justify-content:space-between; padding:6px 2px 22px;}
+        .brand{display:flex; align-items:center; gap:10px;}
+        .brand-mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+            background:linear-gradient(145deg,#1a1710,#0c0b08); border:1px solid var(--line);
+            font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:20px;
+            box-shadow:0 6px 18px rgba(0,0,0,.6), inset 0 1px 0 rgba(232,198,106,.15);}
+        .brand-name{font-weight:800;font-size:15px;letter-spacing:.5px;}
+        .brand-name span{color:var(--gold);}
+        .verified-chip{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
+            border:1px solid var(--line);padding:5px 9px;border-radius:20px;background:rgba(255,255,255,.02);}
+
+        /* ---------- Hero ---------- */
+        .hero{text-align:center; padding:14px 6px 8px;}
+        .eyebrow{display:inline-block; font-size:10px; letter-spacing:3px; text-transform:uppercase;
+            color:var(--gold-deep); border:1px solid var(--line); border-radius:20px;
+            padding:6px 14px; margin-bottom:18px; background:rgba(232,198,106,.04);}
+        .hero h1{font-family:'Playfair Display',serif; font-weight:900; font-size:40px; line-height:1.1;
+            letter-spacing:.3px; margin-bottom:14px;}
+        .hero h1 .grad{background:linear-gradient(100deg,#f4d98b,#e8c66a 40%,#b8912f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+        .hero p{color:var(--muted); font-size:14px; max-width:400px; margin:0 auto 22px;}
+        .hero-cta{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+
+        /* ---------- Buttons ---------- */
+        .btn{position:relative; overflow:hidden; border:none; cursor:pointer; font-family:'Inter',sans-serif;
+            font-weight:700; font-size:13px; letter-spacing:.6px; padding:14px 22px; border-radius:12px;
+            transition:transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s, background .25s; text-decoration:none; display:inline-flex; align-items:center; gap:8px;}
+        .btn-gold{background:linear-gradient(145deg,#f4d98b,#e8c66a 45%,#c99d38); color:#1a1405;
+            box-shadow:0 10px 26px rgba(184,145,47,.28), inset 0 1px 0 rgba(255,255,255,.4);}
+        .btn-gold:hover{transform:translateY(-3px) scale(1.02); box-shadow:0 16px 34px rgba(184,145,47,.42);}
+        .btn-ghost{background:rgba(255,255,255,.03); color:var(--ink); border:1px solid var(--line);}
+        .btn-ghost:hover{transform:translateY(-3px); border-color:var(--gold); color:var(--gold-2);}
+        .btn .ripple{position:absolute; border-radius:50%; transform:scale(0); background:rgba(255,255,255,.45); animation:rip .6s linear; pointer-events:none;}
+        @keyframes rip{to{transform:scale(4); opacity:0;}}
+
+        /* ---------- Glass cards ---------- */
+        .card{background:var(--panel); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            border:1px solid var(--line); border-radius:var(--radius); padding:22px;
+            box-shadow:0 18px 44px rgba(0,0,0,.5); position:relative; overflow:hidden; margin-top:18px;}
+        .card::before{content:"";position:absolute;inset:0;border-radius:var(--radius);padding:1px;
+            background:linear-gradient(140deg,rgba(232,198,106,.5),rgba(232,198,106,0) 40%);
+            -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+            -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6;}
+        .card-title{font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:2px; text-transform:uppercase;
+            color:var(--gold); margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+        .section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted-2);text-align:center;margin:36px 0 2px;}
+
+        /* ---------- Registration ---------- */
+        .form-group{margin-bottom:16px;}
+        .form-group label{display:block; font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px;}
+        .form-control{width:100%; padding:14px 15px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.08);
+            border-radius:11px; color:#fff; font-size:14px; transition:border-color .25s, box-shadow .25s;}
+        .form-control::placeholder{color:#565349;}
+        .form-control:focus{border-color:var(--gold); outline:none; box-shadow:0 0 0 3px rgba(232,198,106,.12);}
+
+        /* ---------- Wallet ---------- */
+        .wallet{background:linear-gradient(150deg,rgba(28,24,14,.85),rgba(12,11,8,.85)); border:1px solid var(--line);
+            border-radius:16px; padding:22px; text-align:center; margin-top:18px; position:relative; overflow:hidden;}
+        .wallet .shimmer{position:absolute;top:0;left:-60%;width:60%;height:100%;
+            background:linear-gradient(100deg,transparent,rgba(232,198,106,.14),transparent);animation:sweep 4.5s ease-in-out infinite;}
+        @keyframes sweep{0%{left:-60%;}55%,100%{left:120%;}}
+        .wallet-lbl{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);}
+        .wallet-val{font-family:'Orbitron',sans-serif;font-size:38px;font-weight:900;color:var(--gold);margin:8px 0 4px;}
+        .wallet-fine{font-size:10.5px;color:var(--muted-2);line-height:1.5;}
+        .geo-indicator{font-size:10px;color:var(--green);margin-top:8px;text-transform:uppercase;letter-spacing:1px;}
+
+        /* ---------- Tier / option cards ---------- */
+        .opt-card{background:rgba(255,255,255,.02); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,.06);
+            margin-bottom:10px; display:flex; align-items:center; cursor:pointer; transition:border-color .25s, background .25s, transform .2s;}
+        .opt-card:hover{border-color:var(--gold); background:rgba(232,198,106,.05); transform:translateX(3px);}
+        .opt-card input{margin-right:14px; accent-color:var(--gold); transform:scale(1.25);}
+        .opt-name{font-size:14px;font-weight:600;color:#fff;}
+        .opt-name:hover{color:var(--gold-2);}
+        .opt-reward{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.5;}
+
+        /* ---------- Ad slots (honest placeholders) ---------- */
+        .ad-slot{background:rgba(0,0,0,.3); border:1px dashed rgba(232,198,106,.3); padding:18px; text-align:center;
+            border-radius:12px; margin:16px 0; color:var(--muted);}
+        .ad-slot p{margin:3px 0; font-size:11px;}
+        .ad-slot .tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-deep);}
+
+        /* ---------- Trust badges ---------- */
+        .trust{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px;}
+        .trust-item{background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:14px;
+            padding:14px 8px; text-align:center; transition:transform .25s, border-color .25s;}
+        .trust-item:hover{transform:translateY(-4px); border-color:var(--line);}
+        .trust-ico{font-size:20px; margin-bottom:6px;}
+        .trust-t{font-size:11px; font-weight:700; color:var(--ink);}
+        .trust-d{font-size:9.5px; color:var(--muted-2); margin-top:2px; line-height:1.4;}
+
+        /* ---------- Honest notices ---------- */
+        .notice{background:rgba(79,211,154,.06); border:1px solid rgba(79,211,154,.25); padding:13px;
+            border-radius:11px; color:#a9d9c4; font-size:11px; line-height:1.65; margin:16px 0;}
+        .notice strong{color:var(--green);}
+
+        /* ---------- Stat strip ---------- */
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px;}
+        .stat{background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center;}
+        .stat-n{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:800;color:var(--gold);}
+        .stat-l{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted-2);margin-top:3px;}
+
+        /* ---------- Footer ---------- */
+        footer{margin-top:40px; text-align:center; border-top:1px solid rgba(255,255,255,.06); padding-top:24px;}
+        .foot-brand{font-family:'Playfair Display',serif;font-weight:700;color:var(--gold);font-size:18px;margin-bottom:8px;}
+        .social{display:flex; justify-content:center; gap:12px; margin:12px 0;}
+        .social a{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+            background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:var(--muted);
+            text-decoration:none;font-size:14px;transition:transform .25s,color .25s,border-color .25s;}
+        .social a:hover{transform:translateY(-3px);color:var(--gold);border-color:var(--gold);}
+        .foot-links{font-size:11px;color:var(--muted-2);margin:8px 0;}
+        .foot-links a{color:var(--muted);text-decoration:none;margin:0 6px;}
+        .foot-links a:hover{color:var(--gold);}
+        .foot-fine{font-size:10px;color:var(--muted-2);line-height:1.6;max-width:420px;margin:10px auto 0;}
+
+        .warden-box{background:rgba(255,255,255,.02);border:1px solid var(--line);padding:14px;border-radius:12px;margin-top:16px;display:none;}
+        .warden-title{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;}
+        .warden-text{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+
+        @media(max-width:420px){.hero h1{font-size:32px;} .wallet-val{font-size:32px;}}
     </style>
 </head>
 <body>
 
-    <div class="mendez-dashboard">
-        <div class="security-ribbon">🛡️ AES-256 Cloud Shield & IP-Lock Engaged 🛡️</div>
-        
-        <div class="header-title">MENDEZ SYSTEM</div>
-        <div class="header-sub">Mendez Community Cyber Fortress</div>
-        
-        <!-- 🔐 रजिस्ट्रेशन गेट -->
-        <div class="auth-gate" id="auth-gate-panel">
+    <!-- SPLASH -->
+    <div id="splash">
+        <div class="splash-monogram">M</div>
+        <div class="splash-ring"></div>
+        <div class="splash-txt">Mendez Community</div>
+    </div>
+
+    <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+    <div class="grain"></div>
+
+    <div class="wrap">
+
+        <!-- TOP BAR -->
+        <div class="topbar reveal">
+            <div class="brand">
+                <div class="brand-mark">M</div>
+                <div>
+                    <div class="brand-name">Mendez<span>Community</span></div>
+                    <div style="font-size:9px;letter-spacing:1.5px;color:var(--muted-2);text-transform:uppercase;">Premium Rewards Platform</div>
+                </div>
+            </div>
+            <div class="verified-chip">&#10003; Honest &middot; Verified</div>
+        </div>
+
+        <!-- HERO -->
+        <div class="hero reveal">
+            <span class="eyebrow">Real Rewards &middot; Real Revenue</span>
+            <h1>Earn with <span class="grad">Integrity.</span><br>Get paid with <span class="grad">Confidence.</span></h1>
+            <p>A premium rewards experience where every point is earned honestly &mdash; credited only after the ad network verifies a genuine engagement. No fake numbers. No empty promises.</p>
+            <div class="hero-cta">
+                <a class="btn btn-gold" href="silver-task.html" onclick="ripple(event)">&#128176; Enter Reward Zone</a>
+                <a class="btn btn-ghost" href="#how" onclick="ripple(event)">How it works</a>
+            </div>
+        </div>
+
+        <!-- STAT STRIP (honest, non-monetary) -->
+        <div class="stats reveal">
+            <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Honest Copy</div></div>
+            <div class="stat"><div class="stat-n">S2S</div><div class="stat-l">Verified Payouts</div></div>
+            <div class="stat"><div class="stat-n">PayPal</div><div class="stat-l">Withdrawals</div></div>
+        </div>
+
+        <!-- REGISTRATION -->
+        <div class="card reveal" id="auth-gate-panel">
+            <div class="card-title">&#128272; Create Your Profile</div>
+            <p style="font-size:11.5px;color:var(--muted);margin-bottom:16px;">Set up a local profile on this device to access the reward zone. We keep it simple and honest.</p>
             <div class="form-group">
-                <label>आपका असली नाम (Real Name)</label>
+                <label>Your Name</label>
                 <input type="text" id="user-real-name" class="form-control" placeholder="Enter your full name">
             </div>
             <div class="form-group">
-                <label>आपका ईमेल (Email)</label>
-                <input type="email" id="user-email" class="form-control" placeholder="Enter your email">
+                <label>Your Email</label>
+                <input type="email" id="user-email" class="form-control" placeholder="you@example.com">
             </div>
-            <button class="launch-btn" onclick="secureRegisterUser()">🔒 Secure Registration Gate</button>
+            <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="ripple(event);secureRegisterUser()">Continue &rarr;</button>
         </div>
 
-        <!-- 📱 मुख्य डैशबोर्ड हब (सफलतापूर्वक रजिस्ट्रेशन के बाद) -->
-        <div class="dashboard-hub" id="dashboard-panel">
-            <!-- 📢 टॉप एडस्टेरा विज्ञापन स्लॉट -->
-            <div class="ad-slot-container" id="ad-top-slot">
-                <div class="ad-placeholder">
-                    <p>📢 PREMIUM AD SPACE (728x90)</p>
-                    <p style="font-size: 10px;">Your Advertisement Here - Contact ads@mendezcommunity.com</p>
-                </div>
+        <!-- DASHBOARD (revealed after registration) -->
+        <div id="dashboard-panel" style="display:none;">
+
+            <!-- WALLET -->
+            <div class="wallet reveal in">
+                <div class="shimmer"></div>
+                <div class="wallet-lbl" id="welcome-banner">Welcome</div>
+                <div id="mendez-wallet-display" class="wallet-val">0.00</div>
+                <div class="wallet-fine">Rewards are credited only after verified ad views (server-side confirmation) &mdash; not auto-credited.</div>
+                <div id="geo-status" class="geo-indicator">Ready</div>
             </div>
-            
-            <!-- 💰 मुख्य मल्टी-करेंसी वॉलेट -->
-            <div class="wallet-card">
-                <div class="wallet-lbl" id="welcome-banner">Welcome, Warrior!</div>
-                <div id="mendez-wallet-display" class="wallet-val">₹0.00</div>
-                <div style="font-size:10px;color:#888;margin-top:6px;">Rewards are credited only after verified ad views (server-side confirmation) — not auto-credited.</div>
-                <div id="geo-status" class="geo-indicator">Scanning Network Node...</div>
+
+            <!-- TOP AD SLOT -->
+            <div class="ad-slot">
+                <div class="tag">Premium Ad Space</div>
+                <p>Your Advertisement Here</p>
+                <p style="font-size:10px;color:var(--muted-2);">Partnerships &middot; ads@mendezcommunity.com</p>
             </div>
-            
-            <!-- 🥈🥇 डिवीजन 1: पुराना कोर मिशन ढांचा -->
-            <div class="div-box">
-                <div class="div-title" id="div1-title">Division 1: Core Discipline Mission</div>
+
+            <!-- PROGRAMS -->
+            <div class="card">
+                <div class="card-title" id="div1-title">&#127942; Reward Programs</div>
                 <label class="opt-card">
                     <input type="radio" name="mendez-core" value="silver" checked>
                     <div class="opt-info">
-                        <div class="opt-name" id="silver-name" onclick="goToSilverTask()">🥈 Silver Task - AD REVENUE</div>
-                        <div class="opt-reward" id="silver-reward">Loading Rewards...</div>
+                        <div class="opt-name" id="silver-name" onclick="goToSilverTask()">&#129352; Silver Task &mdash; Sponsor Engagement</div>
+                        <div class="opt-reward" id="silver-reward">Loading&hellip;</div>
                     </div>
                 </label>
                 <label class="opt-card">
                     <input type="radio" name="mendez-core" value="gold">
                     <div class="opt-info">
-                        <div class="opt-name" id="gold-name">🥇 Gold VIP Career Program</div>
-                        <div class="opt-reward" id="gold-reward">Loading Rewards...</div>
+                        <div class="opt-name" id="gold-name">&#129351; Gold Program &mdash; Coming Soon</div>
+                        <div class="opt-reward" id="gold-reward">Loading&hellip;</div>
                     </div>
                 </label>
             </div>
-            
-            <!-- 👑 डिवीजन 2: पुराना स्वतंत्र वीआईपी वर्ककॉम्बो ढांचा -->
-            <div class="div-box">
-                <div class="div-title" id="div2-title">Division 2: Independent VIP Station</div>
-                <label class="opt-card" style="border-color: #222;">
+
+            <!-- VIP -->
+            <div class="card">
+                <div class="card-title" id="div2-title">&#128081; VIP Workroom &mdash; Preview</div>
+                <label class="opt-card" style="cursor:default;">
                     <input type="checkbox" id="vip-combo-check" value="vip">
                     <div class="opt-info">
-                        <div class="opt-name">👑 Mendez Billionaire VIP Workroom</div>
-                        <div class="opt-reward" id="vip-reward">Loading Extra Rewards...</div>
+                        <div class="opt-name">&#128081; Mendez VIP Workroom</div>
+                        <div class="opt-reward" id="vip-reward">Loading&hellip;</div>
                     </div>
                 </label>
             </div>
-            
-            <!-- 📢 बॉटम एडस्टेरा विज्ञापन स्लॉट -->
-            <div class="ad-slot-container" id="ad-bottom-slot">
-                <div class="ad-placeholder">
-                    <p>📢 PARTNER OFFERS (300x250)</p>
-                    <p style="font-size: 10px;">Business Solutions & Digital Marketing Services</p>
-                </div>
+
+            <!-- BOTTOM AD SLOT -->
+            <div class="ad-slot">
+                <div class="tag">Partner Offers</div>
+                <p>Business Solutions &amp; Digital Services</p>
             </div>
 
-            <!-- 🛡️ AD-QUALITY / SAFETY NOTICE -->
-            <div class="ad-safety-notice">
-                🛡️ <strong>Ad Safety Notice:</strong> Ads on this site are served by third-party networks
+            <!-- AD SAFETY NOTICE -->
+            <div class="notice">
+                &#128737; <strong>Ad Safety Notice:</strong> Ads on this site are served by third-party networks
                 (Monetag / Adsterra) and may rotate. We configure these networks to show only clean,
-                mainstream ads and to block gambling, adult, and scam/"fake alert" categories. Spotted a
+                mainstream ads and to block gambling, adult, and scam/&ldquo;fake alert&rdquo; categories. Spotted a
                 bad ad? Report it to <strong>ads@mendezcommunity.com</strong> and we'll blacklist that advertiser.
             </div>
-            
-            <!-- 🚀 मुख्य बटन -->
-            <button class="launch-btn" id="coach-btn" onclick="startMendezFreeTrial()">Test Live AI Coach (3 Min Free)</button>
+
+            <button class="btn btn-gold" id="coach-btn" style="width:100%;justify-content:center;" onclick="ripple(event);startMendezFreeTrial()">Preview the Reward Zone</button>
         </div>
 
-        <!-- 🤖 द वार्डन सुरक्षा विजेट -->
+        <!-- HOW IT WORKS -->
+        <div class="section-label reveal" id="how">The Mendez Standard</div>
+        <div class="card reveal">
+            <div class="card-title">&#9878;&#65039; How Honest Earning Works</div>
+            <div style="font-size:12.5px;color:var(--muted);line-height:1.8;">
+                <p style="margin-bottom:10px;"><strong style="color:var(--gold-2);">1. Engage.</strong> You voluntarily open a sponsor offer in a new tab. Nothing auto-fires.</p>
+                <p style="margin-bottom:10px;"><strong style="color:var(--gold-2);">2. Verify.</strong> The ad network confirms a genuine view via a server-side postback &mdash; the only thing that credits a reward.</p>
+                <p style="margin-bottom:10px;"><strong style="color:var(--gold-2);">3. Withdraw.</strong> Once you have verified points, request a PayPal withdrawal. Payouts come from real ad revenue only.</p>
+            </div>
+        </div>
+
+        <!-- TRUST BADGES -->
+        <div class="trust reveal">
+            <div class="trust-item"><div class="trust-ico">&#128737;&#65039;</div><div class="trust-t">Verified Only</div><div class="trust-d">Server-side postback rewards</div></div>
+            <div class="trust-item"><div class="trust-ico">&#129309;</div><div class="trust-t">No Fake Cash</div><div class="trust-d">Honest, policy-safe copy</div></div>
+            <div class="trust-item"><div class="trust-ico">&#128179;</div><div class="trust-t">PayPal Payouts</div><div class="trust-d">Real ad-revenue withdrawals</div></div>
+        </div>
+
+        <!-- WARDEN (honest guidance box, no fake bans) -->
         <div class="warden-box" id="warden-alert">
-            <div class="warden-title">🤖 द वार्डन सुरक्षा गार्ड:</div>
+            <div class="warden-title">&#8505;&#65039; Notice</div>
             <div class="warden-text" id="warden-msg"></div>
         </div>
+
+        <!-- FOOTER -->
+        <footer class="reveal">
+            <div class="foot-brand">Mendez Community</div>
+            <div style="font-size:11px;color:var(--muted-2);">Premium &middot; Honest &middot; Verified Rewards</div>
+            <div class="social">
+                <a href="#" aria-label="Community" title="Community (add your link)">&#128172;</a>
+                <a href="#" aria-label="Updates" title="Updates (add your link)">&#128227;</a>
+                <a href="mailto:ads@mendezcommunity.com" aria-label="Email" title="Email us">&#9993;&#65039;</a>
+            </div>
+            <div class="foot-links">
+                <a href="silver-task.html">Reward Zone</a> &middot;
+                <a href="#how">How it works</a> &middot;
+                <a href="mailto:ads@mendezcommunity.com">Contact</a>
+            </div>
+            <div class="foot-fine">
+                Mendez Community is an honest rewards platform. Reward points are credited only after the ad
+                network verifies a genuine view via server-side postback. This is not a guaranteed salary or
+                fixed income &mdash; payouts are made from actual ad revenue after admin review. &copy; 2026 Mendez Community.
+            </div>
+        </footer>
+
     </div>
 
     <script>
-        // 🌍 अंतरराष्ट्रीय जियो-सैलरी लोकेटर सिमुलेशन
-        const userCountries = ["IN", "US", "NP"];
-        const randomCountry = userCountries[Math.floor(Math.random() * userCountries.length)]; 
-        let currentCurrency = "₹";
-        let silverVal = 65, goldVal = 150, vipVal = 310;
-        let currentBalance = 0;
-        
-        // 🛡️ 'द वार्डन' डिवाइस फिंगरप्रिंट लॉक सिमुलेशन (एंटी-चीट इंजन)
-        function getDeviceFingerprint() {
-            return btoa(navigator.userAgent + window.screen.width + window.screen.height).substring(5, 18);
+        /* ---------- Splash ---------- */
+        window.addEventListener("load", function(){
+            setTimeout(function(){ document.getElementById("splash").classList.add("hidden"); }, 900);
+        });
+
+        /* ---------- Ripple micro-interaction ---------- */
+        function ripple(e){
+            const t=e.currentTarget; const c=document.createElement("span"); c.className="ripple";
+            const r=t.getBoundingClientRect(); const s=Math.max(r.width,r.height);
+            c.style.width=c.style.height=s+"px";
+            c.style.left=(e.clientX-r.left-s/2)+"px"; c.style.top=(e.clientY-r.top-s/2)+"px";
+            t.appendChild(c); setTimeout(()=>c.remove(),600);
         }
 
-        function secureRegisterUser() {
-            const rawName = document.getElementById("user-real-name").value.trim();
-            const rawEmail = document.getElementById("user-email").value.trim();
+        /* ---------- Reveal on scroll ---------- */
+        const io=new IntersectionObserver((entries)=>{
+            entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+        },{threshold:.12});
+        document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 
-            if (rawName === "" || rawEmail === "") {
-                alert("Mendez Security Alert: कृपया अपना असली नाम और ईमेल दर्ज करें।");
-                return;
-            }
-
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(rawEmail)) {
-                alert("कृपया एक मान्य ईमेल पता दर्ज करें।");
-                return;
-            }
-
-            const deviceID = getDeviceFingerprint();
-            
-            // 🔒 लोकल स्टोरेज एंटी-चीट डेटाबेस चेक
-            const registeredLock = localStorage.getItem("mendez_device_secure_lock");
-            if (registeredLock && registeredLock !== rawEmail) {
-                document.getElementById("auth-gate-panel").style.display = "none";
-                const wardenBox = document.getElementById("warden-alert");
-                wardenBox.style.display = "block";
-                document.getElementById("warden-msg").innerHTML = "<strong style='color:#ff3333;'>DEVICE BANNED (धोखाधड़ी का प्रयास)!</strong><br>आपके डिवाइस पर कई खातों का संदेह है। कृपया सपोर्ट से संपर्क करें।";
-                return;
-            }
-
-            // डेटाबेस में ईमेल लॉक करना
-            localStorage.setItem("mendez_device_secure_lock", rawEmail);
-            const secureID = btoa(rawName + "::" + deviceID).substring(0, 8);
-            alert("🔒 DATA SECURED!\nआपका डेटा AES-256 के तहत लॉक कर दिया गया है।\nSecure ID: MZ-" + secureID);
-
-            // पुराना लग्ज़री डैशबोर्ड अनलॉक करना
-            document.getElementById("auth-gate-panel").style.display = "none";
-            document.getElementById("dashboard-panel").style.display = "block";
-            
-            setupLocalization(rawName);
+        /* ---------- Honest registration (local profile only) ---------- */
+        function secureRegisterUser(){
+            const rawName=document.getElementById("user-real-name").value.trim();
+            const rawEmail=document.getElementById("user-email").value.trim();
+            if(rawName===""||rawEmail===""){ alert("Please enter your name and email."); return; }
+            const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(!emailRegex.test(rawEmail)){ alert("Please enter a valid email address."); return; }
+            try{
+                localStorage.setItem("mendez_profile_name", rawName);
+                localStorage.setItem("mendez_profile_email", rawEmail);
+            }catch(e){}
+            document.getElementById("auth-gate-panel").style.display="none";
+            document.getElementById("dashboard-panel").style.display="block";
+            setupProfile(rawName);
         }
 
-        function setupLocalization(name) {
-            const geoStatus = document.getElementById("geo-status");
-            const walletDisplay = document.getElementById("mendez-wallet-display");
-            
-            if (randomCountry === "US") {
-                currentCurrency = "$"; 
-                silverVal = 5.00; 
-                goldVal = 12.00; 
-                vipVal = 15.00;
-                geoStatus.innerText = "🇺🇸 Secured Node: USA Node Detected (US English)";
-                geoStatus.style.color = "#00ffcc";
-                document.getElementById("div1-title").innerText = "Division 1: Core Focus Plan";
-                document.getElementById("silver-name").innerText = "🥈 Silver Task - AD REVENUE";
-                document.getElementById("gold-name").innerText = "🥇 Gold Executive Program";
-            } else if (randomCountry === "NP") {
-                currentCurrency = "NPR "; 
-                silverVal = 32; 
-                goldVal = 64; 
-                vipVal = 104;
-                geoStatus.innerText = "🇳🇵 Secured Node: Nepal Node Detected (नेपाली भाषा)";
-                geoStatus.style.color = "#ffaa00";
-                document.getElementById("div1-title").innerText = "डिवीजन १: मुख्य अनुशासन मिसन";
-                document.getElementById("silver-name").innerText = "🥈 सिल्भर - विज्ञापन रिवेन्यु";
-                document.getElementById("gold-name").innerText = "🥇 गोल्ड भिआइपी करियर मिसन";
-            } else {
-                currentCurrency = "₹"; 
-                silverVal = 65; 
-                goldVal = 150; 
-                vipVal = 310;
-                geoStatus.innerText = "🇮🇳 Secured Node: India Node Detected (हिंदी/हिंग्लिश)";
-                geoStatus.style.color = "#00ff00";
-            }
-            
-            walletDisplay.innerText = currentCurrency + "0.00";
-            document.getElementById("welcome-banner").innerText = "Welcome Back, Warrior: " + name;
-            document.getElementById("silver-reward").innerText = "Watch sponsor ads & earn reward points (credited only after verified views — not a guaranteed cash payout)";
-            document.getElementById("gold-reward").innerText = "Complete tasks & get 10-min VIP coach access — earn reward points (credited only after verified actions, not a guaranteed cash payout)";
-            document.getElementById("vip-reward").innerText = "Premium surveys & AI tasks — earn extra reward points (credited only after verified actions, not a guaranteed cash payout)";
+        /* ---------- Profile setup (HONEST: no fake geo salary, no fake currency) ---------- */
+        function setupProfile(name){
+            const geoStatus=document.getElementById("geo-status");
+            const walletDisplay=document.getElementById("mendez-wallet-display");
+            walletDisplay.innerText="0.00";
+            geoStatus.innerText="\u2713 Profile ready \u2014 verified rewards will appear here";
+            document.getElementById("welcome-banner").innerText="Welcome, "+name;
+            document.getElementById("silver-reward").innerText="Watch sponsor ads & earn reward points (credited only after verified views \u2014 not a guaranteed cash payout).";
+            document.getElementById("gold-reward").innerText="Structured program launching soon \u2014 verified reward points only, no guaranteed cash.";
+            document.getElementById("vip-reward").innerText="Premium tasks preview \u2014 verified reward points only, no guaranteed cash payout.";
         }
 
-        // 🎯 Silver Task पर जाएँ
-        function goToSilverTask() {
-            // corrected Silver Task page lives in the repo as silver-task.html
-            window.location.href = 'silver-task.html';
+        /* ---------- Navigate to Silver Task ---------- */
+        function goToSilverTask(){ window.location.href='silver-task.html'; }
+
+        /* ---------- Honest preview action (no fake trial/expiry pressure) ---------- */
+        function startMendezFreeTrial(){
+            const box=document.getElementById("warden-alert");
+            box.style.display="block";
+            document.getElementById("warden-msg").innerText="The full Reward Zone is on the Silver Task page. Open it to voluntarily view sponsor offers and build verified reward points \u2014 rewards credit only after the ad network confirms a genuine view.";
+            setTimeout(function(){ goToSilverTask(); }, 1400);
         }
 
-        // ⏱️ 3-सेकड का हार्ड वीडियो कॉल कट-ऑफ ताला
-        function startMendezFreeTrial() {
-            alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ्त ट्रायल शुरू!)");
-            
-            setTimeout(function() {
-                const coachBtn = document.getElementById("coach-btn");
-                coachBtn.innerText = "Trial Expired - Lock Core Missions Below";
-                coachBtn.style.background = "#222";
-                coachBtn.style.color = "#555";
-                coachBtn.disabled = true;
-                
-                // 'द वार्डन' एआई का गाइडेंस एक्टिवेशन
-                const wardenBox = document.getElementById("warden-alert");
-                wardenBox.style.display = "block";
-                document.getElementById("warden-msg").innerText = "Mendez Community के मुफ़्त ट्रायल की दैनिक सीमा समाप्त हो चुकी है। कृपया प्रीमियम प्लान में अपग्रेड करें!";
-            }, 3000);
-        }
+        /* ---------- Auto-restore profile if already registered ---------- */
+        document.addEventListener("DOMContentLoaded", function(){
+            try{
+                const n=localStorage.getItem("mendez_profile_name");
+                if(n){
+                    document.getElementById("auth-gate-panel").style.display="none";
+                    document.getElementById("dashboard-panel").style.display="block";
+                    setupProfile(n);
+                }
+            }catch(e){}
+        });
 
-        // 💰 वॉलेट क्रेडिटिंग — केवल verified ad views के बाद server-side confirmation से
-        // ⚠️ पुराना 5-सेकंड auto-credit timer (triggerLiveCounter) हटा दिया गया है।
-        // कोई भी client-side timer wallet/balance में पैसे या points auto-add नहीं करेगा।
-        // असली reward crediting Monetag/EffectiveCPMNetwork के server-side postback
-        // (verified view/click confirmation) से backend पर होनी चाहिए — browser में नहीं।
-        // इसलिए wallet display असली balance (शुरुआत में 0.00) पर ही रहता है।
+        /* NOTE: No client-side timer credits the wallet. Real reward crediting happens
+           on the backend via Monetag/Adsterra server-side postbacks (verified views).
+           The wallet display stays at the real balance (0.00 until backend confirms). */
     </script>
 </body>
 </html>
