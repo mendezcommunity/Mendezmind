@@ -46,6 +46,9 @@
 
         .disclaimer { background: #0d0d0d; border: 1px solid #333; padding: 12px; border-radius: 8px; color: #999; font-size: 11px; line-height: 1.6; margin: 15px 0; }
 
+        .ad-safety-notice { background: #071410; border: 1px solid #00cc66; padding: 12px; border-radius: 8px; color: #9ad; font-size: 11px; line-height: 1.6; margin: 15px 0; }
+        .ad-safety-notice strong { color: #7fdcaa; }
+
         .back-btn { margin-top: 20px; }
     </style>
 </head>
@@ -107,6 +110,15 @@
             Verified Reward Balance ONLY if the ad network verifies a genuine view via its server-side
             postback — the engagement count above is activity only, not money. We do not guarantee a
             fixed payout. Please do not click repeatedly to inflate views; that violates ad-network policy.
+        </div>
+
+        <!-- 🛡️ AD-QUALITY / SAFETY NOTICE (legitimately code-controllable) -->
+        <div class="ad-safety-notice" id="ad-safety-notice">
+            🛡️ <strong>Ad Safety Notice:</strong> Sponsored offers are served by third-party ad networks
+            (Monetag / Adsterra) and may rotate. We ask these networks to show only clean, mainstream ads
+            and to block gambling, adult, and scam/"fake alert" categories. If you ever see an inappropriate
+            or scammy ad, please report it to <strong>ads@mendezcommunity.com</strong> so we can blacklist
+            that advertiser. See <strong>AD_QUALITY_GUIDELINES.md</strong> in our repo for details.
         </div>
 
         <button class="btn btn-secondary back-btn" onclick="goBack()">← Back to Dashboard</button>
@@ -175,15 +187,46 @@
         window.__MENDEZ_USER_ID = USER_ID;
         window.__WALLET_CONFIG = WALLET_CONFIG;
 
-        // ---- append userId as the network subid on the sponsor link ----
-        // so a verified postback can attribute the reward to THIS user.
-        (function wireSubid() {
+        // ------------------------------------------------------------------
+        //  🧹 CURATED_OFFERS — OPTIONAL self-curated CLEAN offer whitelist.
+        //  Ad-CATEGORY blocking (scam/gambling/adult/aggressive) is done in your
+        //  Monetag & Adsterra DASHBOARDS, not here (see AD_QUALITY_GUIDELINES.md).
+        //  This array is an EXTRA, code-side safety control:
+        //   - Leave it EMPTY (default) -> the button uses the real Monetag Smartlink.
+        //   - Paste YOUR OWN vetted, clean offer URLs (that you personally checked
+        //     are legitimate, non-gambling, non-adult, non-scam) -> the button
+        //     rotates through your curated links instead of the raw rotating smartlink.
+        //  RULES: only clean links; keep target=_blank + rel=noopener noreferrer;
+        //  opens ONE offer per VOLUNTARY click only (no auto-open). Do NOT paste
+        //  gambling/adult/scam links. Do NOT fabricate offers.
+        //  Example (commented — replace with your real vetted links, then uncomment):
+        //  const CURATED_OFFERS = [
+        //      "https://example-brand.com/clean-offer-1",
+        //      "https://example-shop.com/clean-offer-2"
+        //  ];
+        // ------------------------------------------------------------------
+        const CURATED_OFFERS = [];   // empty by default -> smartlink fallback
+
+        // ---- choose the offer URL: curated clean list if provided, else smartlink ----
+        // then append userId as the network subid so a verified postback can
+        // attribute the reward to THIS user.
+        (function wireOfferLink() {
             const a = document.getElementById("silver-task-btn");
             if (!a) return;
             try {
-                const url = new URL(a.href);
+                // Fallback = the real Monetag Smartlink already in the href.
+                let target = a.href;
+                if (Array.isArray(CURATED_OFFERS) && CURATED_OFFERS.length > 0) {
+                    // pick one curated clean offer (rotate by time) — voluntary click only
+                    const pick = CURATED_OFFERS[Math.floor(Date.now() / 60000) % CURATED_OFFERS.length];
+                    if (pick && /^https?:\/\//i.test(pick)) { target = pick; }
+                }
+                const url = new URL(target);
                 url.searchParams.set(WALLET_CONFIG.SUBID_PARAM, USER_ID);
                 a.href = url.toString();
+                // enforce safe link attributes regardless of source
+                a.setAttribute("target", "_blank");
+                a.setAttribute("rel", "noopener noreferrer");
             } catch (e) { /* leave href unchanged on failure */ }
         })();
 
