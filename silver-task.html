@@ -115,19 +115,46 @@
     <!-- The EffectiveCPMNetwork smartlink (voluntary anchor, new tab) handles monetization for now. -->
 
     <script>
-        // Provisional session points only. NOT money. Reset every page load because
-        // there is no backend wallet to persist or fund payouts.
+        // Provisional reward points only. NOT money. These are a client-side
+        // convenience counter — final rewards are ALWAYS subject to the ad
+        // network's server-side / verified confirmation, and are NOT guaranteed.
+        const POINTS_KEY = "mendez_reward_points";
         let rewardPoints = 0;
         let offersOpened = 0;
 
-        // Fired when the user VOLUNTARILY clicks the offer link.
-        // We do NOT force-open, auto-click, auto-refresh, or inflate impressions.
+        // ---- localStorage persistence (client-side convenience only) ----
+        // Safely read the saved value; guard against NaN / invalid / negative.
+        function loadSavedPoints() {
+            let saved = 0;
+            try {
+                const raw = localStorage.getItem(POINTS_KEY);
+                const n = parseInt(raw, 10);
+                if (!isNaN(n) && n >= 0) { saved = n; }
+            } catch (e) { saved = 0; } // storage blocked/unavailable -> default 0
+            return saved;
+        }
+
+        function savePoints() {
+            try { localStorage.setItem(POINTS_KEY, String(rewardPoints)); } catch (e) {}
+        }
+
+        // On page load: RESTORE the previously accumulated points instead of
+        // starting at 0. This is a pure read/restore — it does NOT credit any
+        // new point, does NOT run a timer, and does NOT force any ad view.
+        function initPoints() {
+            rewardPoints = loadSavedPoints();
+            updatePoints();
+        }
+
+        // Fired ONLY when the user VOLUNTARILY clicks the offer link.
+        // We do NOT force-open, auto-click, auto-refresh, use timers, or inflate impressions.
         // The point is a provisional on-screen acknowledgement, explicitly "pending verification".
         function onOfferOpened() {
             offersOpened++;
             rewardPoints += 1; // provisional — pending network verification
+            savePoints();      // persist across page refresh/reload (client-side only)
             updatePoints();
-            showInfo("👍 Offer opened in a new tab. If the ad network verifies a genuine view, a reward may be credited (pending verification).");
+            showInfo("👍 Offer opened in a new tab. If the ad network verifies a genuine view, a reward may be credited (pending verification). Points are saved on this device only and are not a guaranteed cash payout.");
             // The anchor's native target="_blank" opens the link — no JS navigation,
             // no popup forcing, no impression inflation.
         }
@@ -135,6 +162,9 @@
         function updatePoints() {
             document.getElementById("reward-points").innerText = rewardPoints;
         }
+
+        // Restore saved points as soon as the page loads (survives refresh).
+        document.addEventListener("DOMContentLoaded", initPoints);
 
         function showInfo(message) {
             const msg = document.getElementById("info-msg");
