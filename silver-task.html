@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mendez Silver Task - Ad Revenue Zone</title>
-    <!-- WITHDRAWAL SYSTEM v8 2026-07-08:
-         Added full Withdrawal Request section with:
+    <title>Mendez Silver Task &mdash; Premium Reward Zone</title>
+    <!-- LUXURY REDESIGN v12 2026-07-08:
+         Premium dark+gold glass-morphism shell (splash loader, aurora bg,
+         reveal animations, micro-interactions, footer). ALL wallet/withdrawal
+         JS logic, element IDs, endpoints and CONFIG placeholders preserved
+         byte-for-byte from v8. No fabricated keys/URLs. No auto-fire, no forced
+         views, no fake cash. Honest copy intact.
+
+         WITHDRAWAL SYSTEM (from v8):
          - User tier display (New / Regular) + next eligible date
          - PayPal email input (saved to localStorage)
          - Request Withdrawal button (calls requestWithdrawal Cloud Function)
@@ -13,102 +19,173 @@
          - Withdrawal history list (calls withdrawalHistory Cloud Function)
          - Honest copy: not a guaranteed salary; payouts from real ad revenue only
          - CONFIG placeholders for WITHDRAWAL_ENDPOINT, HISTORY_ENDPOINT, CYCLE_ENDPOINT
-         All existing features intact: verified balance, engagement counter,
-         ad safety notice, curated offers, smartlink, UUID/subid. -->
+         Verified balance, engagement counter, ad safety notice, curated offers,
+         smartlink, UUID/subid all intact. -->
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; padding: 15px; }
+        :root{
+            --bg:#060606; --panel:rgba(20,20,24,0.62); --panel-solid:#101013;
+            --line:rgba(212,175,55,0.16); --gold:#e8c66a; --gold-2:#f4d98b; --gold-deep:#b8912f;
+            --ink:#f4f1e8; --muted:#9a968c; --muted-2:#6c6a63;
+            --green:#4fd39a; --cyan:#59d6d6; --blue:#7f9bff; --radius:18px;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding:15px;}
+        ::selection{background:rgba(232,198,106,0.28);color:#fff;}
 
-        .container { max-width: 480px; margin: auto; background: #0a0a0a; padding: 20px; border-radius: 15px; border: 1px solid #1a1a1a; }
+        /* Splash */
+        #splash{position:fixed;inset:0;z-index:9999;background:#060606;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .7s ease,visibility .7s ease;}
+        #splash.hidden{opacity:0;visibility:hidden;}
+        .splash-monogram{font-family:'Playfair Display',serif;font-weight:900;font-size:48px;color:var(--gold);text-shadow:0 0 34px rgba(232,198,106,.35);animation:pulseGlow 1.8s ease-in-out infinite;}
+        .splash-ring{width:42px;height:42px;border-radius:50%;border:2px solid rgba(232,198,106,.18);border-top-color:var(--gold);animation:spin .9s linear infinite;}
+        .splash-txt{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--muted-2);}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @keyframes pulseGlow{0%,100%{opacity:.78;transform:scale(1);}50%{opacity:1;transform:scale(1.05);}}
 
-        .header { text-align: center; margin-bottom: 20px; }
-        .header-title { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 22px; font-weight: 800; letter-spacing: 2px; }
-        .header-sub { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+        /* Aurora bg */
+        .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(1100px 560px at 50% -10%,#17140c 0%,#060606 55%);}
+        .aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 16s ease-in-out infinite;}
+        .aurora .a1{width:380px;height:380px;background:rgba(184,145,47,.20);top:-110px;left:-70px;}
+        .aurora .a2{width:320px;height:320px;background:rgba(232,198,106,.12);bottom:-90px;right:-50px;animation-delay:-5s;}
+        .aurora .a3{width:280px;height:280px;background:rgba(79,211,154,.07);top:45%;left:55%;animation-delay:-9s;}
+        @keyframes float{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(26px,-26px) scale(1.08);}66%{transform:translate(-18px,18px) scale(.95);}}
 
-        .wallet-box { background: #071410; border: 2px solid #00cc66; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
-        .wallet-label { font-size: 12px; color: #7fdcaa; text-transform: uppercase; letter-spacing: 1px; }
-        .wallet-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cc66; margin: 10px 0; }
-        .wallet-note { font-size: 11px; color: #8aa; line-height: 1.5; }
-        .wallet-status { font-size: 10px; color: #567; margin-top: 6px; }
+        .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+        .reveal.in{opacity:1;transform:none;}
 
-        .earnings-box { background: #101010; border: 2px solid #00cccc; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
-        .earnings-label { font-size: 12px; color: #888; text-transform: uppercase; }
-        .earnings-amount { font-size: 32px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cccc; margin: 8px 0; }
-        .earnings-note { font-size: 11px; color: #888; line-height: 1.5; }
+        .container{max-width:520px;margin:auto;position:relative;}
 
-        .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
-        .task-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ffcc00; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-left: 3px solid #ffcc00; padding-left: 8px; }
-        .task-item { background: #121212; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00cccc; padding-left: 12px; font-size: 12px; }
-        .task-reward { color: #ffcc00; font-weight: bold; float: right; }
+        /* Header */
+        .header{text-align:center;margin-bottom:8px;padding-top:6px;}
+        .brand-mark{width:44px;height:44px;border-radius:13px;display:inline-grid;place-items:center;margin-bottom:12px;
+            background:linear-gradient(145deg,#1a1710,#0c0b08);border:1px solid var(--line);
+            font-family:'Playfair Display',serif;font-weight:900;color:var(--gold);font-size:22px;
+            box-shadow:0 6px 18px rgba(0,0,0,.6),inset 0 1px 0 rgba(232,198,106,.15);}
+        .header-title{font-family:'Playfair Display',serif;color:var(--ink);font-size:26px;font-weight:900;letter-spacing:.5px;}
+        .header-title .grad{background:linear-gradient(100deg,#f4d98b,#e8c66a 45%,#b8912f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+        .header-sub{font-size:10px;color:var(--muted-2);text-transform:uppercase;letter-spacing:2px;margin-top:6px;}
 
-        .btn { display: block; width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; text-align: center; text-decoration: none; box-sizing: border-box; }
-        .btn-primary { background: #ffcc00; color: #000; }
-        .btn-primary:hover { background: #ffdd33; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
-        .btn-secondary { background: #222; color: #fff; }
-        .btn-secondary:hover { background: #333; }
-        .btn-green { background: #00cc66; color: #000; }
-        .btn-green:hover { background: #00dd77; }
-        .btn-sm { padding: 10px 14px; font-size: 12px; width: auto; display: inline-block; margin: 5px 0; }
+        /* Glass card base */
+        .glass{background:var(--panel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+            border:1px solid var(--line);border-radius:var(--radius);position:relative;overflow:hidden;
+            box-shadow:0 18px 44px rgba(0,0,0,.5);}
+        .glass::before{content:"";position:absolute;inset:0;border-radius:var(--radius);padding:1px;
+            background:linear-gradient(140deg,rgba(232,198,106,.5),rgba(232,198,106,0) 40%);
+            -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+            -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55;}
 
-        .info-msg { background: #05121a; border: 1px solid #00cccc; padding: 12px; border-radius: 8px; color: #00cccc; text-align: center; font-size: 12px; margin: 10px 0; }
-        .error-msg { background: #1a0505; border: 1px solid #cc3300; padding: 12px; border-radius: 8px; color: #ff6644; font-size: 12px; margin: 10px 0; }
-        .success-msg { background: #051a0a; border: 1px solid #00cc66; padding: 12px; border-radius: 8px; color: #00cc66; font-size: 12px; margin: 10px 0; }
+        /* Wallet */
+        .wallet-box{background:linear-gradient(150deg,rgba(10,26,20,.9),rgba(8,14,11,.9));border:1px solid rgba(79,211,154,.35);
+            padding:22px;border-radius:16px;text-align:center;margin-bottom:15px;margin-top:16px;position:relative;overflow:hidden;}
+        .wallet-box .shimmer{position:absolute;top:0;left:-60%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(79,211,154,.12),transparent);animation:sweep 4.5s ease-in-out infinite;}
+        @keyframes sweep{0%{left:-60%;}55%,100%{left:120%;}}
+        .wallet-label{font-size:11px;color:#7fdcaa;text-transform:uppercase;letter-spacing:1.4px;}
+        .wallet-amount{font-size:42px;font-family:'Orbitron',sans-serif;font-weight:900;color:var(--green);margin:10px 0;text-shadow:0 0 24px rgba(79,211,154,.25);}
+        .wallet-note{font-size:11px;color:#8aa;line-height:1.5;}
+        .wallet-status{font-size:10px;color:#567;margin-top:6px;}
 
-        .disclaimer { background: #0d0d0d; border: 1px solid #333; padding: 12px; border-radius: 8px; color: #999; font-size: 11px; line-height: 1.6; margin: 15px 0; }
-        .ad-safety-notice { background: #071410; border: 1px solid #00cc66; padding: 12px; border-radius: 8px; color: #9ad; font-size: 11px; line-height: 1.6; margin: 15px 0; }
-        .ad-safety-notice strong { color: #7fdcaa; }
+        /* Earnings / engagement */
+        .earnings-box{background:linear-gradient(150deg,rgba(10,22,26,.85),rgba(8,12,14,.85));border:1px solid rgba(89,214,214,.3);
+            padding:18px;border-radius:16px;text-align:center;margin-bottom:20px;}
+        .earnings-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;}
+        .earnings-amount{font-size:32px;font-family:'Orbitron',sans-serif;font-weight:900;color:var(--cyan);margin:8px 0;}
+        .earnings-note{font-size:11px;color:var(--muted);line-height:1.5;}
 
-        /* WITHDRAWAL SECTION */
-        .withdrawal-section { background: #0a0d14; border: 2px solid #4466ff; padding: 20px; border-radius: 12px; margin: 20px 0; }
-        .withdrawal-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: #88aaff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-left: 3px solid #4466ff; padding-left: 8px; }
+        /* Task list */
+        .task-list{padding:18px;border-radius:var(--radius);margin:20px 0;}
+        .task-title{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;border-left:3px solid var(--gold);padding-left:10px;}
+        .task-item{background:rgba(255,255,255,.02);padding:12px 14px;border-radius:10px;margin-bottom:10px;border-left:3px solid var(--cyan);font-size:12px;transition:transform .2s,border-color .2s;}
+        .task-item:hover{transform:translateX(3px);border-left-color:var(--gold);}
+        .task-reward{color:var(--gold);font-weight:bold;float:right;}
 
-        .tier-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-        .tier-new { background: #1a2a00; color: #aaff44; border: 1px solid #aaff44; }
-        .tier-regular { background: #001a2a; color: #44aaff; border: 1px solid #44aaff; }
+        /* Buttons */
+        .btn{position:relative;overflow:hidden;display:block;width:100%;padding:15px;margin:10px 0;border:none;border-radius:12px;
+            font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:1px;cursor:pointer;
+            transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s,background .25s;text-align:center;text-decoration:none;box-sizing:border-box;}
+        .btn-primary{background:linear-gradient(145deg,#f4d98b,#e8c66a 45%,#c99d38);color:#1a1405;box-shadow:0 10px 26px rgba(184,145,47,.28),inset 0 1px 0 rgba(255,255,255,.4);}
+        .btn-primary:hover{transform:translateY(-3px) scale(1.01);box-shadow:0 16px 34px rgba(184,145,47,.42);}
+        .btn-secondary{background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--line);}
+        .btn-secondary:hover{transform:translateY(-3px);border-color:var(--gold);color:var(--gold-2);}
+        .btn-green{background:linear-gradient(145deg,#5fe0a8,#4fd39a 50%,#2fae7f);color:#04140d;box-shadow:0 10px 26px rgba(79,211,154,.25),inset 0 1px 0 rgba(255,255,255,.35);}
+        .btn-green:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(79,211,154,.4);}
+        .btn-sm{padding:10px 14px;font-size:12px;width:auto;display:inline-block;margin:5px 0;}
+        .btn .ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,.45);animation:rip .6s linear;pointer-events:none;}
+        @keyframes rip{to{transform:scale(4);opacity:0;}}
 
-        .tier-info { font-size: 11px; color: #778; line-height: 1.6; margin-bottom: 14px; }
-        .tier-info strong { color: #aab; }
+        /* Messages */
+        .info-msg{background:rgba(89,214,214,.08);border:1px solid rgba(89,214,214,.35);padding:12px;border-radius:10px;color:var(--cyan);text-align:center;font-size:12px;margin:10px 0;}
+        .error-msg{background:rgba(204,51,0,.1);border:1px solid rgba(204,51,0,.4);padding:12px;border-radius:10px;color:#ff6644;font-size:12px;margin:10px 0;}
+        .success-msg{background:rgba(79,211,154,.1);border:1px solid rgba(79,211,154,.4);padding:12px;border-radius:10px;color:var(--green);font-size:12px;margin:10px 0;}
 
-        .form-group { margin-bottom: 14px; }
-        .form-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block; }
-        .form-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 13px; box-sizing: border-box; }
-        .form-input:focus { outline: none; border-color: #4466ff; }
-        .form-input::placeholder { color: #555; }
+        .disclaimer{padding:13px;border-radius:11px;color:var(--muted);font-size:11px;line-height:1.65;margin:15px 0;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);}
+        .ad-safety-notice{background:rgba(79,211,154,.06);border:1px solid rgba(79,211,154,.25);padding:13px;border-radius:11px;color:#a9d9c4;font-size:11px;line-height:1.65;margin:15px 0;}
+        .ad-safety-notice strong{color:var(--green);}
 
-        .cycle-selector { display: flex; gap: 10px; margin-bottom: 14px; }
-        .cycle-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #333; color: #888; border-radius: 8px; font-size: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
-        .cycle-btn.active { background: #001a2a; border-color: #44aaff; color: #44aaff; font-weight: 700; }
-        .cycle-btn:hover { border-color: #4466ff; color: #88aaff; }
+        /* Withdrawal section */
+        .withdrawal-section{background:linear-gradient(150deg,rgba(12,16,30,.85),rgba(8,10,18,.85));border:1px solid rgba(127,155,255,.35);padding:22px;border-radius:var(--radius);margin:20px 0;}
+        .withdrawal-title{font-family:'Orbitron',sans-serif;font-size:13px;color:#a9bbff;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:16px;border-left:3px solid var(--blue);padding-left:10px;}
+        .tier-badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+        .tier-new{background:rgba(170,255,68,.08);color:#aaff44;border:1px solid rgba(170,255,68,.5);}
+        .tier-regular{background:rgba(68,170,255,.08);color:#44aaff;border:1px solid rgba(68,170,255,.5);}
+        .tier-info{font-size:11px;color:var(--muted);line-height:1.65;margin-bottom:14px;}
+        .tier-info strong{color:var(--ink);}
+        .form-group{margin-bottom:14px;}
+        .form-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:7px;display:block;}
+        .form-input{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.09);color:#fff;padding:12px 14px;border-radius:11px;font-size:13px;box-sizing:border-box;transition:border-color .25s,box-shadow .25s;}
+        .form-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(127,155,255,.12);}
+        .form-input::placeholder{color:#565349;}
+        .cycle-selector{display:flex;gap:10px;margin-bottom:14px;}
+        .cycle-btn{flex:1;padding:11px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.09);color:var(--muted);border-radius:11px;font-size:12px;cursor:pointer;text-align:center;transition:all .2s;}
+        .cycle-btn.active{background:rgba(68,170,255,.1);border-color:#44aaff;color:#44aaff;font-weight:700;}
+        .cycle-btn:hover{border-color:var(--blue);color:#a9bbff;}
+        .withdrawal-disclaimer{font-size:11px;color:var(--muted-2);line-height:1.65;margin:12px 0;padding:11px;background:rgba(0,0,0,.25);border-radius:9px;border-left:3px solid rgba(127,155,255,.4);}
+        .history-section{margin-top:16px;}
+        .history-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;}
+        .history-item{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);padding:11px 13px;border-radius:10px;margin-bottom:8px;font-size:11px;}
+        .history-item .h-amount{color:var(--gold);font-weight:700;font-size:13px;}
+        .history-item .h-status{float:right;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;}
+        .status-pending{background:rgba(255,204,0,.08);color:#ffcc00;border:1px solid rgba(255,204,0,.5);}
+        .status-approved_manual{background:rgba(79,211,154,.08);color:var(--green);border:1px solid rgba(79,211,154,.5);}
+        .status-paid{background:rgba(0,255,136,.08);color:#00ff88;border:1px solid rgba(0,255,136,.5);}
+        .status-rejected{background:rgba(255,68,68,.08);color:#ff4444;border:1px solid rgba(255,68,68,.5);}
+        .history-item .h-date{color:var(--muted-2);font-size:10px;margin-top:4px;}
+        .history-empty{color:var(--muted-2);font-size:12px;text-align:center;padding:10px;}
 
-        .withdrawal-disclaimer { font-size: 11px; color: #667; line-height: 1.6; margin: 12px 0; padding: 10px; background: #080808; border-radius: 6px; border-left: 3px solid #334; }
+        .back-btn{margin-top:20px;}
 
-        .history-section { margin-top: 16px; }
-        .history-title { font-size: 11px; color: #778; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .history-item { background: #0d0d0d; border: 1px solid #222; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 11px; }
-        .history-item .h-amount { color: #ffcc00; font-weight: 700; font-size: 13px; }
-        .history-item .h-status { float: right; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .status-pending { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc00; }
-        .status-approved_manual { background: #001a0a; color: #00cc66; border: 1px solid #00cc66; }
-        .status-paid { background: #001a0a; color: #00ff88; border: 1px solid #00ff88; }
-        .status-rejected { background: #1a0000; color: #ff4444; border: 1px solid #ff4444; }
-        .history-item .h-date { color: #556; font-size: 10px; margin-top: 4px; }
-        .history-empty { color: #445; font-size: 12px; text-align: center; padding: 10px; }
+        /* Footer */
+        footer{margin-top:34px;text-align:center;border-top:1px solid rgba(255,255,255,.06);padding-top:22px;}
+        .foot-brand{font-family:'Playfair Display',serif;font-weight:700;color:var(--gold);font-size:17px;margin-bottom:6px;}
+        .foot-fine{font-size:10px;color:var(--muted-2);line-height:1.6;max-width:420px;margin:8px auto 0;}
 
-        .back-btn { margin-top: 20px; }
+        @media(max-width:420px){.wallet-amount{font-size:34px;}.header-title{font-size:22px;}}
     </style>
 </head>
 <body>
 
+    <!-- SPLASH -->
+    <div id="splash">
+        <div class="splash-monogram">M</div>
+        <div class="splash-ring"></div>
+        <div class="splash-txt">Silver Task</div>
+    </div>
+
+    <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+
     <div class="container">
-        <div class="header">
-            <div class="header-title">&#129352; SILVER TASK</div>
-            <div class="header-sub">Ad Revenue Zone &middot; Monetag Powered</div>
+        <div class="header reveal">
+            <div class="brand-mark">M</div>
+            <div class="header-title">&#129352; <span class="grad">Silver Task</span></div>
+            <div class="header-sub">Premium Reward Zone &middot; Monetag Powered</div>
         </div>
 
         <!-- VERIFIED REWARD BALANCE -->
-        <div class="wallet-box">
+        <div class="wallet-box reveal">
+            <div class="shimmer"></div>
             <div class="wallet-label">&#10003; Verified Reward Balance</div>
             <div class="wallet-amount" id="verified-balance">0</div>
             <div class="wallet-note">
@@ -120,7 +197,7 @@
         </div>
 
         <!-- ENGAGEMENT COUNTER (activity only) -->
-        <div class="earnings-box">
+        <div class="earnings-box reveal">
             <div class="earnings-label">Engagement / Activity Count</div>
             <div class="earnings-amount" id="reward-points">0</div>
             <div class="earnings-note">
@@ -131,7 +208,7 @@
         </div>
 
         <!-- TASK LIST -->
-        <div class="task-list">
+        <div class="task-list glass reveal">
             <div class="task-title">&#128203; Silver Tasks &mdash; Watch &amp; Support</div>
             <div class="task-item">&#128065; View Sponsor Offer #1 <span class="task-reward">+1 activity*</span></div>
             <div class="task-item">&#128065; View Sponsor Offer #2 <span class="task-reward">+1 activity*</span></div>
@@ -164,13 +241,13 @@
             that advertiser. See <strong>AD_QUALITY_GUIDELINES.md</strong> in our repo for details.
         </div>
 
-        <!-- ══════════════════════════════════════════════════════════════════
+        <!-- ═══════════════════════════════════════════════════════════════════════
              WITHDRAWAL REQUEST SECTION
              - New users: eligible after 2 days of joining
              - Regular users: eligible every 15 or 25 days (chosen cycle)
              - Minimum: $1.00 | Payouts from REAL ad revenue only
-             ══════════════════════════════════════════════════════════════════ -->
-        <div class="withdrawal-section">
+             ═══════════════════════════════════════════════════════════════════════ -->
+        <div class="withdrawal-section reveal">
             <div class="withdrawal-title">&#128184; Withdrawal Request</div>
 
             <div id="tier-badge-container">
@@ -236,6 +313,16 @@
         <!-- END WITHDRAWAL SECTION -->
 
         <button class="btn btn-secondary back-btn" onclick="goBack()">&#8592; Back to Dashboard</button>
+
+        <footer class="reveal">
+            <div class="foot-brand">Mendez Community</div>
+            <div style="font-size:11px;color:var(--muted-2);">Premium &middot; Honest &middot; Verified Rewards</div>
+            <div class="foot-fine">
+                Reward points are credited only after the ad network verifies a genuine view via server-side
+                postback. This is not a guaranteed salary &mdash; payouts are made from actual ad revenue after
+                admin review. &copy; 2026 Mendez Community.
+            </div>
+        </footer>
     </div>
 
     <!-- =====================================================================
@@ -380,6 +467,17 @@
     </script>
 
     <script>
+        // Splash hide + reveal on scroll + ripple (presentation only)
+        window.addEventListener("load", function(){
+            setTimeout(function(){ var s=document.getElementById("splash"); if(s) s.classList.add("hidden"); }, 850);
+        });
+        (function(){
+            const io=new IntersectionObserver((entries)=>{
+                entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+            },{threshold:.1});
+            document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+        })();
+
         // Engagement/activity counter
         const POINTS_KEY = "mendez_engagement_count";
         let rewardPoints = 0;
