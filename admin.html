@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mendez Community — Admin Panel</title>
+  <!--
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║  MENDEZ COMMUNITY — WITHDRAWAL REQUEST ADMIN PANEL                  ║
+    ║  Version: v9  |  Date: 2026-07-08                                   ║
+    ║                                                                      ║
+    ║  ADMIN_CONFIG — PASTE YOUR REAL VALUES IN THE SCRIPT BLOCK BELOW    ║
+    ║  Do NOT hardcode secrets in this file.                               ║
+    ║  All Cloud Function URLs come from `firebase deploy` output.         ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #0a0f0d;
+      --surface:   #111a15;
+      --surface2:  #162019;
+      --border:    #1e3028;
+      --accent:    #00cc66;
+      --accent2:   #00ff88;
+      --warn:      #ffaa00;
+      --danger:    #ff4444;
+      --success:   #00cc66;
+      --text:      #c8e6d4;
+      --text-dim:  #6a9a7a;
+      --text-muted:#3a5a48;
+      --radius:    10px;
+    }
+    html { font-size: 15px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ── Login Screen ─────────────────────────────────────────────────── */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .login-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      color: var(--accent2);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .login-sub { color: var(--text-dim); font-size: 0.82rem; margin-bottom: 28px; }
+    .login-card label { display: block; text-align: left; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
+    .login-card input[type="password"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 11px 14px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color .2s;
+      margin-bottom: 16px;
+    }
+    .login-card input[type="password"]:focus { border-color: var(--accent); }
+    .btn-login {
+      width: 100%;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-login:hover { background: var(--accent2); }
+    #login-error { color: var(--danger); font-size: 0.82rem; margin-top: 10px; min-height: 18px; }
+    .login-note { color: var(--text-muted); font-size: 0.75rem; margin-top: 18px; line-height: 1.5; }
+
+    /* ── Main App (hidden until login) ───────────────────────────────── */
+    #app { display: none; }
+
+    /* ── Top Bar ──────────────────────────────────────────────────────── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: var(--accent2);
+      letter-spacing: 1.5px;
+    }
+    .topbar-brand span { color: var(--text-dim); font-size: 0.75rem; font-family: 'Inter', sans-serif; margin-left: 10px; letter-spacing: 0; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .btn-refresh {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      border-radius: 7px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .btn-refresh:hover { border-color: var(--accent); }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 7px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Layout ───────────────────────────────────────────────────────── */
+    .main-wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+    /* ── Stats Row ────────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-align: center;
+    }
+    .stat-card .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent2);
+      line-height: 1;
+    }
+    .stat-card .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 5px; }
+    .stat-card.warn .stat-num { color: var(--warn); }
+    .stat-card.danger .stat-num { color: var(--danger); }
+
+    /* ── Tabs ─────────────────────────────────────────────────────────── */
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-dim);
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section Header ───────────────────────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-pending  { background: #2a2000; color: var(--warn); border: 1px solid #4a3800; }
+    .badge-approved { background: #002a14; color: var(--success); border: 1px solid #004a24; }
+    .badge-rejected { background: #2a0000; color: var(--danger); border: 1px solid #4a0000; }
+    .badge-new      { background: #001a2a; color: #44aaff; border: 1px solid #003a5a; }
+    .badge-regular  { background: #1a0a2a; color: #cc88ff; border: 1px solid #3a1a5a; }
+
+    /* ── Table ────────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead tr { background: var(--surface2); }
+    thead th {
+      padding: 11px 14px;
+      text-align: left;
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+    tbody tr { border-top: 1px solid var(--border); transition: background .15s; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 12px 14px; vertical-align: middle; }
+    .td-user { font-family: monospace; font-size: 0.78rem; color: var(--text-dim); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .td-email { color: var(--text); }
+    .td-amount { font-weight: 700; color: var(--accent2); }
+    .td-date { color: var(--text-dim); font-size: 0.78rem; white-space: nowrap; }
+    .td-actions { white-space: nowrap; }
+
+    /* ── Action Buttons ───────────────────────────────────────────────── */
+    .btn-approve, .btn-reject {
+      border: none;
+      border-radius: 6px;
+      padding: 6px 13px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-approve { background: var(--success); color: #000; margin-right: 6px; }
+    .btn-reject  { background: var(--danger);  color: #fff; }
+    .btn-approve:hover, .btn-reject:hover { opacity: .85; }
+    .btn-approve:disabled, .btn-reject:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Empty / Loading / Error states ──────────────────────────────── */
+    .state-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+    .state-msg .icon { font-size: 2rem; margin-bottom: 10px; }
+    .spinner {
+      display: inline-block;
+      width: 22px; height: 22px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ────────────────────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-size: 0.85rem;
+      color: var(--text);
+      max-width: 320px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { border-color: var(--success); color: var(--accent2); }
+    #toast.error   { border-color: var(--danger);  color: var(--danger); }
+
+    /* ── Reject Modal ─────────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 28px 24px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .modal-title { font-weight: 700; font-size: 1rem; margin-bottom: 14px; color: var(--text); }
+    .modal-card label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
+    .modal-card textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+    }
+    .modal-card textarea:focus { border-color: var(--danger); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
+    .btn-cancel {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 7px;
+      padding: 9px 18px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-confirm-reject {
+      background: var(--danger);
+      border: none;
+      color: #fff;
+      border-radius: 7px;
+      padding: 9px 18px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ── Config Notice ────────────────────────────────────────────────── */
+    .config-notice {
+      background: #1a1000;
+      border: 1px solid #3a2800;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 0.8rem;
+      color: var(--warn);
+      margin-bottom: 22px;
+      line-height: 1.6;
+    }
+    .config-notice strong { color: #ffcc44; }
+    .config-notice code { background: #2a1800; padding: 1px 5px; border-radius: 4px; font-size: 0.78rem; }
+
+    /* ── Responsive ───────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .topbar { padding: 12px 16px; }
+      .main-wrap { padding: 16px 12px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      thead th:nth-child(1),
+      tbody td:nth-child(1) { display: none; } /* hide userId col on mobile */
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">MENDEZ</div>
+    <div class="login-sub">Admin Withdrawal Panel</div>
+    <label for="admin-pass">Admin Secret</label>
+    <input type="password" id="admin-pass" placeholder="Enter ADMIN_SECRET…" autocomplete="current-password" />
+    <button class="btn-login" id="btn-login">Sign In →</button>
+    <div id="login-error"></div>
+    <p class="login-note">
+      This panel is for site admins only.<br />
+      The secret is the same <code>ADMIN_SECRET</code> set in your Firebase Cloud Functions.<br />
+      It is never stored in this page's code.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     MAIN APP
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      MENDEZ <span>Admin Panel</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-refresh" id="btn-refresh">⟳ Refresh</button>
+      <button class="btn-logout" id="btn-logout">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main-wrap">
+
+    <!-- Config Notice (shown when endpoints not configured) -->
+    <div class="config-notice" id="config-notice" style="display:none;">
+      ⚠️ <strong>Cloud Function URLs not configured.</strong>
+      Open <code>admin.html</code>, find the <code>ADMIN_CONFIG</code> block in the
+      <code>&lt;script&gt;</code> section, and paste your real Firebase Cloud Function URLs.
+      Until then, the panel cannot fetch real data.
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card warn">
+        <div class="stat-num" id="stat-pending">—</div>
+        <div class="stat-label">Pending Requests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-approved">—</div>
+        <div class="stat-label">Approved Today</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-num" id="stat-rejected">—</div>
+        <div class="stat-label">Rejected Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-label">Total All Time</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pending">⏳ Pending</button>
+      <button class="tab-btn" data-tab="approved">✅ Approved</button>
+      <button class="tab-btn" data-tab="rejected">❌ Rejected</button>
+      <button class="tab-btn" data-tab="all">📋 All</button>
+    </div>
+
+    <!-- Pending Tab -->
+    <div class="tab-panel active" id="tab-pending">
+      <div class="section-header">
+        <div class="section-title">Pending Withdrawal Requests</div>
+      </div>
+      <div id="pending-container">
+        <div class="state-msg"><span class="spinner"></span> Loading…</div>
+      </div>
+    </div>
+
+    <!-- Approved Tab -->
+    <div class="tab-panel" id="tab-approved">
+      <div class="section-header">
+        <div class="section-title">Approved Requests</div>
+      </div>
+      <div id="approved-container">
+        <div class="state-msg"><span class="spinner"></span> Loading…</div>
+      </div>
+    </div>
+
+    <!-- Rejected Tab -->
+    <div class="tab-panel" id="tab-rejected">
+      <div class="section-header">
+        <div class="section-title">Rejected Requests</div>
+      </div>
+      <div id="rejected-container">
+        <div class="state-msg"><span class="spinner"></span> Loading…</div>
+      </div>
+    </div>
+
+    <!-- All Tab -->
+    <div class="tab-panel" id="tab-all">
+      <div class="section-header">
+        <div class="section-title">All Withdrawal Requests</div>
+      </div>
+      <div id="all-container">
+        <div class="state-msg"><span class="spinner"></span> Loading…</div>
+      </div>
+    </div>
+
+  </div><!-- /main-wrap -->
+</div><!-- /app -->
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal-card">
+    <div class="modal-title">❌ Reject Withdrawal Request</div>
+    <label for="reject-reason">Reason (optional — shown to user)</label>
+    <textarea id="reject-reason" placeholder="e.g. Insufficient verified balance, duplicate request…"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel-reject">Cancel</button>
+      <button class="btn-confirm-reject" id="btn-confirm-reject">Confirm Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════
+   ADMIN_CONFIG — PASTE YOUR REAL VALUES HERE
+   Do NOT fabricate URLs or secrets. All URLs come from `firebase deploy`.
+   ════════════════════════════════════════════════════════════════════════
+
+   After running `firebase deploy --only functions`, copy the URLs printed
+   in the terminal and paste them below:
+
+   LIST_ENDPOINT:    https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals
+   APPROVE_ENDPOINT: https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal
+   REJECT_ENDPOINT:  https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal
+
+   ADMIN_SECRET: Do NOT paste here — admin types it at login each session.
+   ════════════════════════════════════════════════════════════════════════ */
+const ADMIN_CONFIG = {
+  LIST_ENDPOINT:    "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals
+  APPROVE_ENDPOINT: "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal
+  REJECT_ENDPOINT:  "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal
+};
+
+/* ════════════════════════════════════════════════════════════════════════
+   APP STATE
+   ════════════════════════════════════════════════════════════════════════ */
+let ADMIN_SECRET = "";
+let allRequests  = [];
+let pendingRejectId = null;
+
+/* ════════════════════════════════════════════════════════════════════════
+   HELPERS
+   ════════════════════════════════════════════════════════════════════════ */
+function toast(msg, type = "info") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "show " + type;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ""; }, 3500);
+}
+
+function fmtDate(ts) {
+  if (!ts) return "—";
+  const d = ts._seconds ? new Date(ts._seconds * 1000) : new Date(ts);
+  return d.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function fmtAmount(a) {
+  return "$" + parseFloat(a || 0).toFixed(2);
+}
+
+function tierBadge(tier) {
+  if (!tier) return "";
+  return tier === "new"
+    ? '<span class="badge badge-new">🌱 New</span>'
+    : '<span class="badge badge-regular">⭐ Regular</span>';
+}
+
+function statusBadge(s) {
+  const map = {
+    pending:          '<span class="badge badge-pending">⏳ Pending</span>',
+    approved:         '<span class="badge badge-approved">✅ Approved</span>',
+    approved_manual:  '<span class="badge badge-approved">✅ Manual</span>',
+    rejected:         '<span class="badge badge-rejected">❌ Rejected</span>',
+    paid:             '<span class="badge badge-approved">💸 Paid</span>',
+  };
+  return map[s] || `<span class="badge">${s}</span>`;
+}
+
+function configOk() {
+  return ADMIN_CONFIG.LIST_ENDPOINT && ADMIN_CONFIG.APPROVE_ENDPOINT && ADMIN_CONFIG.REJECT_ENDPOINT;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   LOGIN
+   ════════════════════════════════════════════════════════════════════════ */
+document.getElementById("btn-login").addEventListener("click", handleLogin);
+document.getElementById("admin-pass").addEventListener("keydown", e => {
+  if (e.key === "Enter") handleLogin();
+});
+
+function handleLogin() {
+  const pass = document.getElementById("admin-pass").value.trim();
+  if (!pass) {
+    document.getElementById("login-error").textContent = "Please enter the admin secret.";
+    return;
+  }
+  ADMIN_SECRET = pass;
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  if (!configOk()) {
+    document.getElementById("config-notice").style.display = "block";
+  }
+  loadAll();
+}
+
+document.getElementById("btn-logout").addEventListener("click", () => {
+  ADMIN_SECRET = "";
+  allRequests  = [];
+  document.getElementById("app").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("admin-pass").value = "";
+  document.getElementById("login-error").textContent = "";
+});
+
+/* ════════════════════════════════════════════════════════════════════════
+   FETCH DATA
+   ════════════════════════════════════════════════════════════════════════ */
+async function loadAll() {
+  if (!configOk()) {
+    renderMockData();
+    return;
+  }
+  try {
+    const res = await fetch(
+      ADMIN_CONFIG.LIST_ENDPOINT + "?status=all&adminSecret=" + encodeURIComponent(ADMIN_SECRET)
+    );
+    if (res.status === 401 || res.status === 403) {
+      toast("❌ Wrong admin secret or unauthorized.", "error");
+      return;
+    }
+    const data = await res.json();
+    allRequests = data.requests || [];
+    renderAll();
+  } catch (err) {
+    toast("⚠️ Could not fetch data: " + err.message, "error");
+    renderError();
+  }
+}
+
+document.getElementById("btn-refresh").addEventListener("click", loadAll);
+
+/* ════════════════════════════════════════════════════════════════════════
+   RENDER
+   ════════════════════════════════════════════════════════════════════════ */
+function renderAll() {
+  const pending  = allRequests.filter(r => r.status === "pending");
+  const approved = allRequests.filter(r => r.status === "approved" || r.status === "approved_manual" || r.status === "paid");
+  const rejected = allRequests.filter(r => r.status === "rejected");
+
+  // Stats
+  const today = new Date().toDateString();
+  const approvedToday = approved.filter(r => {
+    const d = r.approvedAt?._seconds ? new Date(r.approvedAt._seconds * 1000) : new Date(r.approvedAt || 0);
+    return d.toDateString() === today;
+  }).length;
+  const rejectedToday = rejected.filter(r => {
+    const d = r.rejectedAt?._seconds ? new Date(r.rejectedAt._seconds * 1000) : new Date(r.rejectedAt || 0);
+    return d.toDateString() === today;
+  }).length;
+
+  document.getElementById("stat-pending").textContent  = pending.length;
+  document.getElementById("stat-approved").textContent = approvedToday;
+  document.getElementById("stat-rejected").textContent = rejectedToday;
+  document.getElementById("stat-total").textContent    = allRequests.length;
+
+  // Tables
+  renderTable("pending-container",  pending,  true);
+  renderTable("approved-container", approved, false);
+  renderTable("rejected-container", rejected, false);
+  renderTable("all-container",      allRequests, false, true);
+}
+
+function renderTable(containerId, rows, showActions, showStatus) {
+  const el = document.getElementById(containerId);
+  if (!rows.length) {
+    el.innerHTML = '<div class="state-msg"><div class="icon">📭</div>No requests found.</div>';
+    return;
+  }
+  const actionsCol = showActions ? "<th>Actions</th>" : "";
+  const statusCol  = showStatus  ? "<th>Status</th>"  : "";
+  let html = `
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>User ID</th>
+        <th>PayPal Email</th>
+        <th>Amount</th>
+        <th>Tier</th>
+        <th>Cycle</th>
+        <th>Requested At</th>
+        ${statusCol}
+        ${actionsCol}
+      </tr></thead>
+      <tbody>`;
+
+  rows.forEach(r => {
+    const actTd = showActions ? `
+      <td class="td-actions">
+        <button class="btn-approve" data-id="${r.id}" onclick="approveRequest('${r.id}', this)">✅ Approve</button>
+        <button class="btn-reject"  data-id="${r.id}" onclick="openRejectModal('${r.id}')">❌ Reject</button>
+      </td>` : "";
+    const statusTd = showStatus ? `<td>${statusBadge(r.status)}</td>` : "";
+    html += `
+      <tr>
+        <td class="td-user" title="${r.userId || ''}">${(r.userId || "—").slice(0, 12)}…</td>
+        <td class="td-email">${r.paypalEmail || "—"}</td>
+        <td class="td-amount">${fmtAmount(r.amount)}</td>
+        <td>${tierBadge(r.tier)}</td>
+        <td style="color:var(--text-dim);font-size:.78rem">${r.salaryCycle ? r.salaryCycle + "-day" : "—"}</td>
+        <td class="td-date">${fmtDate(r.requestedAt)}</td>
+        ${statusTd}
+        ${actTd}
+      </tr>`;
+  });
+
+  html += "</tbody></table></div>";
+  el.innerHTML = html;
+}
+
+function renderError() {
+  ["pending-container","approved-container","rejected-container","all-container"].forEach(id => {
+    document.getElementById(id).innerHTML =
+      '<div class="state-msg"><div class="icon">⚠️</div>Could not load data. Check Cloud Function URLs and admin secret.</div>';
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   MOCK DATA (shown when endpoints not configured — UI demo only)
+   ════════════════════════════════════════════════════════════════════════ */
+function renderMockData() {
+  allRequests = [
+    { id: "mock-001", userId: "user-abc123def456", paypalEmail: "user1@example.com", amount: 2.50, tier: "new",     salaryCycle: null, requestedAt: { _seconds: Date.now()/1000 - 3600 }, status: "pending" },
+    { id: "mock-002", userId: "user-xyz789ghi012", paypalEmail: "user2@example.com", amount: 5.00, tier: "regular", salaryCycle: 15,   requestedAt: { _seconds: Date.now()/1000 - 7200 }, status: "pending" },
+    { id: "mock-003", userId: "user-jkl345mno678", paypalEmail: "user3@example.com", amount: 1.75, tier: "regular", salaryCycle: 25,   requestedAt: { _seconds: Date.now()/1000 - 86400 }, status: "approved", approvedAt: { _seconds: Date.now()/1000 - 3600 } },
+  ];
+  toast("⚠️ Showing demo data — configure Cloud Function URLs to see real requests.", "error");
+  renderAll();
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   APPROVE
+   ════════════════════════════════════════════════════════════════════════ */
+async function approveRequest(requestId, btn) {
+  if (!configOk()) { toast("Configure Cloud Function URLs first.", "error"); return; }
+  btn.disabled = true;
+  btn.textContent = "…";
+  try {
+    const res = await fetch(ADMIN_CONFIG.APPROVE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ withdrawalRequestId: requestId, adminSecret: ADMIN_SECRET }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast("✅ Approved! " + (data.paypalBatchId ? "PayPal batch: " + data.paypalBatchId : "Marked approved_manual."), "success");
+      await loadAll();
+    } else {
+      toast("❌ " + (data.error || "Approval failed."), "error");
+      btn.disabled = false;
+      btn.textContent = "✅ Approve";
+    }
+  } catch (err) {
+    toast("⚠️ Network error: " + err.message, "error");
+    btn.disabled = false;
+    btn.textContent = "✅ Approve";
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   REJECT MODAL
+   ════════════════════════════════════════════════════════════════════════ */
+function openRejectModal(requestId) {
+  pendingRejectId = requestId;
+  document.getElementById("reject-reason").value = "";
+  document.getElementById("reject-modal").classList.add("open");
+}
+
+document.getElementById("btn-cancel-reject").addEventListener("click", () => {
+  document.getElementById("reject-modal").classList.remove("open");
+  pendingRejectId = null;
+});
+
+document.getElementById("btn-confirm-reject").addEventListener("click", async () => {
+  if (!pendingRejectId) return;
+  if (!configOk()) { toast("Configure Cloud Function URLs first.", "error"); return; }
+  const reason = document.getElementById("reject-reason").value.trim();
+  document.getElementById("reject-modal").classList.remove("open");
+  try {
+    const res = await fetch(ADMIN_CONFIG.REJECT_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ withdrawalRequestId: pendingRejectId, adminSecret: ADMIN_SECRET, rejectReason: reason }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast("❌ Rejected. Points refunded to user.", "success");
+      await loadAll();
+    } else {
+      toast("❌ " + (data.error || "Rejection failed."), "error");
+    }
+  } catch (err) {
+    toast("⚠️ Network error: " + err.message, "error");
+  }
+  pendingRejectId = null;
+});
+
+/* ════════════════════════════════════════════════════════════════════════
+   TABS
+   ════════════════════════════════════════════════════════════════════════ */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+  });
+});
+</script>
+</body>
+</html>
