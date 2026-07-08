@@ -1,818 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mendez Community — Admin Panel</title>
-  <!--
-    ╔══════════════════════════════════════════════════════════════════════╗
-    ║  MENDEZ COMMUNITY — WITHDRAWAL REQUEST ADMIN PANEL                  ║
-    ║  Version: v9  |  Date: 2026-07-08                                   ║
-    ║                                                                      ║
-    ║  ADMIN_CONFIG — PASTE YOUR REAL VALUES IN THE SCRIPT BLOCK BELOW    ║
-    ║  Do NOT hardcode secrets in this file.                               ║
-    ║  All Cloud Function URLs come from `firebase deploy` output.         ║
-    ╚══════════════════════════════════════════════════════════════════════╝
-  -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
-  <style>
-    /* ── Reset & Base ─────────────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg:        #0a0f0d;
-      --surface:   #111a15;
-      --surface2:  #162019;
-      --border:    #1e3028;
-      --accent:    #00cc66;
-      --accent2:   #00ff88;
-      --warn:      #ffaa00;
-      --danger:    #ff4444;
-      --success:   #00cc66;
-      --text:      #c8e6d4;
-      --text-dim:  #6a9a7a;
-      --text-muted:#3a5a48;
-      --radius:    10px;
-    }
-    html { font-size: 15px; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      line-height: 1.5;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="X-Robots-Tag" content="noindex, nofollow">
+<title>404 Not Found</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --accent: #00d4aa;
+    --accent2: #7c3aed;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --success: #10b981;
+    --card: #16162a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
 
-    /* ── Login Screen ─────────────────────────────────────────────────── */
-    #login-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
-    }
-    .login-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 40px 36px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .login-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
-      color: var(--accent2);
-      letter-spacing: 2px;
-      margin-bottom: 6px;
-    }
-    .login-sub { color: var(--text-dim); font-size: 0.82rem; margin-bottom: 28px; }
-    .login-card label { display: block; text-align: left; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
-    .login-card input[type="password"] {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 11px 14px;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color .2s;
-      margin-bottom: 16px;
-    }
-    .login-card input[type="password"]:focus { border-color: var(--accent); }
-    .btn-login {
-      width: 100%;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: background .2s;
-    }
-    .btn-login:hover { background: var(--accent2); }
-    #login-error { color: var(--danger); font-size: 0.82rem; margin-top: 10px; min-height: 18px; }
-    .login-note { color: var(--text-muted); font-size: 0.75rem; margin-top: 18px; line-height: 1.5; }
+  /* 404 page */
+  #page-404 {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; text-align: center; padding: 2rem;
+  }
+  #page-404 .code { font-size: 8rem; font-weight: 900; color: var(--muted); line-height: 1; }
+  #page-404 h1 { font-size: 1.5rem; color: var(--muted); margin: 1rem 0 0.5rem; }
+  #page-404 p { color: var(--muted); font-size: 0.9rem; }
+  #page-404 a { color: var(--accent); text-decoration: none; margin-top: 1.5rem; display: inline-block; }
 
-    /* ── Main App (hidden until login) ───────────────────────────────── */
-    #app { display: none; }
+  /* Login screen */
+  #page-login {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 2rem;
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 2.5rem; width: 100%; max-width: 400px;
+  }
+  .login-logo { text-align: center; margin-bottom: 2rem; }
+  .login-logo .brand { font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+  .login-logo .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .login-card h2 { font-size: 1.1rem; color: var(--text); margin-bottom: 1.5rem; text-align: center; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; }
+  .form-group input {
+    width: 100%; padding: 0.75rem 1rem; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s;
+  }
+  .form-group input:focus { border-color: var(--accent); }
+  .btn-login {
+    width: 100%; padding: 0.85rem; background: var(--accent); color: #000; font-weight: 700;
+    border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: opacity 0.2s;
+  }
+  .btn-login:hover { opacity: 0.85; }
+  .btn-login:disabled { opacity: 0.4; cursor: not-allowed; }
+  .login-error { color: var(--danger); font-size: 0.85rem; margin-top: 0.75rem; text-align: center; min-height: 1.2rem; }
+  .attempt-counter { color: var(--muted); font-size: 0.78rem; text-align: center; margin-top: 0.5rem; }
 
-    /* ── Top Bar ──────────────────────────────────────────────────────── */
-    .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .topbar-brand {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
-      color: var(--accent2);
-      letter-spacing: 1.5px;
-    }
-    .topbar-brand span { color: var(--text-dim); font-size: 0.75rem; font-family: 'Inter', sans-serif; margin-left: 10px; letter-spacing: 0; }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .btn-refresh {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--accent);
-      border-radius: 7px;
-      padding: 7px 14px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: border-color .2s;
-    }
-    .btn-refresh:hover { border-color: var(--accent); }
-    .btn-logout {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      border-radius: 7px;
-      padding: 7px 14px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+  /* Admin panel */
+  #page-admin { display: none; }
+  .admin-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+  }
+  .admin-header .brand { font-size: 1.1rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+  .admin-header .sub { font-size: 0.7rem; color: var(--muted); }
+  .session-info { font-size: 0.78rem; color: var(--muted); }
+  .btn-logout {
+    padding: 0.4rem 1rem; background: transparent; border: 1px solid var(--danger);
+    color: var(--danger); border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+  }
+  .btn-logout:hover { background: var(--danger); color: #fff; }
+  .admin-main { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .stat-card .val { font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .stat-card .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 1px; }
+  .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 0.5rem 1.2rem; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { background: var(--surface); color: var(--muted); padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+  td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+  .badge-pending { background: rgba(245,158,11,0.15); color: var(--warn); }
+  .badge-approved { background: rgba(16,185,129,0.15); color: var(--success); }
+  .badge-rejected { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .badge-new { background: rgba(124,58,237,0.15); color: #a78bfa; }
+  .badge-regular { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .action-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .btn-approve {
+    padding: 0.35rem 0.8rem; background: var(--success); color: #fff; border: none;
+    border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: opacity 0.2s;
+  }
+  .btn-approve:hover { opacity: 0.8; }
+  .btn-reject {
+    padding: 0.35rem 0.8rem; background: var(--danger); color: #fff; border: none;
+    border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: opacity 0.2s;
+  }
+  .btn-reject:hover { opacity: 0.8; }
+  .btn-approve:disabled, .btn-reject:disabled { opacity: 0.35; cursor: not-allowed; }
+  .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .config-banner {
+    background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--warn);
+  }
+  .config-banner code { background: rgba(0,0,0,0.3); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem; }
+  .toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.85rem 1.25rem;
+    border-radius: 10px; font-size: 0.85rem; font-weight: 600; z-index: 9999;
+    animation: slideIn 0.3s ease; max-width: 320px;
+  }
+  .toast-success { background: var(--success); color: #fff; }
+  .toast-error { background: var(--danger); color: #fff; }
+  .toast-info { background: var(--accent2); color: #fff; }
+  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    /* ── Layout ───────────────────────────────────────────────────────── */
-    .main-wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
-
-    /* ── Stats Row ────────────────────────────────────────────────────── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      text-align: center;
-    }
-    .stat-card .stat-num {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--accent2);
-      line-height: 1;
-    }
-    .stat-card .stat-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 5px; }
-    .stat-card.warn .stat-num { color: var(--warn); }
-    .stat-card.danger .stat-num { color: var(--danger); }
-
-    /* ── Tabs ─────────────────────────────────────────────────────────── */
-    .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--text-dim);
-      padding: 10px 18px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: color .2s, border-color .2s;
-      margin-bottom: -1px;
-    }
-    .tab-btn.active { color: var(--accent2); border-bottom-color: var(--accent2); }
-    .tab-btn:hover:not(.active) { color: var(--text); }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* ── Section Header ───────────────────────────────────────────────── */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .section-title { font-size: 1rem; font-weight: 700; color: var(--text); }
-    .badge {
-      display: inline-block;
-      padding: 2px 9px;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 700;
-    }
-    .badge-pending  { background: #2a2000; color: var(--warn); border: 1px solid #4a3800; }
-    .badge-approved { background: #002a14; color: var(--success); border: 1px solid #004a24; }
-    .badge-rejected { background: #2a0000; color: var(--danger); border: 1px solid #4a0000; }
-    .badge-new      { background: #001a2a; color: #44aaff; border: 1px solid #003a5a; }
-    .badge-regular  { background: #1a0a2a; color: #cc88ff; border: 1px solid #3a1a5a; }
-
-    /* ── Table ────────────────────────────────────────────────────────── */
-    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
-    thead tr { background: var(--surface2); }
-    thead th {
-      padding: 11px 14px;
-      text-align: left;
-      color: var(--text-dim);
-      font-weight: 600;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      white-space: nowrap;
-    }
-    tbody tr { border-top: 1px solid var(--border); transition: background .15s; }
-    tbody tr:hover { background: var(--surface2); }
-    tbody td { padding: 12px 14px; vertical-align: middle; }
-    .td-user { font-family: monospace; font-size: 0.78rem; color: var(--text-dim); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .td-email { color: var(--text); }
-    .td-amount { font-weight: 700; color: var(--accent2); }
-    .td-date { color: var(--text-dim); font-size: 0.78rem; white-space: nowrap; }
-    .td-actions { white-space: nowrap; }
-
-    /* ── Action Buttons ───────────────────────────────────────────────── */
-    .btn-approve, .btn-reject {
-      border: none;
-      border-radius: 6px;
-      padding: 6px 13px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity .2s;
-    }
-    .btn-approve { background: var(--success); color: #000; margin-right: 6px; }
-    .btn-reject  { background: var(--danger);  color: #fff; }
-    .btn-approve:hover, .btn-reject:hover { opacity: .85; }
-    .btn-approve:disabled, .btn-reject:disabled { opacity: .4; cursor: not-allowed; }
-
-    /* ── Empty / Loading / Error states ──────────────────────────────── */
-    .state-msg {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-dim);
-      font-size: 0.88rem;
-    }
-    .state-msg .icon { font-size: 2rem; margin-bottom: 10px; }
-    .spinner {
-      display: inline-block;
-      width: 22px; height: 22px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Toast ────────────────────────────────────────────────────────── */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 20px;
-      font-size: 0.85rem;
-      color: var(--text);
-      max-width: 320px;
-      z-index: 9999;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity .3s, transform .3s;
-      pointer-events: none;
-    }
-    #toast.show { opacity: 1; transform: translateY(0); }
-    #toast.success { border-color: var(--success); color: var(--accent2); }
-    #toast.error   { border-color: var(--danger);  color: var(--danger); }
-
-    /* ── Reject Modal ─────────────────────────────────────────────────── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.7);
-      z-index: 500;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px 28px 24px;
-      width: 100%;
-      max-width: 420px;
-    }
-    .modal-title { font-weight: 700; font-size: 1rem; margin-bottom: 14px; color: var(--text); }
-    .modal-card label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
-    .modal-card textarea {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 10px 12px;
-      font-size: 0.88rem;
-      resize: vertical;
-      min-height: 80px;
-      outline: none;
-    }
-    .modal-card textarea:focus { border-color: var(--danger); }
-    .modal-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
-    .btn-cancel {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      border-radius: 7px;
-      padding: 9px 18px;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-    .btn-confirm-reject {
-      background: var(--danger);
-      border: none;
-      color: #fff;
-      border-radius: 7px;
-      padding: 9px 18px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    /* ── Config Notice ────────────────────────────────────────────────── */
-    .config-notice {
-      background: #1a1000;
-      border: 1px solid #3a2800;
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      font-size: 0.8rem;
-      color: var(--warn);
-      margin-bottom: 22px;
-      line-height: 1.6;
-    }
-    .config-notice strong { color: #ffcc44; }
-    .config-notice code { background: #2a1800; padding: 1px 5px; border-radius: 4px; font-size: 0.78rem; }
-
-    /* ── Responsive ───────────────────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .topbar { padding: 12px 16px; }
-      .main-wrap { padding: 16px 12px; }
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
-      thead th:nth-child(1),
-      tbody td:nth-child(1) { display: none; } /* hide userId col on mobile */
-    }
-  </style>
+  /* Reject modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 1000; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; width: 100%; max-width: 440px; }
+  .modal-box h3 { margin-bottom: 1rem; color: var(--danger); }
+  .modal-box textarea {
+    width: 100%; padding: 0.75rem; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 0.9rem; resize: vertical; min-height: 80px; outline: none;
+  }
+  .modal-box textarea:focus { border-color: var(--danger); }
+  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1rem; justify-content: flex-end; }
+  .btn-cancel { padding: 0.5rem 1.2rem; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; cursor: pointer; }
+  .btn-confirm-reject { padding: 0.5rem 1.2rem; background: var(--danger); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
+  .refresh-btn {
+    padding: 0.4rem 1rem; background: transparent; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-left: auto; display: block; margin-bottom: 0.75rem;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+  @media (max-width: 600px) {
+    .admin-main { padding: 1rem; }
+    .stat-card .val { font-size: 1.5rem; }
+    td, th { padding: 0.6rem 0.75rem; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     LOGIN SCREEN
-     ══════════════════════════════════════════════════════════════════════ -->
-<div id="login-screen">
+<!-- LAYER 1: Fake 404 (shown without #auth hash) -->
+<div id="page-404">
+  <div class="code">404</div>
+  <h1>Page Not Found</h1>
+  <p>The page you are looking for doesn't exist or has been moved.</p>
+  <a href="index.html">Back to Home</a>
+</div>
+
+<!-- LAYER 2: Login screen (shown only with #auth hash) -->
+<div id="page-login">
   <div class="login-card">
-    <div class="login-logo">MENDEZ</div>
-    <div class="login-sub">Admin Withdrawal Panel</div>
-    <label for="admin-pass">Admin Secret</label>
-    <input type="password" id="admin-pass" placeholder="Enter ADMIN_SECRET…" autocomplete="current-password" />
-    <button class="btn-login" id="btn-login">Sign In →</button>
-    <div id="login-error"></div>
-    <p class="login-note">
-      This panel is for site admins only.<br />
-      The secret is the same <code>ADMIN_SECRET</code> set in your Firebase Cloud Functions.<br />
-      It is never stored in this page's code.
-    </p>
+    <div class="login-logo">
+      <div class="brand">MENDEZ</div>
+      <div class="sub">COMMUNITY &middot; ADMIN PORTAL</div>
+    </div>
+    <h2>Admin Sign In</h2>
+    <div class="form-group">
+      <label>Admin Secret</label>
+      <input type="password" id="secret-input" placeholder="Enter your ADMIN_SECRET" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <button class="btn-login" id="btn-sign-in">Sign In</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="attempt-counter" id="attempt-counter"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     MAIN APP
-     ══════════════════════════════════════════════════════════════════════ -->
-<div id="app">
+<!-- LAYER 3: Admin panel (injected after auth) -->
+<div id="page-admin"></div>
 
-  <!-- Top Bar -->
-  <div class="topbar">
-    <div class="topbar-brand">
-      MENDEZ <span>Admin Panel</span>
-    </div>
-    <div class="topbar-right">
-      <button class="btn-refresh" id="btn-refresh">⟳ Refresh</button>
-      <button class="btn-logout" id="btn-logout">Sign Out</button>
-    </div>
-  </div>
-
-  <div class="main-wrap">
-
-    <!-- Config Notice (shown when endpoints not configured) -->
-    <div class="config-notice" id="config-notice" style="display:none;">
-      ⚠️ <strong>Cloud Function URLs not configured.</strong>
-      Open <code>admin.html</code>, find the <code>ADMIN_CONFIG</code> block in the
-      <code>&lt;script&gt;</code> section, and paste your real Firebase Cloud Function URLs.
-      Until then, the panel cannot fetch real data.
-    </div>
-
-    <!-- Stats Row -->
-    <div class="stats-row">
-      <div class="stat-card warn">
-        <div class="stat-num" id="stat-pending">—</div>
-        <div class="stat-label">Pending Requests</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-approved">—</div>
-        <div class="stat-label">Approved Today</div>
-      </div>
-      <div class="stat-card danger">
-        <div class="stat-num" id="stat-rejected">—</div>
-        <div class="stat-label">Rejected Today</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-total">—</div>
-        <div class="stat-label">Total All Time</div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="pending">⏳ Pending</button>
-      <button class="tab-btn" data-tab="approved">✅ Approved</button>
-      <button class="tab-btn" data-tab="rejected">❌ Rejected</button>
-      <button class="tab-btn" data-tab="all">📋 All</button>
-    </div>
-
-    <!-- Pending Tab -->
-    <div class="tab-panel active" id="tab-pending">
-      <div class="section-header">
-        <div class="section-title">Pending Withdrawal Requests</div>
-      </div>
-      <div id="pending-container">
-        <div class="state-msg"><span class="spinner"></span> Loading…</div>
-      </div>
-    </div>
-
-    <!-- Approved Tab -->
-    <div class="tab-panel" id="tab-approved">
-      <div class="section-header">
-        <div class="section-title">Approved Requests</div>
-      </div>
-      <div id="approved-container">
-        <div class="state-msg"><span class="spinner"></span> Loading…</div>
-      </div>
-    </div>
-
-    <!-- Rejected Tab -->
-    <div class="tab-panel" id="tab-rejected">
-      <div class="section-header">
-        <div class="section-title">Rejected Requests</div>
-      </div>
-      <div id="rejected-container">
-        <div class="state-msg"><span class="spinner"></span> Loading…</div>
-      </div>
-    </div>
-
-    <!-- All Tab -->
-    <div class="tab-panel" id="tab-all">
-      <div class="section-header">
-        <div class="section-title">All Withdrawal Requests</div>
-      </div>
-      <div id="all-container">
-        <div class="state-msg"><span class="spinner"></span> Loading…</div>
-      </div>
-    </div>
-
-  </div><!-- /main-wrap -->
-</div><!-- /app -->
-
-<!-- Reject Modal -->
+<!-- Reject modal -->
 <div class="modal-overlay" id="reject-modal">
-  <div class="modal-card">
-    <div class="modal-title">❌ Reject Withdrawal Request</div>
-    <label for="reject-reason">Reason (optional — shown to user)</label>
-    <textarea id="reject-reason" placeholder="e.g. Insufficient verified balance, duplicate request…"></textarea>
+  <div class="modal-box">
+    <h3>Reject Withdrawal</h3>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0.75rem;">
+      User points will be refunded automatically. Provide a reason (optional):
+    </p>
+    <textarea id="reject-reason" placeholder="e.g. Insufficient verified activity, duplicate request"></textarea>
     <div class="modal-actions">
-      <button class="btn-cancel" id="btn-cancel-reject">Cancel</button>
-      <button class="btn-confirm-reject" id="btn-confirm-reject">Confirm Reject</button>
+      <button class="btn-cancel" id="modal-cancel">Cancel</button>
+      <button class="btn-confirm-reject" id="modal-confirm">Confirm Reject</button>
     </div>
   </div>
 </div>
-
-<!-- Toast -->
-<div id="toast"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════════════════════
-   ADMIN_CONFIG — PASTE YOUR REAL VALUES HERE
-   Do NOT fabricate URLs or secrets. All URLs come from `firebase deploy`.
-   ════════════════════════════════════════════════════════════════════════
+/* ================================================================
+   SECURITY: Hash Gate + Rate Limiting + Session Timeout
+   ================================================================ */
 
-   After running `firebase deploy --only functions`, copy the URLs printed
-   in the terminal and paste them below:
-
-   LIST_ENDPOINT:    https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals
-   APPROVE_ENDPOINT: https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal
-   REJECT_ENDPOINT:  https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal
-
-   ADMIN_SECRET: Do NOT paste here — admin types it at login each session.
-   ════════════════════════════════════════════════════════════════════════ */
+// ── CONFIG PLACEHOLDERS ──────────────────────────────────────────
+// After `firebase deploy --only functions`, replace YOUR-PROJECT with
+// your real Firebase project ID. Format:
+// https://us-central1-YOUR-PROJECT-ID.cloudfunctions.net/FUNCTION_NAME
 const ADMIN_CONFIG = {
-  LIST_ENDPOINT:    "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals
-  APPROVE_ENDPOINT: "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal
-  REJECT_ENDPOINT:  "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal
+  LIST_ENDPOINT:    "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals",
+  APPROVE_ENDPOINT: "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal",
+  REJECT_ENDPOINT:  "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal",
 };
+// ── END CONFIG ───────────────────────────────────────────────────
 
-/* ════════════════════════════════════════════════════════════════════════
-   APP STATE
-   ════════════════════════════════════════════════════════════════════════ */
-let ADMIN_SECRET = "";
-let allRequests  = [];
-let pendingRejectId = null;
+const RATE_LIMIT_KEY  = "mz_admin_lockout";
+const ATTEMPTS_KEY    = "mz_admin_attempts";
+const SESSION_KEY     = "mz_admin_session";
+const SESSION_MS      = 30 * 60 * 1000;  // 30 minutes
+const MAX_ATTEMPTS    = 5;
+const LOCKOUT_MS      = 15 * 60 * 1000;  // 15 minutes
 
-/* ════════════════════════════════════════════════════════════════════════
-   HELPERS
-   ════════════════════════════════════════════════════════════════════════ */
-function toast(msg, type = "info") {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.className = "show " + type;
-  clearTimeout(el._t);
-  el._t = setTimeout(() => { el.className = ""; }, 3500);
+let sessionTimer = null;
+let currentSecret = "";
+let rejectTargetId = null;
+
+/* ── Hash Gate ─────────────────────────────────────────────────── */
+function checkHashGate() {
+  const hash = window.location.hash;
+  const params = new URLSearchParams(window.location.search);
+  const ok = hash === "#auth" || hash === "#admin" || params.get("access") === "1";
+  document.getElementById("page-404").style.display = ok ? "none" : "flex";
+  document.getElementById("page-login").style.display = ok ? "flex" : "none";
+  document.title = ok ? "Admin Portal" : "404 Not Found";
+  return ok;
 }
+window.addEventListener("hashchange", () => { if (checkHashGate()) checkExistingSession(); });
 
-function fmtDate(ts) {
-  if (!ts) return "—";
-  const d = ts._seconds ? new Date(ts._seconds * 1000) : new Date(ts);
-  return d.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-}
-
-function fmtAmount(a) {
-  return "$" + parseFloat(a || 0).toFixed(2);
-}
-
-function tierBadge(tier) {
-  if (!tier) return "";
-  return tier === "new"
-    ? '<span class="badge badge-new">🌱 New</span>'
-    : '<span class="badge badge-regular">⭐ Regular</span>';
-}
-
-function statusBadge(s) {
-  const map = {
-    pending:          '<span class="badge badge-pending">⏳ Pending</span>',
-    approved:         '<span class="badge badge-approved">✅ Approved</span>',
-    approved_manual:  '<span class="badge badge-approved">✅ Manual</span>',
-    rejected:         '<span class="badge badge-rejected">❌ Rejected</span>',
-    paid:             '<span class="badge badge-approved">💸 Paid</span>',
-  };
-  return map[s] || `<span class="badge">${s}</span>`;
-}
-
-function configOk() {
-  return ADMIN_CONFIG.LIST_ENDPOINT && ADMIN_CONFIG.APPROVE_ENDPOINT && ADMIN_CONFIG.REJECT_ENDPOINT;
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   LOGIN
-   ════════════════════════════════════════════════════════════════════════ */
-document.getElementById("btn-login").addEventListener("click", handleLogin);
-document.getElementById("admin-pass").addEventListener("keydown", e => {
-  if (e.key === "Enter") handleLogin();
-});
-
-function handleLogin() {
-  const pass = document.getElementById("admin-pass").value.trim();
-  if (!pass) {
-    document.getElementById("login-error").textContent = "Please enter the admin secret.";
-    return;
-  }
-  ADMIN_SECRET = pass;
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("app").style.display = "block";
-  if (!configOk()) {
-    document.getElementById("config-notice").style.display = "block";
-  }
-  loadAll();
-}
-
-document.getElementById("btn-logout").addEventListener("click", () => {
-  ADMIN_SECRET = "";
-  allRequests  = [];
-  document.getElementById("app").style.display = "none";
-  document.getElementById("login-screen").style.display = "flex";
-  document.getElementById("admin-pass").value = "";
-  document.getElementById("login-error").textContent = "";
-});
-
-/* ════════════════════════════════════════════════════════════════════════
-   FETCH DATA
-   ════════════════════════════════════════════════════════════════════════ */
-async function loadAll() {
-  if (!configOk()) {
-    renderMockData();
-    return;
-  }
+/* ── Rate Limiting ─────────────────────────────────────────────── */
+function getLockout() {
   try {
-    const res = await fetch(
-      ADMIN_CONFIG.LIST_ENDPOINT + "?status=all&adminSecret=" + encodeURIComponent(ADMIN_SECRET)
-    );
-    if (res.status === 401 || res.status === 403) {
-      toast("❌ Wrong admin secret or unauthorized.", "error");
-      return;
-    }
-    const data = await res.json();
-    allRequests = data.requests || [];
-    renderAll();
-  } catch (err) {
-    toast("⚠️ Could not fetch data: " + err.message, "error");
-    renderError();
+    const d = JSON.parse(sessionStorage.getItem(RATE_LIMIT_KEY) || "null");
+    if (d && Date.now() < d.until) return d;
+    sessionStorage.removeItem(RATE_LIMIT_KEY);
+  } catch(e) {}
+  return null;
+}
+function getAttempts() { return parseInt(sessionStorage.getItem(ATTEMPTS_KEY) || "0", 10); }
+function recordFail() {
+  const a = getAttempts() + 1;
+  sessionStorage.setItem(ATTEMPTS_KEY, a);
+  if (a >= MAX_ATTEMPTS) {
+    sessionStorage.setItem(RATE_LIMIT_KEY, JSON.stringify({ until: Date.now() + LOCKOUT_MS }));
+    sessionStorage.removeItem(ATTEMPTS_KEY);
+    return { locked: true };
   }
+  return { locked: false, remaining: MAX_ATTEMPTS - a };
 }
-
-document.getElementById("btn-refresh").addEventListener("click", loadAll);
-
-/* ════════════════════════════════════════════════════════════════════════
-   RENDER
-   ════════════════════════════════════════════════════════════════════════ */
-function renderAll() {
-  const pending  = allRequests.filter(r => r.status === "pending");
-  const approved = allRequests.filter(r => r.status === "approved" || r.status === "approved_manual" || r.status === "paid");
-  const rejected = allRequests.filter(r => r.status === "rejected");
-
-  // Stats
-  const today = new Date().toDateString();
-  const approvedToday = approved.filter(r => {
-    const d = r.approvedAt?._seconds ? new Date(r.approvedAt._seconds * 1000) : new Date(r.approvedAt || 0);
-    return d.toDateString() === today;
-  }).length;
-  const rejectedToday = rejected.filter(r => {
-    const d = r.rejectedAt?._seconds ? new Date(r.rejectedAt._seconds * 1000) : new Date(r.rejectedAt || 0);
-    return d.toDateString() === today;
-  }).length;
-
-  document.getElementById("stat-pending").textContent  = pending.length;
-  document.getElementById("stat-approved").textContent = approvedToday;
-  document.getElementById("stat-rejected").textContent = rejectedToday;
-  document.getElementById("stat-total").textContent    = allRequests.length;
-
-  // Tables
-  renderTable("pending-container",  pending,  true);
-  renderTable("approved-container", approved, false);
-  renderTable("rejected-container", rejected, false);
-  renderTable("all-container",      allRequests, false, true);
+function clearAttempts() {
+  sessionStorage.removeItem(ATTEMPTS_KEY);
+  sessionStorage.removeItem(RATE_LIMIT_KEY);
 }
-
-function renderTable(containerId, rows, showActions, showStatus) {
-  const el = document.getElementById(containerId);
-  if (!rows.length) {
-    el.innerHTML = '<div class="state-msg"><div class="icon">📭</div>No requests found.</div>';
-    return;
-  }
-  const actionsCol = showActions ? "<th>Actions</th>" : "";
-  const statusCol  = showStatus  ? "<th>Status</th>"  : "";
-  let html = `
-    <div class="table-wrap">
-    <table>
-      <thead><tr>
-        <th>User ID</th>
-        <th>PayPal Email</th>
-        <th>Amount</th>
-        <th>Tier</th>
-        <th>Cycle</th>
-        <th>Requested At</th>
-        ${statusCol}
-        ${actionsCol}
-      </tr></thead>
-      <tbody>`;
-
-  rows.forEach(r => {
-    const actTd = showActions ? `
-      <td class="td-actions">
-        <button class="btn-approve" data-id="${r.id}" onclick="approveRequest('${r.id}', this)">✅ Approve</button>
-        <button class="btn-reject"  data-id="${r.id}" onclick="openRejectModal('${r.id}')">❌ Reject</button>
-      </td>` : "";
-    const statusTd = showStatus ? `<td>${statusBadge(r.status)}</td>` : "";
-    html += `
-      <tr>
-        <td class="td-user" title="${r.userId || ''}">${(r.userId || "—").slice(0, 12)}…</td>
-        <td class="td-email">${r.paypalEmail || "—"}</td>
-        <td class="td-amount">${fmtAmount(r.amount)}</td>
-        <td>${tierBadge(r.tier)}</td>
-        <td style="color:var(--text-dim);font-size:.78rem">${r.salaryCycle ? r.salaryCycle + "-day" : "—"}</td>
-        <td class="td-date">${fmtDate(r.requestedAt)}</td>
-        ${statusTd}
-        ${actTd}
-      </tr>`;
-  });
-
-  html += "</tbody></table></div>";
-  el.innerHTML = html;
-}
-
-function renderError() {
-  ["pending-container","approved-container","rejected-container","all-container"].forEach(id => {
-    document.getElementById(id).innerHTML =
-      '<div class="state-msg"><div class="icon">⚠️</div>Could not load data. Check Cloud Function URLs and admin secret.</div>';
-  });
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   MOCK DATA (shown when endpoints not configured — UI demo only)
-   ════════════════════════════════════════════════════════════════════════ */
-function renderMockData() {
-  allRequests = [
-    { id: "mock-001", userId: "user-abc123def456", paypalEmail: "user1@example.com", amount: 2.50, tier: "new",     salaryCycle: null, requestedAt: { _seconds: Date.now()/1000 - 3600 }, status: "pending" },
-    { id: "mock-002", userId: "user-xyz789ghi012", paypalEmail: "user2@example.com", amount: 5.00, tier: "regular", salaryCycle: 15,   requestedAt: { _seconds: Date.now()/1000 - 7200 }, status: "pending" },
-    { id: "mock-003", userId: "user-jkl345mno678", paypalEmail: "user3@example.com", amount: 1.75, tier: "regular", salaryCycle: 25,   requestedAt: { _seconds: Date.now()/1000 - 86400 }, status: "approved", approvedAt: { _seconds: Date.now()/1000 - 3600 } },
-  ];
-  toast("⚠️ Showing demo data — configure Cloud Function URLs to see real requests.", "error");
-  renderAll();
-}
-
-/* ════════════════════════════════════════════════════════════════════════
-   APPROVE
-   ════════════════════════════════════════════════════════════════════════ */
-async function approveRequest(requestId, btn) {
-  if (!configOk()) { toast("Configure Cloud Function URLs first.", "error"); return; }
-  btn.disabled = true;
-  btn.textContent = "…";
-  try {
-    const res = await fetch(ADMIN_CONFIG.APPROVE_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ withdrawalRequestId: requestId, adminSecret: ADMIN_SECRET }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      toast("✅ Approved! " + (data.paypalBatchId ? "PayPal batch: " + data.paypalBatchId : "Marked approved_manual."), "success");
-      await loadAll();
-    } else {
-      toast("❌ " + (data.error || "Approval failed."), "error");
-      btn.disabled = false;
-      btn.textContent = "✅ Approve";
-    }
-  } catch (err) {
-    toast("⚠️ Network error: " + err.message, "error");
+function updateLockoutUI() {
+  const lockout = getLockout();
+  const btn = document.getElementById("btn-sign-in");
+  const counter = document.getElementById("attempt-counter");
+  if (lockout) {
+    const mins = Math.ceil((lockout.until - Date.now()) / 60000);
+    btn.disabled = true;
+    counter.textContent = "Too many failed attempts. Try again in " + mins + " minute(s).";
+    setTimeout(updateLockoutUI, 30000);
+  } else {
     btn.disabled = false;
-    btn.textContent = "✅ Approve";
+    const a = getAttempts();
+    counter.textContent = a > 0 ? a + "/" + MAX_ATTEMPTS + " failed attempts" : "";
   }
 }
 
-/* ════════════════════════════════════════════════════════════════════════
-   REJECT MODAL
-   ════════════════════════════════════════════════════════════════════════ */
-function openRejectModal(requestId) {
-  pendingRejectId = requestId;
+/* ── Session Management ────────────────────────────────────────── */
+function saveSession(secret) { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ secret, at: Date.now() })); }
+function getSession() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
+    if (s && Date.now() - s.at < SESSION_MS) return s;
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch(e) {}
+  return null;
+}
+function startSessionTimer() {
+  clearTimeout(sessionTimer);
+  sessionTimer = setTimeout(() => {
+    showToast("Session expired. Please sign in again.", "info");
+    setTimeout(logout, 1500);
+  }, SESSION_MS);
+}
+function resetSessionTimer() {
+  const s = getSession();
+  if (s) { saveSession(s.secret); startSessionTimer(); }
+}
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  currentSecret = "";
+  clearTimeout(sessionTimer);
+  document.getElementById("page-admin").style.display = "none";
+  document.getElementById("page-admin").innerHTML = "";
+  document.getElementById("page-login").style.display = "flex";
+  document.getElementById("secret-input").value = "";
+  document.getElementById("login-error").textContent = "";
+  document.title = "Admin Portal";
+}
+function checkExistingSession() {
+  const s = getSession();
+  if (s) { currentSecret = s.secret; unlockPanel(s.secret); }
+  else updateLockoutUI();
+}
+
+/* ── Login Handler ─────────────────────────────────────────────── */
+async function handleLogin() {
+  if (getLockout()) { updateLockoutUI(); return; }
+  const secret = document.getElementById("secret-input").value.trim();
+  if (!secret) { document.getElementById("login-error").textContent = "Please enter your Admin Secret."; return; }
+  const btn = document.getElementById("btn-sign-in");
+  btn.disabled = true; btn.textContent = "Verifying...";
+
+  const configured = !ADMIN_CONFIG.LIST_ENDPOINT.includes("YOUR-PROJECT");
+  let ok = false;
+  if (configured) {
+    try {
+      const r = await fetch(ADMIN_CONFIG.LIST_ENDPOINT + "?status=pending&limit=1", { headers: { "x-admin-secret": secret } });
+      ok = r.ok;
+    } catch(e) { ok = true; } // network error -> allow demo
+  } else {
+    ok = secret.length >= 4; // demo mode: any 4+ char secret
+  }
+
+  if (ok) {
+    clearAttempts();
+    saveSession(secret);
+    currentSecret = secret;
+    unlockPanel(secret);
+  } else {
+    const res = recordFail();
+    document.getElementById("login-error").textContent = res.locked
+      ? "Too many failed attempts. Locked for 15 minutes."
+      : "Incorrect secret. " + res.remaining + " attempt(s) remaining.";
+    updateLockoutUI();
+    btn.disabled = false; btn.textContent = "Sign In";
+  }
+}
+
+/* ── Unlock Panel ──────────────────────────────────────────────── */
+function unlockPanel(secret) {
+  document.getElementById("page-login").style.display = "none";
+  document.title = "Mendez Admin - Withdrawal Panel";
+  const configured = !ADMIN_CONFIG.LIST_ENDPOINT.includes("YOUR-PROJECT");
+  const banner = configured ? "" : `<div class="config-banner">
+    Demo Mode: Cloud Function URLs not configured. Replace <code>YOUR-PROJECT</code> in ADMIN_CONFIG with your real Firebase project ID. Showing sample data.
+  </div>`;
+
+  document.getElementById("page-admin").style.display = "block";
+  document.getElementById("page-admin").innerHTML = `
+  <div class="admin-header">
+    <div><div class="brand">MENDEZ</div><div class="sub">ADMIN &middot; WITHDRAWAL PANEL</div></div>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <span class="session-info" id="session-timer">Session: 30m remaining</span>
+      <button class="btn-logout" id="btn-logout-top">Sign Out</button>
+    </div>
+  </div>
+  <div class="admin-main">
+    ${banner}
+    <div class="stats-row">
+      <div class="stat-card"><div class="val" id="stat-pending">-</div><div class="lbl">Pending</div></div>
+      <div class="stat-card"><div class="val" id="stat-approved">-</div><div class="lbl">Approved Today</div></div>
+      <div class="stat-card"><div class="val" id="stat-rejected">-</div><div class="lbl">Rejected Today</div></div>
+      <div class="stat-card"><div class="val" id="stat-total">-</div><div class="lbl">Total Requests</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pending">Pending</button>
+      <button class="tab-btn" data-tab="approved">Approved</button>
+      <button class="tab-btn" data-tab="rejected">Rejected</button>
+      <button class="tab-btn" data-tab="all">All</button>
+    </div>
+    <button class="refresh-btn" id="btn-refresh">Refresh</button>
+    <div id="tab-pending" class="tab-content active">
+      <div class="table-wrap"><table>
+        <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Cycle</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="tbody-pending"><tr><td colspan="8"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+      </table></div>
+    </div>
+    <div id="tab-approved" class="tab-content">
+      <div class="table-wrap"><table>
+        <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Approved At</th><th>Status</th></tr></thead>
+        <tbody id="tbody-approved"><tr><td colspan="7"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+      </table></div>
+    </div>
+    <div id="tab-rejected" class="tab-content">
+      <div class="table-wrap"><table>
+        <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Rejected At</th><th>Reason</th></tr></thead>
+        <tbody id="tbody-rejected"><tr><td colspan="7"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+      </table></div>
+    </div>
+    <div id="tab-all" class="tab-content">
+      <div class="table-wrap"><table>
+        <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="tbody-all"><tr><td colspan="7"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+      </table></div>
+    </div>
+    <p style="color:var(--muted);font-size:0.75rem;margin-top:2rem;text-align:center;">
+      Withdrawal Requests Panel &middot; Mendez Community &middot; Payouts from real ad revenue only &middot; Not a guaranteed salary
+    </p>
+  </div>`;
+
+  document.getElementById("btn-logout-top").addEventListener("click", logout);
+  document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => switchTab(b.dataset.tab)));
+  document.getElementById("btn-refresh").addEventListener("click", () => loadWithdrawals("pending"));
+  document.getElementById("modal-cancel").addEventListener("click", closeRejectModal);
+  document.getElementById("modal-confirm").addEventListener("click", confirmReject);
+
+  ["click","keydown","mousemove","touchstart"].forEach(ev =>
+    document.addEventListener(ev, resetSessionTimer, { passive: true })
+  );
+  startSessionTimer();
+  setInterval(updateSessionDisplay, 60000);
+  updateSessionDisplay();
+  loadWithdrawals("pending");
+}
+
+function updateSessionDisplay() {
+  const s = getSession();
+  const el = document.getElementById("session-timer");
+  if (!el || !s) return;
+  const mins = Math.ceil((SESSION_MS - (Date.now() - s.at)) / 60000);
+  el.textContent = "Session: " + mins + "m remaining";
+}
+
+/* ── Tab switching ─────────────────────────────────────────────── */
+function switchTab(tab) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.toggle("active", c.id === "tab-" + tab));
+  loadWithdrawals(tab);
+}
+
+/* ── Load withdrawals ──────────────────────────────────────────── */
+async function loadWithdrawals(status) {
+  const configured = !ADMIN_CONFIG.LIST_ENDPOINT.includes("YOUR-PROJECT");
+  if (!configured) { renderDemoData(status); return; }
+  try {
+    const r = await fetch(ADMIN_CONFIG.LIST_ENDPOINT + "?status=" + status, { headers: { "x-admin-secret": currentSecret } });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    renderData(data.requests || [], status);
+    updateStats(data.stats || {});
+  } catch(e) {
+    showToast("Failed to load: " + e.message, "error");
+    renderEmpty(status, "Failed to load. Check Cloud Function URL and ADMIN_SECRET.");
+  }
+}
+
+/* ── Render helpers ────────────────────────────────────────────── */
+function fmtDate(ts) {
+  if (!ts) return "-";
+  try { return new Date(ts._seconds ? ts._seconds * 1000 : ts).toLocaleString(); } catch(e) { return "-"; }
+}
+function tierBadge(t) { return t === "new" ? '<span class="badge badge-new">New</span>' : '<span class="badge badge-regular">Regular</span>'; }
+function statusBadge(s) {
+  const m = { pending: "badge-pending", approved: "badge-approved", approved_manual: "badge-approved", rejected: "badge-rejected" };
+  return '<span class="badge ' + (m[s] || "badge-pending") + '">' + (s || "pending") + "</span>";
+}
+function renderData(reqs, status) {
+  const id = "tbody-" + (status === "all" ? "all" : status);
+  const tb = document.getElementById(id);
+  if (!tb) return;
+  if (!reqs.length) { renderEmpty(status, "No requests found."); return; }
+  tb.innerHTML = reqs.map(req => {
+    const isPending = req.status === "pending";
+    const acts = isPending
+      ? '<div class="action-btns"><button class="btn-approve" onclick="approveRequest(\'' + req.id + '\',this)">Approve</button><button class="btn-reject" onclick="openRejectModal(\'' + req.id + '\')">Reject</button></div>'
+      : "-";
+    if (status === "approved") return "<tr><td><code>" + (req.userId||"").slice(0,12) + "...</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + fmtDate(req.approvedAt) + "</td><td>" + statusBadge(req.status) + "</td></tr>";
+    if (status === "rejected") return "<tr><td><code>" + (req.userId||"").slice(0,12) + "...</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + fmtDate(req.rejectedAt) + "</td><td>" + (req.rejectReason||"-") + "</td></tr>";
+    return "<tr><td><code>" + (req.userId||"").slice(0,12) + "...</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + (req.salaryCycle ? req.salaryCycle + "-day" : "-") + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + statusBadge(req.status) + "</td><td>" + acts + "</td></tr>";
+  }).join("");
+}
+function renderEmpty(status, msg) {
+  const id = "tbody-" + (status === "all" ? "all" : status);
+  const tb = document.getElementById(id);
+  if (tb) tb.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">-</div>' + msg + "</div></td></tr>";
+}
+function updateStats(s) {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? "-"; };
+  set("stat-pending", s.pending); set("stat-approved", s.approvedToday);
+  set("stat-rejected", s.rejectedToday); set("stat-total", s.total);
+}
+
+/* ── Demo data ─────────────────────────────────────────────────── */
+function renderDemoData(status) {
+  const now = Date.now();
+  const demo = [
+    { id: "req_demo1", userId: "user_abc123demo", paypalEmail: "user1@example.com", amountUSD: 2.50, tier: "new", salaryCycle: null, requestedAt: { _seconds: (now-3600000)/1000 }, status: "pending" },
+    { id: "req_demo2", userId: "user_xyz789demo", paypalEmail: "user2@example.com", amountUSD: 5.00, tier: "regular", salaryCycle: 15, requestedAt: { _seconds: (now-7200000)/1000 }, status: "pending" },
+  ];
+  const approved = [{ id: "req_demo3", userId: "user_old001demo", paypalEmail: "old1@example.com", amountUSD: 3.00, tier: "regular", requestedAt: { _seconds: (now-86400000)/1000 }, approvedAt: { _seconds: (now-3600000)/1000 }, status: "approved" }];
+  const rejected = [{ id: "req_demo4", userId: "user_old002demo", paypalEmail: "old2@example.com", amountUSD: 1.00, tier: "new", requestedAt: { _seconds: (now-172800000)/1000 }, rejectedAt: { _seconds: (now-86400000)/1000 }, rejectReason: "Insufficient verified activity", status: "rejected" }];
+  const map = { pending: demo, approved, rejected, all: [...demo, ...approved, ...rejected] };
+  renderData(map[status] || demo, status);
+  updateStats({ pending: 2, approvedToday: 1, rejectedToday: 1, total: 4 });
+}
+
+/* ── Approve ───────────────────────────────────────────────────── */
+async function approveRequest(reqId, btn) {
+  if (!confirm("Approve this withdrawal? This will trigger PayPal payout if configured.")) return;
+  btn.disabled = true; btn.textContent = "Processing...";
+  const configured = !ADMIN_CONFIG.APPROVE_ENDPOINT.includes("YOUR-PROJECT");
+  if (!configured) { showToast("Demo mode: approval simulated.", "info"); btn.textContent = "Approved"; return; }
+  try {
+    const r = await fetch(ADMIN_CONFIG.APPROVE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-secret": currentSecret },
+      body: JSON.stringify({ withdrawalRequestId: reqId })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "HTTP " + r.status);
+    showToast("Approved! " + (data.paypalBatchId ? "PayPal batch: " + data.paypalBatchId : "Marked approved_manual."), "success");
+    setTimeout(() => loadWithdrawals("pending"), 1000);
+  } catch(e) {
+    showToast("Approval failed: " + e.message, "error");
+    btn.disabled = false; btn.textContent = "Approve";
+  }
+}
+
+/* ── Reject modal ──────────────────────────────────────────────── */
+function openRejectModal(reqId) {
+  rejectTargetId = reqId;
   document.getElementById("reject-reason").value = "";
   document.getElementById("reject-modal").classList.add("open");
 }
-
-document.getElementById("btn-cancel-reject").addEventListener("click", () => {
+function closeRejectModal() {
+  rejectTargetId = null;
   document.getElementById("reject-modal").classList.remove("open");
-  pendingRejectId = null;
-});
-
-document.getElementById("btn-confirm-reject").addEventListener("click", async () => {
-  if (!pendingRejectId) return;
-  if (!configOk()) { toast("Configure Cloud Function URLs first.", "error"); return; }
+}
+async function confirmReject() {
+  if (!rejectTargetId) return;
   const reason = document.getElementById("reject-reason").value.trim();
-  document.getElementById("reject-modal").classList.remove("open");
+  const btn = document.getElementById("modal-confirm");
+  btn.disabled = true; btn.textContent = "Rejecting...";
+  const configured = !ADMIN_CONFIG.REJECT_ENDPOINT.includes("YOUR-PROJECT");
+  if (!configured) { showToast("Demo mode: rejection simulated.", "info"); closeRejectModal(); btn.disabled = false; btn.textContent = "Confirm Reject"; return; }
   try {
-    const res = await fetch(ADMIN_CONFIG.REJECT_ENDPOINT, {
+    const r = await fetch(ADMIN_CONFIG.REJECT_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ withdrawalRequestId: pendingRejectId, adminSecret: ADMIN_SECRET, rejectReason: reason }),
+      headers: { "Content-Type": "application/json", "x-admin-secret": currentSecret },
+      body: JSON.stringify({ withdrawalRequestId: rejectTargetId, rejectReason: reason })
     });
-    const data = await res.json();
-    if (res.ok) {
-      toast("❌ Rejected. Points refunded to user.", "success");
-      await loadAll();
-    } else {
-      toast("❌ " + (data.error || "Rejection failed."), "error");
-    }
-  } catch (err) {
-    toast("⚠️ Network error: " + err.message, "error");
-  }
-  pendingRejectId = null;
-});
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "HTTP " + r.status);
+    showToast("Rejected. User points refunded.", "success");
+    closeRejectModal();
+    setTimeout(() => loadWithdrawals("pending"), 1000);
+  } catch(e) { showToast("Rejection failed: " + e.message, "error"); }
+  btn.disabled = false; btn.textContent = "Confirm Reject";
+}
 
-/* ════════════════════════════════════════════════════════════════════════
-   TABS
-   ════════════════════════════════════════════════════════════════════════ */
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
-  });
-});
+/* ── Toast ─────────────────────────────────────────────────────── */
+function showToast(msg, type) {
+  const t = document.createElement("div");
+  t.className = "toast toast-" + (type || "info");
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+/* ── Wire login ────────────────────────────────────────────────── */
+document.getElementById("btn-sign-in").addEventListener("click", handleLogin);
+document.getElementById("secret-input").addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+
+/* ── Boot ──────────────────────────────────────────────────────── */
+if (checkHashGate()) checkExistingSession();
 </script>
 </body>
 </html>
