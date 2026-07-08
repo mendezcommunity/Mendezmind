@@ -6,6 +6,14 @@
     <title>Mendez Community &mdash; Premium Rewards Platform</title>
     <meta name="description" content="Mendez Community — a premium, honest rewards platform. Earn verified reward points from real sponsor engagement and request PayPal withdrawals from actual ad revenue.">
     <meta name="theme-color" content="#0a0a0a">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1200">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mendez">
+    <link rel="apple-touch-icon" href="icon-192.svg">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
@@ -439,6 +447,85 @@
         /* NOTE: No client-side timer credits the wallet. Real reward crediting happens
            on the backend via Monetag/Adsterra server-side postbacks (verified views).
            The wallet display stays at the real balance (0.00 until backend confirms). */
+    </script>
+
+    <!-- ── PWA: Install App Button ─────────────────────────────────────── -->
+    <style>
+      #pwa-install-btn {
+        display: none;
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: linear-gradient(135deg, #d4a017, #f5c842, #b8860b);
+        color: #0a0800;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 24px;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        box-shadow: 0 4px 24px rgba(212,160,23,0.45), 0 0 0 2px rgba(245,200,66,0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+        animation: pwa-pulse 2.5s ease-in-out infinite;
+      }
+      #pwa-install-btn:hover { transform: scale(1.06); box-shadow: 0 6px 32px rgba(212,160,23,0.65); }
+      @keyframes pwa-pulse {
+        0%,100% { box-shadow: 0 4px 24px rgba(212,160,23,0.45), 0 0 0 2px rgba(245,200,66,0.2); }
+        50%      { box-shadow: 0 4px 32px rgba(212,160,23,0.7),  0 0 0 6px rgba(245,200,66,0.08); }
+      }
+      #pwa-install-btn .pwa-icon { margin-right: 8px; font-size: 16px; }
+    </style>
+    <button id="pwa-install-btn" aria-label="Install Mendez Community App">
+      <span class="pwa-icon">📲</span> Install App
+    </button>
+
+    <!-- ── PWA: Service Worker Registration ───────────────────────────── -->
+    <script>
+      (function() {
+        // Install prompt capture
+        let deferredPrompt = null;
+        const installBtn = document.getElementById('pwa-install-btn');
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+          e.preventDefault();
+          deferredPrompt = e;
+          if (installBtn) installBtn.style.display = 'flex';
+        });
+
+        if (installBtn) {
+          installBtn.addEventListener('click', function() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function(choice) {
+              if (choice.outcome === 'accepted') {
+                installBtn.style.display = 'none';
+              }
+              deferredPrompt = null;
+            });
+          });
+        }
+
+        window.addEventListener('appinstalled', function() {
+          if (installBtn) installBtn.style.display = 'none';
+          deferredPrompt = null;
+        });
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('service-worker.js', { scope: '/Mendezmind/' })
+              .then(function(reg) {
+                console.log('[SW] Registered, scope:', reg.scope);
+              })
+              .catch(function(err) {
+                console.warn('[SW] Registration failed:', err);
+              });
+          });
+        }
+      })();
     </script>
 </body>
 </html>
