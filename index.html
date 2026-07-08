@@ -80,8 +80,7 @@
             </div>
             <button class="launch-btn" onclick="secureRegisterUser()">🔒 Secure Registration Gate</button>
         </div>
-<div class="opt-name" id="silver-name" onclick="window.open(''//static.teamily.ai/sites/b323018e-2758-4bf5-af0a-3f826c4398d0/webpages/mendez_v5/index.html, '_self')">🥈 Silver Task</div>
-    
+
         <!-- 📱 मुख्य डैशबोर्ड हब (सफलतापूर्वक रजिस्ट्रेशन के बाद) -->
         <div class="dashboard-hub" id="dashboard-panel">
             <!-- 📢 टॉप एडस्टेरा विज्ञापन स्लॉट -->
@@ -96,6 +95,7 @@
             <div class="wallet-card">
                 <div class="wallet-lbl" id="welcome-banner">Welcome, Warrior!</div>
                 <div id="mendez-wallet-display" class="wallet-val">₹0.00</div>
+                <div style="font-size:10px;color:#888;margin-top:6px;">Rewards are credited only after verified ad views (server-side confirmation) — not auto-credited.</div>
                 <div id="geo-status" class="geo-indicator">Scanning Network Node...</div>
             </div>
             
@@ -237,17 +237,18 @@
             
             walletDisplay.innerText = currentCurrency + "0.00";
             document.getElementById("welcome-banner").innerText = "Welcome Back, Warrior: " + name;
-            document.getElementById("silver-reward").innerText = "Earn " + currentCurrency + silverVal + " / Day (Watch Ads & Complete Tasks)";
-            document.getElementById("gold-reward").innerText = "Earn " + currentCurrency + goldVal + " / Day (10 Min VIP Coach Included)";
-            document.getElementById("vip-reward").innerText = "Earn Extra " + currentCurrency + vipVal + " / Day (Premium Surveys & AI Tasks)";
+            document.getElementById("silver-reward").innerText = "Watch sponsor ads & earn reward points (credited only after verified views — not a guaranteed cash payout)";
+            document.getElementById("gold-reward").innerText = "Complete tasks & get 10-min VIP coach access — earn reward points (credited only after verified actions, not a guaranteed cash payout)";
+            document.getElementById("vip-reward").innerText = "Premium surveys & AI tasks — earn extra reward points (credited only after verified actions, not a guaranteed cash payout)";
         }
 
         // 🎯 Silver Task पर जाएँ
         function goToSilverTask() {
+            // corrected Silver Task page lives in the repo as silver-task.html
             window.location.href = 'silver-task.html';
         }
 
-        // ⏱️ 3-सेक��ड का हार्ड वीडियो कॉल कट-ऑफ ताला
+        // ⏱️ 3-सेकड का हार्ड वीडियो कॉल कट-ऑफ ताला
         function startMendezFreeTrial() {
             alert("Mendez Live AI Coach: फोटो-रियलिस्टिक वीडियो कॉल कनेक्ट हो रही है... (3 सेकंड का मुफ्त ट्रायल शुरू!)");
             
@@ -265,28 +266,12 @@
             }, 3000);
         }
 
-        // 💰 रीयल-टाइम वॉलेट काउंटर और 5-सेकंड टाइमर ताला लॉजिक
-        function triggerLiveCounter(slotId, amount) {
-            const slotElement = document.getElementById(slotId);
-            if (!slotElement) return;
-            
-            slotElement.style.pointerEvents = "none"; 
-            let timeLeft = 5;
-            
-            const timerInterval = setInterval(function() {
-                slotElement.innerText = "⏳ Processing Ad... " + timeLeft + "s";
-                timeLeft--;
-                if(timeLeft < 0) {
-                    clearInterval(timerInterval);
-                    currentBalance += amount;
-                    document.getElementById("mendez-wallet-display").innerText = currentCurrency + currentBalance.toFixed(2);
-                    slotElement.innerText = "✅ Reward Credited Successfully! ✅";
-                    slotElement.style.background = "#051a05";
-                    slotElement.style.borderColor = "#00ff00";
-                    slotElement.style.color = "#00ff00";
-                }
-            }, 1000);
-        }
+        // 💰 वॉलेट क्रेडिटिंग — केवल verified ad views के बाद server-side confirmation से
+        // ⚠️ पुराना 5-सेकंड auto-credit timer (triggerLiveCounter) हटा दिया गया है।
+        // कोई भी client-side timer wallet/balance में पैसे या points auto-add नहीं करेगा।
+        // असली reward crediting Monetag/EffectiveCPMNetwork के server-side postback
+        // (verified view/click confirmation) से backend पर होनी चाहिए — browser में नहीं।
+        // इसलिए wallet display असली balance (शुरुआत में 0.00) पर ही रहता है।
     </script>
 </body>
 </html>
