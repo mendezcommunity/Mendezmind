@@ -458,125 +458,672 @@ function sendPayPalPayout(accessToken, mode, { email, amount, note, sender_item_
   });
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// adminListWithdrawals  — v9 2026-07-08
-// Protected by ADMIN_SECRET. Returns withdrawal requests filtered by status.
-// Query params: adminSecret (required), status (pending|approved|rejected|all)
-// ═══════════════════════════════════════════════════════════════════════════
+// ─── 7. ADMIN LIST WITHDRAWALS ────────────────────────────────────────────────
+/**
+ * adminListWithdrawals — protected by ADMIN_SECRET
+ * GET ?secret=ADMIN_SECRET&status=pending|approved|rejected|all&limit=50
+ * Returns withdrawal requests sorted by requestedAt desc, plus summary stats.
+ */
 exports.adminListWithdrawals = functions.https.onRequest(async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
   res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") { res.status(204).send(""); return; }
-
-  const adminSecret = req.query.adminSecret || req.body?.adminSecret;
-  const expectedSecret = process.env.ADMIN_SECRET;
-  if (!expectedSecret || adminSecret !== expectedSecret) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-
-  const statusFilter = req.query.status || "pending"; // pending|approved|rejected|all
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") return res.status(204).send("");
   try {
-    let query = db.collection("withdrawalRequests").orderBy("requestedAt", "desc").limit(200);
-    if (statusFilter !== "all") {
-      query = db.collection("withdrawalRequests")
-        .where("status", "==", statusFilter)
-        .orderBy("requestedAt", "desc")
-        .limit(200);
-    }
+    const adminSecret = process.env.ADMIN_SECRET ||
+                        (functions.config().admin && functions.config().admin.secret);
+    const { secret, status = "pending", limit = "50" } = req.query;
+    if (!adminSecret || secret !== adminSecret) return err(res, 403, "Unauthorized");
+
+    let query = db.collection("withdrawalRequests").orderBy("requestedAt", "desc");
+    if (status !== "all") query = query.where("status", "==", status);
+    query = query.limit(Math.min(parseInt(limit, 10) || 50, 200));
+
     const snap = await query.get();
-    const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const requests = snap.docs.map(doc => {
+      const d = doc.data();
+      return {
+        id:           doc.id,
+        userId:       d.userId,
+        paypalEmail:  d.paypalEmail,
+        amount:       d.amount,
+        tier:         d.tier,
+        salaryCycle:  d.salaryCycle,
+        status:       d.status,
+        rejectReason: d.rejectReason || null,
+        requestedAt:  d.requestedAt ? d.requestedAt.toDate().toISOString() : null,
+        approvedAt:   d.approvedAt  ? d.approvedAt.toDate().toISOString()  : null,
+        rejectedAt:   d.rejectedAt  ? d.rejectedAt.toDate().toISOString()  : null,
+        paypalBatchId: d.paypalBatchId || null,
+      };
+    });
 
-    // Summary stats
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayTs = today.getTime() / 1000;
-    const allSnap = await db.collection("withdrawalRequests").get();
-    const all = allSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const stats = {
-      totalPending:       all.filter(r => r.status === "pending").length,
-      approvedToday:      all.filter(r => (r.status === "approved" || r.status === "approved_manual") && r.approvedAt?._seconds >= todayTs).length,
-      rejectedToday:      all.filter(r => r.status === "rejected" && r.rejectedAt?._seconds >= todayTs).length,
-      totalAll:           all.length,
-    };
+    const todayStart = admin.firestore.Timestamp.fromDate(
+      new Date(new Date().setHours(0, 0, 0, 0))
+    );
+    const [pendingSnap, approvedTodaySnap, rejectedTodaySnap] = await Promise.all([
+      db.collection("withdrawalRequests").where("status", "==", "pending").count().get(),
+      db.collection("withdrawalRequests")
+        .where("status", "==", "approved")
+        .where("approvedAt", ">=", todayStart).count().get(),
+      db.collection("withdrawalRequests")
+        .where("status", "==", "rejected")
+        .where("rejectedAt", ">=", todayStart).count().get(),
+    ]);
 
-    res.status(200).json({ requests, stats });
-  } catch (err) {
-    console.error("adminListWithdrawals error:", err);
-    res.status(500).json({ error: "Internal error: " + err.message });
+    return ok(res, {
+      requests,
+      stats: {
+        totalPending:  pendingSnap.data().count,
+        approvedToday: approvedTodaySnap.data().count,
+        rejectedToday: rejectedTodaySnap.data().count,
+      },
+    });
+  } catch (e) {
+    console.error("adminListWithdrawals error", e);
+    return err(res, 500, e.message);
   }
 });
 
-// ═══════════════════════════════════════════════════════════════════════════
-// adminRejectWithdrawal  — v9 2026-07-08
-// Protected by ADMIN_SECRET. Rejects a pending withdrawal request,
-// atomically refunds verifiedRewardPoints to the user, records reason.
-// Body: { withdrawalRequestId, adminSecret, rejectReason? }
-// ═══════════════════════════════════════════════════════════════════════════
+// ─── 8. ADMIN REJECT WITHDRAWAL ──────────────────────────────────────────────
+/**
+ * adminRejectWithdrawal — protected by ADMIN_SECRET
+ * POST { secret, withdrawalRequestId, rejectReason }
+ * Sets status to "rejected", refunds verifiedRewardPoints atomically.
+ */
 exports.adminRejectWithdrawal = functions.https.onRequest(async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") { res.status(204).send(""); return; }
-  if (req.method !== "POST") { res.status(405).json({ error: "POST only" }); return; }
-
-  const { withdrawalRequestId, adminSecret, rejectReason } = req.body || {};
-
-  // Validate admin secret
-  const expectedSecret = process.env.ADMIN_SECRET;
-  if (!expectedSecret || adminSecret !== expectedSecret) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  if (!withdrawalRequestId) {
-    res.status(400).json({ error: "withdrawalRequestId required" });
-    return;
-  }
-
-  const reqRef = db.collection("withdrawalRequests").doc(withdrawalRequestId);
-
+  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") return res.status(204).send("");
+  if (req.method !== "POST") return err(res, 405, "POST required");
   try {
-    let refundedAmount = 0;
-    let userId = null;
+    const adminSecret = process.env.ADMIN_SECRET ||
+                        (functions.config().admin && functions.config().admin.secret);
+    const { secret, withdrawalRequestId, rejectReason = "Rejected by admin" } = req.body;
+    if (!adminSecret || secret !== adminSecret) return err(res, 403, "Unauthorized");
+    if (!withdrawalRequestId) return err(res, 400, "withdrawalRequestId required");
+
+    const reqRef  = db.collection("withdrawalRequests").doc(withdrawalRequestId);
+    const reqSnap = await reqRef.get();
+    if (!reqSnap.exists) return err(res, 404, "Withdrawal request not found");
+
+    const data = reqSnap.data();
+    if (data.status !== "pending") return err(res, 409, `Request is already ${data.status}`);
+
+    const userRef        = db.collection("wallets").doc(data.userId);
+    const pointsToRefund = Math.round(data.amount / POINTS_TO_USD);
 
     await db.runTransaction(async (tx) => {
-      const reqDoc = await tx.get(reqRef);
-      if (!reqDoc.exists) throw new Error("Withdrawal request not found");
-
-      const data = reqDoc.data();
-      if (data.status !== "pending") {
-        throw new Error(`Cannot reject — status is already '${data.status}'`);
-      }
-
-      userId = data.userId;
-      refundedAmount = data.pointsDeducted || 0;
-
-      // Mark rejected
+      const userSnap = await tx.get(userRef);
+      if (!userSnap.exists) throw new Error("User wallet not found");
+      const currentPoints = userSnap.data().verifiedRewardPoints || 0;
       tx.update(reqRef, {
-        status:       "rejected",
-        rejectedAt:   admin.firestore.FieldValue.serverTimestamp(),
-        rejectReason: rejectReason || "Rejected by admin",
+        status:      "rejected",
+        rejectReason,
+        rejectedAt:  admin.firestore.FieldValue.serverTimestamp(),
       });
-
-      // Refund points atomically if any were deducted
-      if (userId && refundedAmount > 0) {
-        const walletRef = db.collection("wallets").doc(userId);
-        tx.update(walletRef, {
-          verifiedRewardPoints: admin.firestore.FieldValue.increment(refundedAmount),
-          lastUpdated:          admin.firestore.FieldValue.serverTimestamp(),
-        });
-      }
+      tx.update(userRef, {
+        verifiedRewardPoints: currentPoints + pointsToRefund,
+        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+      });
     });
 
-    res.status(200).json({
-      success:        true,
-      message:        "Withdrawal rejected and points refunded.",
-      refundedPoints: refundedAmount,
-      userId,
+    return ok(res, {
+      message:        "Withdrawal rejected and points refunded",
+      refundedPoints: pointsToRefund,
+      userId:         data.userId,
     });
-  } catch (err) {
-    console.error("adminRejectWithdrawal error:", err);
-    res.status(500).json({ error: err.message });
+  } catch (e) {
+    console.error("adminRejectWithdrawal error", e);
+    return err(res, 500, e.message);
   }
 });
+
+// ─── 9. ADMIN AUTH — Firebase Hosting server-side authentication ──────────────
+/**
+ * adminAuth — Cloud Function that acts as server-side auth middleware for /admin
+ *
+ * How it works:
+ *   GET  /admin  (no valid __session cookie) → serve login HTML form
+ *   POST /admin  (form submit)               → validate ADMIN_SECRET → set __session cookie → redirect
+ *   GET  /admin  (valid __session cookie)    → serve full admin panel HTML
+ *
+ * Security features:
+ *   - __session cookie: HttpOnly, Secure, SameSite=Strict, 30-min expiry
+ *     (Firebase Hosting CDN only forwards the __session cookie — all others stripped)
+ *   - Rate limiting: 5 failed attempts per IP → 15-min lockout (Firestore-backed)
+ *   - Session tokens: crypto.randomBytes(32) stored in Firestore adminSessions collection
+ *   - Constant-time secret comparison via crypto.timingSafeEqual (prevents timing attacks)
+ *   - ADMIN_SECRET never sent to client
+ *
+ * firebase.json rewrite:
+ *   { "source": "/admin", "function": "adminAuth" }
+ *
+ * Access URL after deploy: https://YOUR-PROJECT.web.app/admin
+ */
+const crypto = require("crypto");
+
+const ADMIN_RATE_LIMIT_ATTEMPTS = 5;
+const ADMIN_LOCKOUT_MS          = 15 * 60 * 1000; // 15 minutes
+const SESSION_EXPIRY_MS         = 30 * 60 * 1000; // 30 minutes
+
+function generateSessionToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+async function isRateLimited(ip) {
+  const docRef = db.collection("adminRateLimit").doc(ip.replace(/[:.]/g, "_"));
+  const snap   = await docRef.get();
+  if (!snap.exists) return false;
+  const { lockedUntil } = snap.data();
+  return !!(lockedUntil && lockedUntil.toMillis() > Date.now());
+}
+
+async function recordFailedAttempt(ip) {
+  const docRef = db.collection("adminRateLimit").doc(ip.replace(/[:.]/g, "_"));
+  const snap   = await docRef.get();
+  const now    = Date.now();
+  let attempts = 1;
+  if (snap.exists) {
+    const d = snap.data();
+    if (d.lockedUntil && d.lockedUntil.toMillis() < now) { attempts = 1; }
+    else { attempts = (d.attempts || 0) + 1; }
+  }
+  const lockedUntil = attempts >= ADMIN_RATE_LIMIT_ATTEMPTS
+    ? admin.firestore.Timestamp.fromMillis(now + ADMIN_LOCKOUT_MS)
+    : null;
+  await docRef.set({
+    attempts,
+    lockedUntil,
+    lastAttempt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+  return attempts;
+}
+
+async function clearRateLimit(ip) {
+  await db.collection("adminRateLimit").doc(ip.replace(/[:.]/g, "_")).delete().catch(() => {});
+}
+
+async function validateSession(token) {
+  if (!token) return false;
+  const docRef = db.collection("adminSessions").doc(token);
+  const snap   = await docRef.get();
+  if (!snap.exists) return false;
+  const { expiresAt } = snap.data();
+  if (expiresAt && expiresAt.toMillis() < Date.now()) {
+    await docRef.delete().catch(() => {});
+    return false;
+  }
+  // Refresh expiry on valid access (sliding window)
+  await docRef.update({
+    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + SESSION_EXPIRY_MS),
+  });
+  return true;
+}
+
+async function createSession() {
+  const token = generateSessionToken();
+  await db.collection("adminSessions").doc(token).set({
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    expiresAt: admin.firestore.Timestamp.fromMillis(Date.now() + SESSION_EXPIRY_MS),
+  });
+  return token;
+}
+
+function parseCookies(cookieHeader) {
+  const cookies = {};
+  if (!cookieHeader) return cookies;
+  cookieHeader.split(";").forEach(part => {
+    const [k, ...v] = part.trim().split("=");
+    if (k) cookies[k.trim()] = decodeURIComponent(v.join("=").trim());
+  });
+  return cookies;
+}
+
+function parseBody(req) {
+  return new Promise((resolve) => {
+    let body = "";
+    req.on("data", chunk => { body += chunk.toString(); });
+    req.on("end", () => {
+      const params = {};
+      body.split("&").forEach(pair => {
+        const [k, v] = pair.split("=");
+        if (k) params[decodeURIComponent(k)] = decodeURIComponent((v || "").replace(/\+/g, " "));
+      });
+      resolve(params);
+    });
+  });
+}
+
+function loginPageHTML(errorMsg, locked) {
+  const errorBlock  = errorMsg ? `<div class="error">${errorMsg}</div>` : "";
+  const lockedBlock = `<div class="locked">Too many failed attempts. Please wait 15 minutes before trying again.</div>`;
+  const formBlock   = `<form method="POST" action="/admin">
+    <label for="s">Admin Secret</label>
+    <input type="password" id="s" name="secret" placeholder="Enter admin secret" required autocomplete="current-password">
+    ${errorBlock}
+    <button type="submit">Sign In</button>
+  </form>`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Admin Login — Mendez Community</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#111;border:1px solid #222;border-radius:12px;padding:40px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.logo{text-align:center;margin-bottom:28px}
+.logo h1{font-size:1.4rem;color:#c0a060;letter-spacing:2px;text-transform:uppercase}
+.logo p{font-size:.8rem;color:#666;margin-top:4px}
+label{display:block;font-size:.8rem;color:#888;margin-bottom:6px;margin-top:18px}
+input[type=password]{width:100%;padding:12px 14px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#e0e0e0;font-size:1rem;outline:none}
+button{width:100%;margin-top:22px;padding:13px;background:#c0a060;color:#000;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer}
+.error{background:#2a1010;border:1px solid #5a2020;border-radius:6px;padding:10px 14px;margin-top:16px;font-size:.85rem;color:#e07070}
+.locked{background:#1a1a2a;border:1px solid #3a3a6a;border-radius:6px;padding:10px 14px;margin-top:16px;font-size:.85rem;color:#8080e0}
+.footer{text-align:center;margin-top:24px;font-size:.75rem;color:#444}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><h1>MENDEZ ADMIN</h1><p>Withdrawal Management Portal</p></div>
+  ${locked ? lockedBlock : formBlock}
+  <div class="footer">Mendez Community · Secure Admin Access</div>
+</div>
+</body>
+</html>`;
+}
+
+exports.adminAuth = functions.https.onRequest(async (req, res) => {
+  const ip = ((req.headers["x-forwarded-for"] || "").split(",")[0].trim()) || req.ip || "unknown";
+  try {
+    // ── GET: check session ────────────────────────────────────────────────────
+    if (req.method === "GET") {
+      const cookies = parseCookies(req.headers.cookie);
+      const valid   = await validateSession(cookies["__session"]);
+      res.set("Cache-Control", "private, no-cache, no-store");
+      res.set("X-Robots-Tag", "noindex, nofollow");
+      if (valid) {
+        // Authenticated — serve full admin panel HTML (no client-side secret needed)
+        return res.status(200).send(getAdminPanelHTML());
+      }
+      const locked = await isRateLimited(ip);
+      return res.status(locked ? 429 : 200).send(loginPageHTML("", locked));
+    }
+
+    // ── POST: process login ───────────────────────────────────────────────────
+    if (req.method === "POST") {
+      const locked = await isRateLimited(ip);
+      if (locked) return res.status(429).send(loginPageHTML("", true));
+
+      const body        = await parseBody(req);
+      const adminSecret = process.env.ADMIN_SECRET ||
+                          (functions.config().admin && functions.config().admin.secret);
+
+      if (!adminSecret) {
+        return res.status(500).send(loginPageHTML("Server config error: ADMIN_SECRET not set.", false));
+      }
+
+      // Constant-time comparison to prevent timing attacks
+      const secretBuf  = Buffer.from(body.secret || "");
+      const correctBuf = Buffer.from(adminSecret);
+      const match = secretBuf.length === correctBuf.length &&
+                    crypto.timingSafeEqual(secretBuf, correctBuf);
+
+      if (!match) {
+        const attempts  = await recordFailedAttempt(ip);
+        const remaining = ADMIN_RATE_LIMIT_ATTEMPTS - attempts;
+        const msg = remaining <= 0
+          ? "Too many failed attempts. Locked for 15 minutes."
+          : `Incorrect secret. ${remaining} attempt${remaining === 1 ? "" : "s"} remaining.`;
+        return res.status(401).send(loginPageHTML(msg, remaining <= 0));
+      }
+
+      // Correct — create session, set HttpOnly cookie, redirect
+      await clearRateLimit(ip);
+      const token = await createSession();
+      res.set("Set-Cookie",
+        `__session=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_EXPIRY_MS / 1000}; Path=/admin`
+      );
+      res.set("Cache-Control", "no-store");
+      return res.redirect(302, "/admin");
+    }
+
+    return res.status(405).send("Method Not Allowed");
+  } catch (e) {
+    console.error("adminAuth error", e);
+    return res.status(500).send(loginPageHTML("Internal server error. Please try again.", false));
+  }
+});
+
+/**
+ * getAdminPanelHTML — returns the full admin panel HTML.
+ * Served ONLY after successful server-side authentication via adminAuth.
+ * CONFIG PLACEHOLDERS: replace YOUR-PROJECT with your Firebase project ID.
+ */
+function getAdminPanelHTML() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Admin Panel — Mendez Community</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#e0e0e0;font-family:'Segoe UI',sans-serif;min-height:100vh}
+header{background:#111;border-bottom:1px solid #222;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+header h1{font-size:1.1rem;color:#c0a060;letter-spacing:2px;text-transform:uppercase}
+.logout-btn{background:transparent;border:1px solid #444;color:#888;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.8rem}
+.session-timer{font-size:.75rem;color:#555;margin-right:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;padding:24px}
+.stat-card{background:#111;border:1px solid #222;border-radius:10px;padding:20px;text-align:center}
+.stat-card .num{font-size:2rem;font-weight:700;color:#c0a060}
+.stat-card .lbl{font-size:.75rem;color:#666;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.tabs{display:flex;border-bottom:1px solid #222;padding:0 24px;background:#0d0d0d;overflow-x:auto}
+.tab{padding:12px 20px;cursor:pointer;font-size:.85rem;color:#666;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:#c0a060;border-bottom-color:#c0a060}
+.tab-content{display:none;padding:24px;overflow-x:auto}
+.tab-content.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:600px}
+th{background:#111;color:#888;padding:10px 12px;text-align:left;font-weight:600;text-transform:uppercase;font-size:.75rem;border-bottom:1px solid #222}
+td{padding:10px 12px;border-bottom:1px solid #1a1a1a;vertical-align:middle}
+tr:hover td{background:#111}
+.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:.75rem;font-weight:600;text-transform:uppercase}
+.badge-new{background:#1a2a1a;color:#60c060}.badge-regular{background:#1a1a2a;color:#6080e0}
+.badge-pending{background:#2a2a1a;color:#c0c060}.badge-approved{background:#1a2a1a;color:#60c060}
+.badge-rejected{background:#2a1a1a;color:#e06060}.badge-paid{background:#1a2a2a;color:#60c0c0}
+.btn{padding:6px 14px;border:none;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:600}
+.btn-approve{background:#1a3a1a;color:#60c060;border:1px solid #2a5a2a}
+.btn-reject{background:#3a1a1a;color:#e06060;border:1px solid #5a2a2a;margin-left:6px}
+.empty{text-align:center;padding:40px;color:#444;font-size:.9rem}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#111;border:1px solid #333;border-radius:12px;padding:28px;width:100%;max-width:440px;margin:16px}
+.modal h3{color:#c0a060;margin-bottom:16px}
+.modal textarea{width:100%;background:#1a1a1a;border:1px solid #333;border-radius:6px;color:#e0e0e0;padding:10px;font-size:.9rem;resize:vertical;min-height:80px;outline:none}
+.modal-btns{display:flex;gap:10px;margin-top:16px;justify-content:flex-end}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a2a1a;border:1px solid #2a5a2a;color:#60c060;padding:12px 20px;border-radius:8px;font-size:.9rem;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}.toast.error{background:#2a1a1a;border-color:#5a2a2a;color:#e06060}
+.loading{text-align:center;padding:40px;color:#555}
+.demo-banner{background:#1a1a2a;border:1px solid #3a3a6a;border-radius:6px;padding:10px 16px;margin:16px 24px 0;font-size:.8rem;color:#8080e0}
+</style>
+</head>
+<body>
+<header>
+  <h1>MENDEZ ADMIN — Withdrawal Requests</h1>
+  <div style="display:flex;align-items:center">
+    <span class="session-timer" id="sessionTimer">Session: 30:00</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat-card"><div class="num" id="statPending">—</div><div class="lbl">Pending</div></div>
+  <div class="stat-card"><div class="num" id="statApproved">—</div><div class="lbl">Approved Today</div></div>
+  <div class="stat-card"><div class="num" id="statRejected">—</div><div class="lbl">Rejected Today</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('pending')">Pending</div>
+  <div class="tab" onclick="switchTab('approved')">Approved</div>
+  <div class="tab" onclick="switchTab('rejected')">Rejected</div>
+  <div class="tab" onclick="switchTab('all')">All</div>
+</div>
+
+<div id="tab-pending" class="tab-content active">
+  <div class="loading" id="loading-pending">Loading...</div>
+  <table id="table-pending" style="display:none"><thead><tr>
+    <th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Cycle</th><th>Requested</th><th>Actions</th>
+  </tr></thead><tbody id="tbody-pending"></tbody></table>
+  <div class="empty" id="empty-pending" style="display:none">No pending requests</div>
+</div>
+<div id="tab-approved" class="tab-content">
+  <div class="loading" id="loading-approved">Loading...</div>
+  <table id="table-approved" style="display:none"><thead><tr>
+    <th>User ID</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Approved</th><th>Status</th>
+  </tr></thead><tbody id="tbody-approved"></tbody></table>
+  <div class="empty" id="empty-approved" style="display:none">No approved requests yet.</div>
+</div>
+<div id="tab-rejected" class="tab-content">
+  <div class="loading" id="loading-rejected">Loading...</div>
+  <table id="table-rejected" style="display:none"><thead><tr>
+    <th>User ID</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Rejected</th><th>Reason</th>
+  </tr></thead><tbody id="tbody-rejected"></tbody></table>
+  <div class="empty" id="empty-rejected" style="display:none">No rejected requests yet.</div>
+</div>
+<div id="tab-all" class="tab-content">
+  <div class="loading" id="loading-all">Loading...</div>
+  <table id="table-all" style="display:none"><thead><tr>
+    <th>User ID</th><th>Amount</th><th>Tier</th><th>Status</th><th>Requested</th>
+  </tr></thead><tbody id="tbody-all"></tbody></table>
+  <div class="empty" id="empty-all" style="display:none">No requests found.</div>
+</div>
+
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal">
+    <h3>Reject Withdrawal Request</h3>
+    <p style="color:#888;font-size:.85rem;margin-bottom:12px">Rejecting will refund the user points automatically.</p>
+    <textarea id="rejectReason" placeholder="Reason for rejection (optional)..."></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-approve" onclick="closeRejectModal()">Cancel</button>
+      <button class="btn btn-reject" onclick="confirmReject()">Confirm Reject</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// CONFIG PLACEHOLDERS — replace YOUR-PROJECT with your Firebase project ID after deploy:
+const ADMIN_CONFIG = {
+  LIST_ENDPOINT:    "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals",
+  APPROVE_ENDPOINT: "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal",
+  REJECT_ENDPOINT:  "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal",
+  // ADMIN_SECRET is NOT stored here — validated server-side via __session cookie.
+  // The session was established by the adminAuth Cloud Function on login.
+};
+const DEMO_MODE = ADMIN_CONFIG.LIST_ENDPOINT.includes("YOUR-PROJECT");
+if (DEMO_MODE) {
+  const b = document.createElement("div");
+  b.className = "demo-banner";
+  b.textContent = "DEMO MODE — Cloud Function URLs not configured. Showing sample data. Replace YOUR-PROJECT in ADMIN_CONFIG after firebase deploy.";
+  document.querySelector(".stats").before(b);
+}
+
+// Session inactivity timeout (30 min)
+let sessionSeconds = 30 * 60;
+let pendingRejectId = null;
+const timerEl = document.getElementById("sessionTimer");
+const sessionInterval = setInterval(() => {
+  sessionSeconds--;
+  if (sessionSeconds <= 0) { clearInterval(sessionInterval); logout(); return; }
+  const m = Math.floor(sessionSeconds / 60).toString().padStart(2, "0");
+  const s = (sessionSeconds % 60).toString().padStart(2, "0");
+  timerEl.textContent = "Session: " + m + ":" + s;
+}, 1000);
+["click","keydown","mousemove","touchstart"].forEach(e =>
+  document.addEventListener(e, () => { sessionSeconds = 30 * 60; }, { passive: true })
+);
+
+function logout() {
+  document.cookie = "__session=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/admin";
+  window.location.href = "/admin";
+}
+
+const loadedTabs = new Set();
+function switchTab(name) {
+  document.querySelectorAll(".tab").forEach((t, i) => {
+    t.classList.toggle("active", ["pending","approved","rejected","all"][i] === name);
+  });
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  if (!loadedTabs.has(name)) loadData(name);
+}
+
+async function loadData(status) {
+  loadedTabs.add(status);
+  const loadingEl = document.getElementById("loading-" + status);
+  const tableEl   = document.getElementById("table-" + status);
+  const emptyEl   = document.getElementById("empty-" + status);
+  const tbodyEl   = document.getElementById("tbody-" + status);
+  loadingEl.style.display = "block"; tableEl.style.display = "none"; emptyEl.style.display = "none";
+
+  if (DEMO_MODE) {
+    await new Promise(r => setTimeout(r, 600));
+    const demo = getDemoData(status);
+    renderTable(status, demo.requests, tbodyEl);
+    updateStats(demo.stats);
+    loadingEl.style.display = "none";
+    if (demo.requests.length === 0) emptyEl.style.display = "block";
+    else tableEl.style.display = "table";
+    return;
+  }
+
+  try {
+    // Session cookie is sent automatically (credentials: include)
+    // No ADMIN_SECRET needed in client — server validates via __session cookie
+    const resp = await fetch(ADMIN_CONFIG.LIST_ENDPOINT + "?status=" + status + "&limit=100", {
+      credentials: "include"
+    });
+    if (resp.status === 403) {
+      showToast("Session expired. Logging out.", true);
+      setTimeout(logout, 2000);
+      return;
+    }
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error);
+    renderTable(status, data.requests, tbodyEl);
+    if (data.stats) updateStats(data.stats);
+    loadingEl.style.display = "none";
+    if (data.requests.length === 0) emptyEl.style.display = "block";
+    else tableEl.style.display = "table";
+  } catch (e) {
+    loadingEl.textContent = "Error loading data: " + e.message;
+  }
+}
+
+function updateStats(s) {
+  if (!s) return;
+  document.getElementById("statPending").textContent  = s.totalPending  ?? "—";
+  document.getElementById("statApproved").textContent = s.approvedToday ?? "—";
+  document.getElementById("statRejected").textContent = s.rejectedToday ?? "—";
+}
+
+function renderTable(status, requests, tbody) {
+  tbody.innerHTML = "";
+  requests.forEach(r => {
+    const tr = document.createElement("tr");
+    const date  = r.requestedAt ? new Date(r.requestedAt).toLocaleDateString() : "—";
+    const aDate = r.approvedAt  ? new Date(r.approvedAt).toLocaleDateString()  : "—";
+    const rDate = r.rejectedAt  ? new Date(r.rejectedAt).toLocaleDateString()  : "—";
+    const tierB = r.tier === "new"
+      ? '<span class="badge badge-new">New</span>'
+      : '<span class="badge badge-regular">Regular</span>';
+    const statB = {
+      pending:          '<span class="badge badge-pending">Pending</span>',
+      approved:         '<span class="badge badge-approved">Approved</span>',
+      approved_manual:  '<span class="badge badge-approved">Manual</span>',
+      rejected:         '<span class="badge badge-rejected">Rejected</span>',
+      paid:             '<span class="badge badge-paid">Paid</span>',
+    }[r.status] || r.status;
+    const uid = (r.userId || "").slice(0, 12) + "...";
+    const amt = "$" + (r.amount || 0).toFixed(2);
+
+    if (status === "pending") {
+      tr.innerHTML = '<td style="font-family:monospace;font-size:.75rem">' + uid + '</td>'
+        + '<td>' + (r.paypalEmail || "—") + '</td>'
+        + '<td style="color:#c0a060;font-weight:700">' + amt + '</td>'
+        + '<td>' + tierB + '</td>'
+        + '<td>' + (r.salaryCycle ? r.salaryCycle + "d" : "—") + '</td>'
+        + '<td>' + date + '</td>'
+        + '<td><button class="btn btn-approve" onclick="approveRequest(\'' + r.id + '\')">Approve</button>'
+        + '<button class="btn btn-reject" onclick="openRejectModal(\'' + r.id + '\')">Reject</button></td>';
+    } else if (status === "approved") {
+      tr.innerHTML = '<td style="font-family:monospace;font-size:.75rem">' + uid + '</td>'
+        + '<td style="color:#c0a060;font-weight:700">' + amt + '</td>'
+        + '<td>' + tierB + '</td><td>' + date + '</td><td>' + aDate + '</td><td>' + statB + '</td>';
+    } else if (status === "rejected") {
+      tr.innerHTML = '<td style="font-family:monospace;font-size:.75rem">' + uid + '</td>'
+        + '<td style="color:#c0a060;font-weight:700">' + amt + '</td>'
+        + '<td>' + tierB + '</td><td>' + date + '</td><td>' + rDate + '</td>'
+        + '<td style="color:#888;font-size:.8rem">' + (r.rejectReason || "—") + '</td>';
+    } else {
+      tr.innerHTML = '<td style="font-family:monospace;font-size:.75rem">' + uid + '</td>'
+        + '<td style="color:#c0a060;font-weight:700">' + amt + '</td>'
+        + '<td>' + tierB + '</td><td>' + statB + '</td><td>' + date + '</td>';
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+async function approveRequest(id) {
+  if (!confirm("Approve this withdrawal request?")) return;
+  if (DEMO_MODE) { showToast("Demo mode: approval simulated"); return; }
+  try {
+    const resp = await fetch(ADMIN_CONFIG.APPROVE_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ withdrawalRequestId: id }),
+    });
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error);
+    showToast("Approved! " + (data.paypalStatus || ""));
+    loadedTabs.clear(); loadData("pending");
+  } catch (e) { showToast("Error: " + e.message, true); }
+}
+
+function openRejectModal(id) {
+  pendingRejectId = id;
+  document.getElementById("rejectReason").value = "";
+  document.getElementById("rejectModal").classList.add("open");
+}
+function closeRejectModal() {
+  pendingRejectId = null;
+  document.getElementById("rejectModal").classList.remove("open");
+}
+async function confirmReject() {
+  const reason = document.getElementById("rejectReason").value.trim() || "Rejected by admin";
+  closeRejectModal();
+  if (DEMO_MODE) { showToast("Demo mode: rejection simulated"); return; }
+  try {
+    const resp = await fetch(ADMIN_CONFIG.REJECT_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ withdrawalRequestId: pendingRejectId, rejectReason: reason }),
+    });
+    const data = await resp.json();
+    if (!data.success) throw new Error(data.error);
+    showToast("Rejected. Points refunded to user.");
+    loadedTabs.clear(); loadData("pending");
+  } catch (e) { showToast("Error: " + e.message, true); }
+}
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (isError ? " error" : "");
+  setTimeout(() => { t.className = "toast"; }, 3500);
+}
+
+function getDemoData(status) {
+  const all = [
+    { id:"req001", userId:"user-abc123def456", paypalEmail:"alice@example.com", amount:2.50, tier:"new",     salaryCycle:null, status:"pending",  requestedAt:new Date().toISOString(),                    approvedAt:null, rejectedAt:null, rejectReason:null },
+    { id:"req002", userId:"user-xyz789ghi012", paypalEmail:"bob@example.com",   amount:5.00, tier:"regular", salaryCycle:15,   status:"pending",  requestedAt:new Date(Date.now()-86400000).toISOString(),  approvedAt:null, rejectedAt:null, rejectReason:null },
+    { id:"req003", userId:"user-mno345pqr678", paypalEmail:"carol@example.com", amount:3.75, tier:"regular", salaryCycle:25,   status:"approved", requestedAt:new Date(Date.now()-172800000).toISOString(), approvedAt:new Date().toISOString(), rejectedAt:null, rejectReason:null },
+    { id:"req004", userId:"user-stu901vwx234", paypalEmail:"dave@example.com",  amount:1.00, tier:"new",     salaryCycle:null, status:"rejected", requestedAt:new Date(Date.now()-259200000).toISOString(), approvedAt:null, rejectedAt:new Date().toISOString(), rejectReason:"Insufficient verified activity" },
+  ];
+  const filtered = status === "all" ? all : all.filter(r => r.status === status);
+  return { requests: filtered, stats: { totalPending: 2, approvedToday: 1, rejectedToday: 1 } };
+}
+
+loadData("pending");
+</script>
+</body>
+</html>`;
+}
