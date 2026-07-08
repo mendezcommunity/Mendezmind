@@ -1,163 +1,453 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="referrer" content="no-referrer">
-<meta http-equiv="X-Robots-Tag" content="noindex, nofollow">
-<title>404 Not Found</title>
-<style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --border: #1e1e2e;
-    --accent: #00d4aa;
-    --accent2: #7c3aed;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --danger: #ef4444;
-    --warn: #f59e0b;
-    --success: #10b981;
-    --card: #16162a;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 Not Found</title>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <meta name="referrer" content="no-referrer">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ── Design tokens ─────────────────────────────────────────────────── */
+    :root {
+      --bg:        #0a0a0a;
+      --surface:   #111108;
+      --surface2:  #18160a;
+      --gold:      #d4a017;
+      --gold-lt:   #f5c842;
+      --gold-dk:   #b8860b;
+      --red:       #c0392b;
+      --red-lt:    #e74c3c;
+      --green:     #1a7a4a;
+      --green-lt:  #27ae60;
+      --muted:     #6b6550;
+      --text:      #e8dfc0;
+      --text-dim:  #a89870;
+      --border:    rgba(212,160,23,0.18);
+      --glass:     rgba(26,22,10,0.72);
+      --radius:    14px;
+      --radius-sm: 8px;
+    }
 
-  /* 404 page */
-  #page-404 {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; text-align: center; padding: 2rem;
-  }
-  #page-404 .code { font-size: 8rem; font-weight: 900; color: var(--muted); line-height: 1; }
-  #page-404 h1 { font-size: 1.5rem; color: var(--muted); margin: 1rem 0 0.5rem; }
-  #page-404 p { color: var(--muted); font-size: 0.9rem; }
-  #page-404 a { color: var(--accent); text-decoration: none; margin-top: 1.5rem; display: inline-block; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Login screen */
-  #page-login {
-    display: none; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 2rem;
-  }
-  .login-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 2.5rem; width: 100%; max-width: 400px;
-  }
-  .login-logo { text-align: center; margin-bottom: 2rem; }
-  .login-logo .brand { font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
-  .login-logo .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
-  .login-card h2 { font-size: 1.1rem; color: var(--text); margin-bottom: 1.5rem; text-align: center; }
-  .form-group { margin-bottom: 1.2rem; }
-  .form-group label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; }
-  .form-group input {
-    width: 100%; padding: 0.75rem 1rem; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text); font-size: 0.95rem; outline: none; transition: border 0.2s;
-  }
-  .form-group input:focus { border-color: var(--accent); }
-  .btn-login {
-    width: 100%; padding: 0.85rem; background: var(--accent); color: #000; font-weight: 700;
-    border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: opacity 0.2s;
-  }
-  .btn-login:hover { opacity: 0.85; }
-  .btn-login:disabled { opacity: 0.4; cursor: not-allowed; }
-  .login-error { color: var(--danger); font-size: 0.85rem; margin-top: 0.75rem; text-align: center; min-height: 1.2rem; }
-  .attempt-counter { color: var(--muted); font-size: 0.78rem; text-align: center; margin-top: 0.5rem; }
+    html { scroll-behavior: smooth; }
 
-  /* Admin panel */
-  #page-admin { display: none; }
-  .admin-header {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
-  }
-  .admin-header .brand { font-size: 1.1rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
-  .admin-header .sub { font-size: 0.7rem; color: var(--muted); }
-  .session-info { font-size: 0.78rem; color: var(--muted); }
-  .btn-logout {
-    padding: 0.4rem 1rem; background: transparent; border: 1px solid var(--danger);
-    color: var(--danger); border-radius: 6px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
-  }
-  .btn-logout:hover { background: var(--danger); color: #fff; }
-  .admin-main { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; text-align: center; }
-  .stat-card .val { font-size: 2rem; font-weight: 800; color: var(--accent); }
-  .stat-card .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 1px; }
-  .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-  .tab-btn {
-    padding: 0.5rem 1.2rem; border-radius: 8px; border: 1px solid var(--border);
-    background: transparent; color: var(--muted); cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
-  }
-  .tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th { background: var(--surface); color: var(--muted); padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
-  td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
-  .badge-pending { background: rgba(245,158,11,0.15); color: var(--warn); }
-  .badge-approved { background: rgba(16,185,129,0.15); color: var(--success); }
-  .badge-rejected { background: rgba(239,68,68,0.15); color: var(--danger); }
-  .badge-new { background: rgba(124,58,237,0.15); color: #a78bfa; }
-  .badge-regular { background: rgba(0,212,170,0.15); color: var(--accent); }
-  .action-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-  .btn-approve {
-    padding: 0.35rem 0.8rem; background: var(--success); color: #fff; border: none;
-    border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: opacity 0.2s;
-  }
-  .btn-approve:hover { opacity: 0.8; }
-  .btn-reject {
-    padding: 0.35rem 0.8rem; background: var(--danger); color: #fff; border: none;
-    border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: opacity 0.2s;
-  }
-  .btn-reject:hover { opacity: 0.8; }
-  .btn-approve:disabled, .btn-reject:disabled { opacity: 0.35; cursor: not-allowed; }
-  .empty-state { text-align: center; padding: 3rem; color: var(--muted); }
-  .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-  .config-banner {
-    background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
-    border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--warn);
-  }
-  .config-banner code { background: rgba(0,0,0,0.3); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem; }
-  .toast {
-    position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.85rem 1.25rem;
-    border-radius: 10px; font-size: 0.85rem; font-weight: 600; z-index: 9999;
-    animation: slideIn 0.3s ease; max-width: 320px;
-  }
-  .toast-success { background: var(--success); color: #fff; }
-  .toast-error { background: var(--danger); color: #fff; }
-  .toast-info { background: var(--accent2); color: #fff; }
-  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-  /* Reject modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    z-index: 1000; align-items: center; justify-content: center; padding: 1rem;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; width: 100%; max-width: 440px; }
-  .modal-box h3 { margin-bottom: 1rem; color: var(--danger); }
-  .modal-box textarea {
-    width: 100%; padding: 0.75rem; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text); font-size: 0.9rem; resize: vertical; min-height: 80px; outline: none;
-  }
-  .modal-box textarea:focus { border-color: var(--danger); }
-  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1rem; justify-content: flex-end; }
-  .btn-cancel { padding: 0.5rem 1.2rem; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; cursor: pointer; }
-  .btn-confirm-reject { padding: 0.5rem 1.2rem; background: var(--danger); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
-  .refresh-btn {
-    padding: 0.4rem 1rem; background: transparent; border: 1px solid var(--border);
-    color: var(--muted); border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-left: auto; display: block; margin-bottom: 0.75rem;
-  }
-  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
-  @media (max-width: 600px) {
-    .admin-main { padding: 1rem; }
-    .stat-card .val { font-size: 1.5rem; }
-    td, th { padding: 0.6rem 0.75rem; }
-  }
-</style>
+    /* ── Aurora background ─────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 20%, rgba(212,160,23,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 35% at 80% 75%, rgba(184,134,11,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(245,200,66,0.03) 0%, transparent 70%);
+      animation: aurora 18s ease-in-out infinite alternate;
+    }
+    @keyframes aurora {
+      0%   { opacity: 0.7; transform: scale(1)   rotate(0deg); }
+      50%  { opacity: 1;   transform: scale(1.04) rotate(1deg); }
+      100% { opacity: 0.8; transform: scale(0.98) rotate(-1deg); }
+    }
+
+    /* ── Fake 404 page ─────────────────────────────────────────────────── */
+    #page-404 {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--bg);
+      text-align: center; padding: 2rem;
+    }
+    #page-404 .code {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(5rem, 18vw, 9rem);
+      font-weight: 900;
+      color: var(--muted);
+      line-height: 1;
+      letter-spacing: -4px;
+    }
+    #page-404 h1 { font-size: 1.4rem; color: var(--muted); margin: 1rem 0 0.5rem; font-weight: 500; }
+    #page-404 p  { color: var(--muted); font-size: 0.9rem; opacity: 0.7; }
+    #page-404 a  {
+      color: var(--gold); text-decoration: none; margin-top: 1.5rem;
+      display: inline-block; font-size: 0.85rem; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(212,160,23,0.3); padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    #page-404 a:hover { color: var(--gold-lt); }
+
+    /* ── Login screen ──────────────────────────────────────────────────── */
+    #page-login {
+      position: fixed; inset: 0; z-index: 10;
+      display: none; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      width: 100%; max-width: 420px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,160,23,0.08);
+      position: relative; overflow: hidden;
+      animation: card-in 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+    /* shimmer sweep */
+    .login-card::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(245,200,66,0.06), transparent);
+      animation: shimmer 3.5s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100% { left: -100%; } 50% { left: 140%; } }
+
+    .login-logo { text-align: center; margin-bottom: 1.75rem; }
+    .login-logo .brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: 4px;
+    }
+    .login-logo .sub {
+      font-size: 0.65rem; color: var(--muted); letter-spacing: 3px;
+      text-transform: uppercase; margin-top: 4px;
+    }
+    .login-logo .divider {
+      width: 48px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0.75rem auto 0;
+    }
+
+    .login-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem; font-weight: 700;
+      color: var(--text); text-align: center; margin-bottom: 1.5rem;
+    }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+    .form-group input {
+      width: 100%; padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 0.95rem; font-family: 'Inter', sans-serif;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212,160,23,0.12);
+    }
+
+    .btn-login {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(135deg, var(--gold-dk), var(--gold), var(--gold-lt));
+      color: #0a0800; font-weight: 800; font-size: 0.95rem;
+      font-family: 'Inter', sans-serif; letter-spacing: 1px;
+      border: none; border-radius: var(--radius-sm); cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 20px rgba(212,160,23,0.35);
+      position: relative; overflow: hidden;
+    }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(212,160,23,0.5);
+    }
+    .btn-login:active:not(:disabled) { transform: scale(0.98); }
+    .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .login-error {
+      color: #e74c3c; font-size: 0.82rem; text-align: center;
+      margin-top: 0.75rem; min-height: 1.2em;
+    }
+    .attempt-counter {
+      color: var(--muted); font-size: 0.75rem; text-align: center;
+      margin-top: 0.4rem; min-height: 1em;
+    }
+
+    /* ── Admin panel wrapper ───────────────────────────────────────────── */
+    #page-admin { display: none; position: relative; z-index: 5; min-height: 100vh; }
+
+    /* ── Admin header ──────────────────────────────────────────────────── */
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      padding: 1.25rem 2rem;
+      background: rgba(10,8,0,0.85);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .admin-header .brand {
+      font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: 3px;
+    }
+    .admin-header .sub {
+      font-size: 0.6rem; color: var(--muted); letter-spacing: 2.5px;
+      text-transform: uppercase; margin-top: 2px;
+    }
+    .session-info {
+      font-size: 0.75rem; color: var(--muted); letter-spacing: 0.5px;
+    }
+    .btn-logout {
+      padding: 0.45rem 1.1rem;
+      background: transparent;
+      border: 1px solid rgba(212,160,23,0.35);
+      border-radius: 50px; color: var(--gold);
+      font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-logout:hover { background: rgba(212,160,23,0.1); border-color: var(--gold); }
+
+    /* ── Main content ──────────────────────────────────────────────────── */
+    .admin-main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+
+    /* ── Config banner ─────────────────────────────────────────────────── */
+    .config-banner {
+      background: rgba(212,160,23,0.08);
+      border: 1px solid rgba(212,160,23,0.25);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.25rem;
+      font-size: 0.82rem; color: var(--gold);
+      margin-bottom: 1.5rem; line-height: 1.6;
+    }
+    .config-banner code {
+      background: rgba(212,160,23,0.15); padding: 1px 5px;
+      border-radius: 4px; font-size: 0.8rem;
+    }
+
+    /* ── Stats row ─────────────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      backdrop-filter: blur(16px);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(212,160,23,0.12); }
+    .stat-card .val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-card .lbl {
+      font-size: 0.7rem; color: var(--muted); letter-spacing: 1.5px;
+      text-transform: uppercase; margin-top: 0.35rem;
+    }
+
+    /* ── Tabs ──────────────────────────────────────────────────────────── */
+    .tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .tab-btn {
+      padding: 0.55rem 1.25rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 50px; color: var(--muted);
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; letter-spacing: 0.5px;
+    }
+    .tab-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold-dk), var(--gold));
+      border-color: transparent; color: #0a0800;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .refresh-btn {
+      padding: 0.5rem 1.25rem; margin-bottom: 1rem;
+      background: transparent;
+      border: 1px solid rgba(212,160,23,0.3);
+      border-radius: var(--radius-sm); color: var(--gold);
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .refresh-btn:hover { background: rgba(212,160,23,0.08); }
+
+    /* ── Table ─────────────────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    thead tr {
+      background: rgba(212,160,23,0.06);
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      padding: 0.85rem 1rem; text-align: left;
+      font-size: 0.68rem; font-weight: 700;
+      color: var(--gold); letter-spacing: 1.5px; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.85rem 1rem; color: var(--text-dim);
+      border-bottom: 1px solid rgba(212,160,23,0.06);
+      vertical-align: middle;
+    }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover { background: rgba(212,160,23,0.04); }
+    tbody tr:last-child td { border-bottom: none; }
+    td code {
+      font-size: 0.78rem; color: var(--muted);
+      background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 4px;
+    }
+
+    /* ── Badges ────────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 50px; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .badge-new      { background: rgba(212,160,23,0.15); color: var(--gold-lt); border: 1px solid rgba(212,160,23,0.3); }
+    .badge-regular  { background: rgba(39,174,96,0.12);  color: #6fcf97;        border: 1px solid rgba(39,174,96,0.25); }
+    .badge-pending  { background: rgba(212,160,23,0.12); color: var(--gold);    border: 1px solid rgba(212,160,23,0.25); }
+    .badge-approved { background: rgba(39,174,96,0.12);  color: #6fcf97;        border: 1px solid rgba(39,174,96,0.25); }
+    .badge-rejected { background: rgba(192,57,43,0.12);  color: #e07070;        border: 1px solid rgba(192,57,43,0.25); }
+
+    /* ── Action buttons ────────────────────────────────────────────────── */
+    .action-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn-approve {
+      padding: 0.4rem 0.9rem;
+      background: linear-gradient(135deg, var(--gold-dk), var(--gold));
+      color: #0a0800; border: none; border-radius: var(--radius-sm);
+      font-size: 0.75rem; font-weight: 700; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 10px rgba(212,160,23,0.25);
+    }
+    .btn-approve:hover:not(:disabled) {
+      transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212,160,23,0.4);
+    }
+    .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-reject {
+      padding: 0.4rem 0.9rem;
+      background: rgba(192,57,43,0.15);
+      color: #e07070; border: 1px solid rgba(192,57,43,0.35);
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem; font-weight: 700; cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .btn-reject:hover { background: rgba(192,57,43,0.28); box-shadow: 0 0 12px rgba(192,57,43,0.25); }
+
+    /* ── Empty state ───────────────────────────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 3rem 1rem; color: var(--muted);
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+
+    /* ── Reject modal ──────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 2rem;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 16px 64px rgba(0,0,0,0.7);
+      animation: card-in 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .modal-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--text); margin-bottom: 0.75rem;
+    }
+    .modal-box textarea {
+      width: 100%; min-height: 90px; padding: 0.75rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.88rem;
+      resize: vertical; outline: none; transition: border-color 0.2s;
+    }
+    .modal-box textarea:focus { border-color: var(--gold); }
+    .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1rem; }
+    .btn-cancel {
+      padding: 0.55rem 1.25rem;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--muted);
+      font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s;
+    }
+    .btn-cancel:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-confirm-reject {
+      padding: 0.55rem 1.25rem;
+      background: linear-gradient(135deg, #8b1a1a, var(--red-lt));
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 2px 12px rgba(192,57,43,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-confirm-reject:hover:not(:disabled) {
+      transform: translateY(-1px); box-shadow: 0 4px 20px rgba(192,57,43,0.45);
+    }
+    .btn-confirm-reject:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Toast ─────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+      padding: 0.85rem 1.5rem; border-radius: var(--radius-sm);
+      font-size: 0.88rem; font-weight: 600; max-width: 340px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      animation: toast-in 0.3s ease both;
+    }
+    @keyframes toast-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .toast-success { background: rgba(26,122,74,0.95); color: #a8f0c6; border: 1px solid rgba(39,174,96,0.4); }
+    .toast-error   { background: rgba(120,30,20,0.95); color: #f0a8a8; border: 1px solid rgba(192,57,43,0.4); }
+    .toast-info    { background: rgba(26,22,10,0.95);  color: var(--gold); border: 1px solid var(--border); }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .admin-header { padding: 1rem; }
+      .admin-main   { padding: 1rem; }
+      .stats-row    { grid-template-columns: repeat(2, 1fr); }
+      th, td        { padding: 0.65rem 0.75rem; }
+    }
+  </style>
 </head>
 <body>
 
@@ -166,7 +456,7 @@
   <div class="code">404</div>
   <h1>Page Not Found</h1>
   <p>The page you are looking for doesn't exist or has been moved.</p>
-  <a href="index.html">Back to Home</a>
+  <a href="index.html">← Back to Home</a>
 </div>
 
 <!-- LAYER 2: Login screen (shown only with #auth hash) -->
@@ -174,14 +464,16 @@
   <div class="login-card">
     <div class="login-logo">
       <div class="brand">MENDEZ</div>
-      <div class="sub">COMMUNITY &middot; ADMIN PORTAL</div>
+      <div class="sub">Community &middot; Admin Portal</div>
+      <div class="divider"></div>
     </div>
-    <h2>Admin Sign In</h2>
+    <h2>Secure Sign In</h2>
     <div class="form-group">
       <label>Admin Secret</label>
-      <input type="password" id="secret-input" placeholder="Enter your ADMIN_SECRET" autocomplete="off" autocorrect="off" spellcheck="false">
+      <input type="password" id="secret-input" placeholder="Enter your ADMIN_SECRET"
+             autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
-    <button class="btn-login" id="btn-sign-in">Sign In</button>
+    <button class="btn-login" id="btn-sign-in">Sign In →</button>
     <div class="login-error" id="login-error"></div>
     <div class="attempt-counter" id="attempt-counter"></div>
   </div>
@@ -206,18 +498,18 @@
 </div>
 
 <script>
-// ─── GITHUB PAGES FALLBACK VERSION ───────────────────────────────────────────
+// ─── GITHUB PAGES FALLBACK VERSION ──────────────────────────────────────────
 // This admin.html is the GitHub Pages fallback with client-side hardening.
 // For true server-side security, deploy firebase/ to Firebase Hosting.
 // Firebase Hosting access: https://YOUR-PROJECT.web.app/admin
 // GitHub Pages access:     https://mendezcommunity.github.io/Mendezmind/admin.html#auth
-// ─────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
 
 /* ================================================================
    SECURITY: Hash Gate + Rate Limiting + Session Timeout
    ================================================================ */
 
-// ── CONFIG PLACEHOLDERS ──────────────────────────────────────────
+// ── CONFIG PLACEHOLDERS ──────────────────────────────────────────────────────
 // After `firebase deploy --only functions`, replace YOUR-PROJECT with
 // your real Firebase project ID. Format:
 // https://us-central1-YOUR-PROJECT-ID.cloudfunctions.net/FUNCTION_NAME
@@ -226,7 +518,7 @@ const ADMIN_CONFIG = {
   APPROVE_ENDPOINT: "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal",
   REJECT_ENDPOINT:  "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal",
 };
-// ── END CONFIG ───────────────────────────────────────────────────
+// ── END CONFIG ───────────────────────────────────────────────────────────────
 
 const RATE_LIMIT_KEY  = "mz_admin_lockout";
 const ATTEMPTS_KEY    = "mz_admin_attempts";
@@ -239,7 +531,7 @@ let sessionTimer = null;
 let currentSecret = "";
 let rejectTargetId = null;
 
-/* ── Hash Gate ─────────────────────────────────────────────────── */
+/* ── Hash Gate ──────────────────────────────────────────────────────────── */
 function checkHashGate() {
   const hash = window.location.hash;
   const params = new URLSearchParams(window.location.search);
@@ -251,7 +543,7 @@ function checkHashGate() {
 }
 window.addEventListener("hashchange", () => { if (checkHashGate()) checkExistingSession(); });
 
-/* ── Rate Limiting ─────────────────────────────────────────────── */
+/* ── Rate Limiting ──────────────────────────────────────────────────────── */
 function getLockout() {
   try {
     const d = JSON.parse(sessionStorage.getItem(RATE_LIMIT_KEY) || "null");
@@ -291,7 +583,7 @@ function updateLockoutUI() {
   }
 }
 
-/* ── Session Management ────────────────────────────────────────── */
+/* ── Session Management ─────────────────────────────────────────────────── */
 function saveSession(secret) { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ secret, at: Date.now() })); }
 function getSession() {
   try {
@@ -329,7 +621,7 @@ function checkExistingSession() {
   else updateLockoutUI();
 }
 
-/* ── Login Handler ─────────────────────────────────────────────── */
+/* ── Login Handler ──────────────────────────────────────────────────────── */
 async function handleLogin() {
   if (getLockout()) { updateLockoutUI(); return; }
   const secret = document.getElementById("secret-input").value.trim();
@@ -359,23 +651,26 @@ async function handleLogin() {
       ? "Too many failed attempts. Locked for 15 minutes."
       : "Incorrect secret. " + res.remaining + " attempt(s) remaining.";
     updateLockoutUI();
-    btn.disabled = false; btn.textContent = "Sign In";
+    btn.disabled = false; btn.textContent = "Sign In →";
   }
 }
 
-/* ── Unlock Panel ──────────────────────────────────────────────── */
+/* ── Unlock Panel ───────────────────────────────────────────────────────── */
 function unlockPanel(secret) {
   document.getElementById("page-login").style.display = "none";
-  document.title = "Mendez Admin - Withdrawal Panel";
+  document.title = "Mendez Admin — Withdrawal Panel";
   const configured = !ADMIN_CONFIG.LIST_ENDPOINT.includes("YOUR-PROJECT");
   const banner = configured ? "" : `<div class="config-banner">
-    Demo Mode: Cloud Function URLs not configured. Replace <code>YOUR-PROJECT</code> in ADMIN_CONFIG with your real Firebase project ID. Showing sample data.
+    ⚠️ Demo Mode: Cloud Function URLs not configured. Replace <code>YOUR-PROJECT</code> in ADMIN_CONFIG with your real Firebase project ID. Showing sample data.
   </div>`;
 
   document.getElementById("page-admin").style.display = "block";
   document.getElementById("page-admin").innerHTML = `
   <div class="admin-header">
-    <div><div class="brand">MENDEZ</div><div class="sub">ADMIN &middot; WITHDRAWAL PANEL</div></div>
+    <div>
+      <div class="brand">MENDEZ</div>
+      <div class="sub">Admin &middot; Withdrawal Panel</div>
+    </div>
     <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
       <span class="session-info" id="session-timer">Session: 30m remaining</span>
       <button class="btn-logout" id="btn-logout-top">Sign Out</button>
@@ -390,37 +685,37 @@ function unlockPanel(secret) {
       <div class="stat-card"><div class="val" id="stat-total">-</div><div class="lbl">Total Requests</div></div>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" data-tab="pending">Pending</button>
-      <button class="tab-btn" data-tab="approved">Approved</button>
-      <button class="tab-btn" data-tab="rejected">Rejected</button>
-      <button class="tab-btn" data-tab="all">All</button>
+      <button class="tab-btn active" data-tab="pending">⏳ Pending</button>
+      <button class="tab-btn" data-tab="approved">✅ Approved</button>
+      <button class="tab-btn" data-tab="rejected">❌ Rejected</button>
+      <button class="tab-btn" data-tab="all">📋 All</button>
     </div>
-    <button class="refresh-btn" id="btn-refresh">Refresh</button>
+    <button class="refresh-btn" id="btn-refresh">↻ Refresh</button>
     <div id="tab-pending" class="tab-content active">
       <div class="table-wrap"><table>
         <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Cycle</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="tbody-pending"><tr><td colspan="8"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+        <tbody id="tbody-pending"><tr><td colspan="8"><div class="empty-state"><div class="icon">⏳</div>Loading…</div></td></tr></tbody>
       </table></div>
     </div>
     <div id="tab-approved" class="tab-content">
       <div class="table-wrap"><table>
         <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Approved At</th><th>Status</th></tr></thead>
-        <tbody id="tbody-approved"><tr><td colspan="7"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+        <tbody id="tbody-approved"><tr><td colspan="7"><div class="empty-state"><div class="icon">✅</div>Loading…</div></td></tr></tbody>
       </table></div>
     </div>
     <div id="tab-rejected" class="tab-content">
       <div class="table-wrap"><table>
         <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Rejected At</th><th>Reason</th></tr></thead>
-        <tbody id="tbody-rejected"><tr><td colspan="7"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+        <tbody id="tbody-rejected"><tr><td colspan="7"><div class="empty-state"><div class="icon">❌</div>Loading…</div></td></tr></tbody>
       </table></div>
     </div>
     <div id="tab-all" class="tab-content">
       <div class="table-wrap"><table>
         <thead><tr><th>User ID</th><th>PayPal Email</th><th>Amount</th><th>Tier</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="tbody-all"><tr><td colspan="7"><div class="empty-state"><div class="icon">...</div>Loading</div></td></tr></tbody>
+        <tbody id="tbody-all"><tr><td colspan="7"><div class="empty-state"><div class="icon">📋</div>Loading…</div></td></tr></tbody>
       </table></div>
     </div>
-    <p style="color:var(--muted);font-size:0.75rem;margin-top:2rem;text-align:center;">
+    <p style="color:var(--muted);font-size:0.72rem;margin-top:2.5rem;text-align:center;letter-spacing:0.5px;">
       Withdrawal Requests Panel &middot; Mendez Community &middot; Payouts from real ad revenue only &middot; Not a guaranteed salary
     </p>
   </div>`;
@@ -448,14 +743,14 @@ function updateSessionDisplay() {
   el.textContent = "Session: " + mins + "m remaining";
 }
 
-/* ── Tab switching ─────────────────────────────────────────────── */
+/* ── Tab switching ──────────────────────────────────────────────────────── */
 function switchTab(tab) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
   document.querySelectorAll(".tab-content").forEach(c => c.classList.toggle("active", c.id === "tab-" + tab));
   loadWithdrawals(tab);
 }
 
-/* ── Load withdrawals ──────────────────────────────────────────── */
+/* ── Load withdrawals ───────────────────────────────────────────────────── */
 async function loadWithdrawals(status) {
   const configured = !ADMIN_CONFIG.LIST_ENDPOINT.includes("YOUR-PROJECT");
   if (!configured) { renderDemoData(status); return; }
@@ -471,7 +766,7 @@ async function loadWithdrawals(status) {
   }
 }
 
-/* ── Render helpers ────────────────────────────────────────────── */
+/* ── Render helpers ─────────────────────────────────────────────────────── */
 function fmtDate(ts) {
   if (!ts) return "-";
   try { return new Date(ts._seconds ? ts._seconds * 1000 : ts).toLocaleString(); } catch(e) { return "-"; }
@@ -489,17 +784,17 @@ function renderData(reqs, status) {
   tb.innerHTML = reqs.map(req => {
     const isPending = req.status === "pending";
     const acts = isPending
-      ? '<div class="action-btns"><button class="btn-approve" onclick="approveRequest(\'' + req.id + '\',this)">Approve</button><button class="btn-reject" onclick="openRejectModal(\'' + req.id + '\')">Reject</button></div>'
+      ? '<div class="action-btns"><button class="btn-approve" onclick="approveRequest(\'' + req.id + '\',this)">✅ Approve</button><button class="btn-reject" onclick="openRejectModal(\'' + req.id + '\')">❌ Reject</button></div>'
       : "-";
-    if (status === "approved") return "<tr><td><code>" + (req.userId||"").slice(0,12) + "...</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + fmtDate(req.approvedAt) + "</td><td>" + statusBadge(req.status) + "</td></tr>";
-    if (status === "rejected") return "<tr><td><code>" + (req.userId||"").slice(0,12) + "...</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + fmtDate(req.rejectedAt) + "</td><td>" + (req.rejectReason||"-") + "</td></tr>";
-    return "<tr><td><code>" + (req.userId||"").slice(0,12) + "...</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + (req.salaryCycle ? req.salaryCycle + "-day" : "-") + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + statusBadge(req.status) + "</td><td>" + acts + "</td></tr>";
+    if (status === "approved") return "<tr><td><code>" + (req.userId||"").slice(0,12) + "…</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + fmtDate(req.approvedAt) + "</td><td>" + statusBadge(req.status) + "</td></tr>";
+    if (status === "rejected") return "<tr><td><code>" + (req.userId||"").slice(0,12) + "…</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + fmtDate(req.rejectedAt) + "</td><td>" + (req.rejectReason||"-") + "</td></tr>";
+    return "<tr><td><code>" + (req.userId||"").slice(0,12) + "…</code></td><td>" + (req.paypalEmail||"-") + "</td><td>$" + (req.amountUSD||0).toFixed(2) + "</td><td>" + tierBadge(req.tier) + "</td><td>" + (req.salaryCycle ? req.salaryCycle + "-day" : "-") + "</td><td>" + fmtDate(req.requestedAt) + "</td><td>" + statusBadge(req.status) + "</td><td>" + acts + "</td></tr>";
   }).join("");
 }
 function renderEmpty(status, msg) {
   const id = "tbody-" + (status === "all" ? "all" : status);
   const tb = document.getElementById(id);
-  if (tb) tb.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">-</div>' + msg + "</div></td></tr>";
+  if (tb) tb.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">—</div>' + msg + "</div></td></tr>";
 }
 function updateStats(s) {
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? "-"; };
@@ -507,26 +802,26 @@ function updateStats(s) {
   set("stat-rejected", s.rejectedToday); set("stat-total", s.total);
 }
 
-/* ── Demo data ─────────────────────────────────────────────────── */
+/* ── Demo data ──────────────────────────────────────────────────────────── */
 function renderDemoData(status) {
   const now = Date.now();
   const demo = [
-    { id: "req_demo1", userId: "user_abc123demo", paypalEmail: "user1@example.com", amountUSD: 2.50, tier: "new", salaryCycle: null, requestedAt: { _seconds: (now-3600000)/1000 }, status: "pending" },
-    { id: "req_demo2", userId: "user_xyz789demo", paypalEmail: "user2@example.com", amountUSD: 5.00, tier: "regular", salaryCycle: 15, requestedAt: { _seconds: (now-7200000)/1000 }, status: "pending" },
+    { id: "req_demo1", userId: "user_abc123demo", paypalEmail: "user1@example.com", amountUSD: 2.50, tier: "new",     salaryCycle: null, requestedAt: { _seconds: (now-3600000)/1000 },   status: "pending" },
+    { id: "req_demo2", userId: "user_xyz789demo", paypalEmail: "user2@example.com", amountUSD: 5.00, tier: "regular", salaryCycle: 15,   requestedAt: { _seconds: (now-7200000)/1000 },   status: "pending" },
   ];
   const approved = [{ id: "req_demo3", userId: "user_old001demo", paypalEmail: "old1@example.com", amountUSD: 3.00, tier: "regular", requestedAt: { _seconds: (now-86400000)/1000 }, approvedAt: { _seconds: (now-3600000)/1000 }, status: "approved" }];
-  const rejected = [{ id: "req_demo4", userId: "user_old002demo", paypalEmail: "old2@example.com", amountUSD: 1.00, tier: "new", requestedAt: { _seconds: (now-172800000)/1000 }, rejectedAt: { _seconds: (now-86400000)/1000 }, rejectReason: "Insufficient verified activity", status: "rejected" }];
+  const rejected = [{ id: "req_demo4", userId: "user_old002demo", paypalEmail: "old2@example.com", amountUSD: 1.00, tier: "new",     requestedAt: { _seconds: (now-172800000)/1000 }, rejectedAt: { _seconds: (now-86400000)/1000 }, rejectReason: "Insufficient verified activity", status: "rejected" }];
   const map = { pending: demo, approved, rejected, all: [...demo, ...approved, ...rejected] };
   renderData(map[status] || demo, status);
   updateStats({ pending: 2, approvedToday: 1, rejectedToday: 1, total: 4 });
 }
 
-/* ── Approve ───────────────────────────────────────────────────── */
+/* ── Approve ────────────────────────────────────────────────────────────── */
 async function approveRequest(reqId, btn) {
   if (!confirm("Approve this withdrawal? This will trigger PayPal payout if configured.")) return;
-  btn.disabled = true; btn.textContent = "Processing...";
+  btn.disabled = true; btn.textContent = "Processing…";
   const configured = !ADMIN_CONFIG.APPROVE_ENDPOINT.includes("YOUR-PROJECT");
-  if (!configured) { showToast("Demo mode: approval simulated.", "info"); btn.textContent = "Approved"; return; }
+  if (!configured) { showToast("Demo mode: approval simulated.", "info"); btn.textContent = "✅ Approved"; return; }
   try {
     const r = await fetch(ADMIN_CONFIG.APPROVE_ENDPOINT, {
       method: "POST",
@@ -539,11 +834,11 @@ async function approveRequest(reqId, btn) {
     setTimeout(() => loadWithdrawals("pending"), 1000);
   } catch(e) {
     showToast("Approval failed: " + e.message, "error");
-    btn.disabled = false; btn.textContent = "Approve";
+    btn.disabled = false; btn.textContent = "✅ Approve";
   }
 }
 
-/* ── Reject modal ──────────────────────────────────────────────── */
+/* ── Reject modal ───────────────────────────────────────────────────────── */
 function openRejectModal(reqId) {
   rejectTargetId = reqId;
   document.getElementById("reject-reason").value = "";
@@ -557,7 +852,7 @@ async function confirmReject() {
   if (!rejectTargetId) return;
   const reason = document.getElementById("reject-reason").value.trim();
   const btn = document.getElementById("modal-confirm");
-  btn.disabled = true; btn.textContent = "Rejecting...";
+  btn.disabled = true; btn.textContent = "Rejecting…";
   const configured = !ADMIN_CONFIG.REJECT_ENDPOINT.includes("YOUR-PROJECT");
   if (!configured) { showToast("Demo mode: rejection simulated.", "info"); closeRejectModal(); btn.disabled = false; btn.textContent = "Confirm Reject"; return; }
   try {
@@ -575,7 +870,7 @@ async function confirmReject() {
   btn.disabled = false; btn.textContent = "Confirm Reject";
 }
 
-/* ── Toast ─────────────────────────────────────────────────────── */
+/* ── Toast ──────────────────────────────────────────────────────────────── */
 function showToast(msg, type) {
   const t = document.createElement("div");
   t.className = "toast toast-" + (type || "info");
@@ -584,11 +879,11 @@ function showToast(msg, type) {
   setTimeout(() => t.remove(), 4000);
 }
 
-/* ── Wire login ────────────────────────────────────────────────── */
+/* ── Wire login ─────────────────────────────────────────────────────────── */
 document.getElementById("btn-sign-in").addEventListener("click", handleLogin);
 document.getElementById("secret-input").addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
 
-/* ── Boot ──────────────────────────────────────────────────────── */
+/* ── Boot ───────────────────────────────────────────────────────────────── */
 if (checkHashGate()) checkExistingSession();
 </script>
 </body>
