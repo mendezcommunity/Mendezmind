@@ -7,57 +7,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; padding: 15px; user-select: none; }
-        
+        body { background: #050505; color: #ffffff; font-family: 'Inter', sans-serif; padding: 15px; }
+
         .container { max-width: 480px; margin: auto; background: #0a0a0a; padding: 20px; border-radius: 15px; border: 1px solid #1a1a1a; }
-        
+
         .header { text-align: center; margin-bottom: 20px; }
         .header-title { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 22px; font-weight: 800; letter-spacing: 2px; }
         .header-sub { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
-        
-        .earnings-box { background: linear-gradient(135deg, #0f0f0f, #151515); border: 2px solid #00ff00; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+
+        .earnings-box { background: #101010; border: 2px solid #00cccc; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
         .earnings-label { font-size: 12px; color: #888; text-transform: uppercase; }
-        .earnings-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00ff00; margin: 10px 0; }
-        .earnings-per-minute { font-size: 11px; color: #00cccc; }
-        
+        .earnings-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cccc; margin: 10px 0; }
+        .earnings-note { font-size: 11px; color: #888; line-height: 1.5; }
+
         /* कार्य सूची */
         .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
         .task-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ffcc00; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-left: 3px solid #ffcc00; padding-left: 8px; }
-        
-        .task-item { background: #121212; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00ff00; padding-left: 12px; font-size: 12px; }
+
+        .task-item { background: #121212; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00cccc; padding-left: 12px; font-size: 12px; }
         .task-reward { color: #ffcc00; font-weight: bold; float: right; }
-        
+
         /* बटन */
-        .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; }
+        .btn { display: block; width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; text-align: center; text-decoration: none; box-sizing: border-box; }
         .btn-primary { background: #ffcc00; color: #000; }
         .btn-primary:hover { background: #ffdd33; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
         .btn-secondary { background: #222; color: #fff; }
         .btn-secondary:hover { background: #333; }
-        
-        /* टाइमर */
-        .timer-section { background: #140404; border: 2px solid #ff3333; padding: 15px; border-radius: 10px; margin: 20px 0; text-align: center; }
-        .timer-label { font-size: 11px; color: #ff3333; text-transform: uppercase; font-weight: bold; }
-        .timer-display { font-size: 48px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #ff3333; margin: 10px 0; letter-spacing: 3px; }
-        
-        /* सफलता संदेश */
-        .success-msg { background: #051a05; border: 2px solid #00ff00; padding: 12px; border-radius: 8px; color: #00ff00; text-align: center; font-size: 12px; margin: 10px 0; display: none; }
-        
+
+        /* सूचना संदेश */
+        .info-msg { background: #05121a; border: 1px solid #00cccc; padding: 12px; border-radius: 8px; color: #00cccc; text-align: center; font-size: 12px; margin: 10px 0; }
+
+        .disclaimer { background: #0d0d0d; border: 1px solid #333; padding: 12px; border-radius: 8px; color: #999; font-size: 11px; line-height: 1.6; margin: 15px 0; }
+
         .back-btn { margin-top: 20px; }
-        
-        /* Modal Popup */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); overflow-y: auto; }
-        .modal-content { background-color: #0a0a0a; margin: 5% auto; padding: 20px; border: 2px solid #ffcc00; width: 90%; max-width: 500px; border-radius: 15px; }
-        .close { color: #ffcc00; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close:hover { color: #ff3333; }
-        .modal-header { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 18px; font-weight: 800; margin-bottom: 15px; text-align: center; }
-        .modal-body { text-align: center; margin: 20px 0; }
-        .modal-ad-container { background: #121212; border: 2px solid #00ff00; padding: 20px; border-radius: 10px; min-height: 200px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
-        .modal-btn { width: 100%; padding: 12px; margin: 8px 0; background: #00ff00; color: #000; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; text-transform: uppercase; }
-        .modal-btn:hover { background: #00dd00; }
-        .timer-countdown { font-size: 24px; font-family: 'Orbitron', sans-serif; color: #ff3333; font-weight: 800; margin: 10px 0; }
-        
-        /* Monetag Ad Container */
-        .monetag-ad { background: #1a1a1a; padding: 15px; border-radius: 8px; min-height: 150px; margin: 15px 0; border: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -65,270 +47,103 @@
     <div class="container">
         <div class="header">
             <div class="header-title">🥈 SILVER TASK</div>
-            <div class="header-sub">Ad Revenue Earning Zone - Monetag Powered</div>
+            <div class="header-sub">Ad Revenue Zone · Monetag Powered</div>
         </div>
-        
-        <!-- 💰 कमाई का डिस्प्ले -->
+
+        <!-- 💰 कमाई का डिस्प्ले (honest: points pending verification, not fixed ₹65) -->
         <div class="earnings-box">
-            <div class="earnings-label">Your Earnings This Session</div>
-            <div class="earnings-amount" id="total-earnings">₹0.00</div>
-            <div class="earnings-per-minute" id="per-minute">₹0.00 / minute</div>
+            <div class="earnings-label">Reward Points (This Session)</div>
+            <div class="earnings-amount" id="reward-points">0</div>
+            <div class="earnings-note">
+                Points are provisional and require verification before any payout.
+                Final rewards depend on genuine ad views confirmed by the ad network.
+            </div>
         </div>
-        
-        <!-- ⏱️ टाइमर -->
-        <div class="timer-section" id="timer-section" style="display:none;">
-            <div class="timer-label">⏳ Task Active Timer</div>
-            <div class="timer-display" id="timer-display">05:00</div>
-        </div>
-        
+
         <!-- 🎯 टास्क करें -->
         <div class="task-list">
-            <div class="task-title">📋 Silver Tasks - Watch & Earn</div>
-            
+            <div class="task-title">📋 Silver Tasks — Watch & Support</div>
+
             <div class="task-item">
-                ✅ Watch Monetag Ad #1 (30 sec)
-                <span class="task-reward">₹2</span>
+                👁️ View Sponsor Offer #1
+                <span class="task-reward">+1 pt*</span>
             </div>
-            
+
             <div class="task-item">
-                ✅ Watch Monetag Ad #2 (30 sec)
-                <span class="task-reward">₹2</span>
+                👁️ View Sponsor Offer #2
+                <span class="task-reward">+1 pt*</span>
             </div>
-            
+
             <div class="task-item">
-                ✅ Watch Monetag Ad #3 (45 sec)
-                <span class="task-reward">₹3</span>
-            </div>
-            
-            <div class="task-item">
-                ✅ Watch Premium Ads (2 min)
-                <span class="task-reward">₹10</span>
-            </div>
-            
-            <div class="task-item">
-                ✅ Continuous Ad Viewing (1 min)
-                <span class="task-reward">₹5</span>
+                👁️ View Sponsor Offer #3
+                <span class="task-reward">+1 pt*</span>
             </div>
         </div>
-        
-        <!-- 🚀 कमाई बटन -->
-        <button class="btn btn-primary" onclick="startSilverTask()">▶️ Start Silver Tasks Now</button>
-        <button class="btn btn-secondary" onclick="openAdPopup()">👁️ Watch Ad & Earn ₹2</button>
-        <button class="btn btn-secondary" onclick="openAdPopup2()">👁️ Watch Premium Ad & Earn ₹5</button>
-        <button class="btn btn-secondary" onclick="openAdPopup3()">👁️ Watch Extended Ad & Earn ₹3</button>
-        
-        <!-- सफलता संदेश -->
-        <div class="success-msg" id="success-msg">✅ Task Completed! You earned ₹2</div>
-        
+
+        <!-- 🚀 Smartlink button: voluntary click, opens in NEW TAB -->
+        <a class="btn btn-primary"
+           href="https://www.effectivecpmnetwork.com/t2wmd8z5e1?key=b6fd7888ad71cbead0fa77c25665a19f"
+           target="_blank"
+           rel="noopener noreferrer"
+           id="silver-task-btn"
+           onclick="onOfferOpened()">👁️ Open Sponsor Offer (New Tab)</a>
+
+        <!-- ℹ️ सूचना संदेश -->
+        <div class="info-msg" id="info-msg" style="display:none;"></div>
+
+        <div class="disclaimer">
+            *⚠️ Clicking the button opens a sponsor offer in a new tab. Whether a reward is
+            credited depends entirely on the ad network verifying a genuine view — we do not
+            guarantee a fixed payout, and the points shown here are not real money until verified.
+            Please do not click repeatedly to inflate views; that violates ad-network policy.
+        </div>
+
         <!-- वापस जाएँ -->
         <button class="btn btn-secondary back-btn" onclick="goBack()">← Back to Dashboard</button>
     </div>
 
-    <!-- Ad Popup Modal 1 -->
-    <div id="adModal1" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAdModal1()">&times;</span>
-            <div class="modal-header">👁️ Watch Advertisement #1</div>
-            <div class="modal-body">
-                <p style="color: #888; font-size: 12px;">Zone ID: 11242429 | Powered by Monetag</p>
-                <div class="timer-countdown" id="adTimer1">30</div>
-                <div class="modal-ad-container">
-                    <div id="monetag-ad-1" class="monetag-ad">
-                        <div style="text-align: center;">
-                            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Monetag Advertisement</p>
-                            <p style="color: #666; font-size: 11px;">Please watch this ad for 30 seconds</p>
-                            <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Ad Loading...</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="modal-btn" onclick="closeAdModal1()" id="adBtn1" disabled>⏳ Wait 30 seconds...</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ad Popup Modal 2 -->
-    <div id="adModal2" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAdModal2()">&times;</span>
-            <div class="modal-header">👁️ Watch Premium Advertisement</div>
-            <div class="modal-body">
-                <p style="color: #888; font-size: 12px;">Zone ID: 11242429 | Premium Monetag</p>
-                <div class="timer-countdown" id="adTimer2">45</div>
-                <div class="modal-ad-container">
-                    <div id="monetag-ad-2" class="monetag-ad">
-                        <div style="text-align: center;">
-                            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Premium Monetag Advertisement</p>
-                            <p style="color: #666; font-size: 11px;">Please watch this premium ad for 45 seconds</p>
-                            <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Ad Loading...</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="modal-btn" onclick="closeAdModal2()" id="adBtn2" disabled>⏳ Wait 45 seconds...</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ad Popup Modal 3 -->
-    <div id="adModal3" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAdModal3()">&times;</span>
-            <div class="modal-header">👁️ Watch Extended Advertisement</div>
-            <div class="modal-body">
-                <p style="color: #888; font-size: 12px;">Zone ID: 11242429 | Extended Monetag</p>
-                <div class="timer-countdown" id="adTimer3">60</div>
-                <div class="modal-ad-container">
-                    <div id="monetag-ad-3" class="monetag-ad">
-                        <div style="text-align: center;">
-                            <p style="color: #ffcc00; font-weight: bold; margin-bottom: 10px;">🎯 Extended Monetag Advertisement</p>
-                            <p style="color: #666; font-size: 11px;">Please watch this extended ad for 60 seconds</p>
-                            <div style="margin-top: 20px; font-size: 14px; color: #00ff00;">⏳ Ad Loading...</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="modal-btn" onclick="closeAdModal3()" id="adBtn3" disabled>⏳ Wait 60 seconds...</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Monetag Script -->
-    <script async src="https://monetag.com/showads/pub-11242429.js"></script>
+    <!-- Monetag on-page tag (official). Actual reward crediting must be confirmed by the
+         network's server-side postback/callback — never by a client-side timer. -->
+    <!-- MONETAG ON-PAGE TAG (ACTION REQUIRED):
+         The previous script URL (https://monetag.com/showads/pub-11242429.js) returned HTTP 404
+         and has been removed so the page has no dead/broken script request.
+         To enable Monetag on-page ads, paste your EXACT official snippet here, copied from:
+         Monetag Dashboard -> Sites -> (your site) -> Code / Zone tag.
+         Example placement (replace with the real snippet from your dashboard):
+         <script src="https://REPLACE-WITH-OFFICIAL-MONETAG-DOMAIN/tag.min.js" data-zone="YOUR_ZONE_ID" async data-cfasync="false"></script>
+         NOTE: Monetization still works via the voluntary "Open Sponsor Offer" smartlink above. -->
+    <!-- The EffectiveCPMNetwork smartlink (voluntary anchor, new tab) handles monetization for now. -->
 
     <script>
-        let totalEarnings = 0;
-        let earnPerMinute = 0;
-        
-        // Ad Popup 1 - ₹2
-        function openAdPopup() {
-            document.getElementById("adModal1").style.display = "block";
-            loadMonetag('monetag-ad-1');
-            startAdTimer(30, "adTimer1", "adBtn1", "adModal1", 2);
+        // Provisional session points only. NOT money. Reset every page load because
+        // there is no backend wallet to persist or fund payouts.
+        let rewardPoints = 0;
+        let offersOpened = 0;
+
+        // Fired when the user VOLUNTARILY clicks the offer link.
+        // We do NOT force-open, auto-click, auto-refresh, or inflate impressions.
+        // The point is a provisional on-screen acknowledgement, explicitly "pending verification".
+        function onOfferOpened() {
+            offersOpened++;
+            rewardPoints += 1; // provisional — pending network verification
+            updatePoints();
+            showInfo("👍 Offer opened in a new tab. If the ad network verifies a genuine view, a reward may be credited (pending verification).");
+            // The anchor's native target="_blank" opens the link — no JS navigation,
+            // no popup forcing, no impression inflation.
         }
 
-        function closeAdModal1() {
-            document.getElementById("adModal1").style.display = "none";
+        function updatePoints() {
+            document.getElementById("reward-points").innerText = rewardPoints;
         }
 
-        // Ad Popup 2 - ₹5
-        function openAdPopup2() {
-            document.getElementById("adModal2").style.display = "block";
-            loadMonetag('monetag-ad-2');
-            startAdTimer(45, "adTimer2", "adBtn2", "adModal2", 5);
-        }
-
-        function closeAdModal2() {
-            document.getElementById("adModal2").style.display = "none";
-        }
-
-        // Ad Popup 3 - ₹3
-        function openAdPopup3() {
-            document.getElementById("adModal3").style.display = "block";
-            loadMonetag('monetag-ad-3');
-            startAdTimer(60, "adTimer3", "adBtn3", "adModal3", 3);
-        }
-
-        function closeAdModal3() {
-            document.getElementById("adModal3").style.display = "none";
-        }
-
-        // Load Monetag Ad
-        function loadMonetag(elementId) {
-            if (window.monetag) {
-                window.monetag.showAds(document.getElementById(elementId));
-            }
-        }
-
-        // Ad Timer Logic
-        function startAdTimer(duration, timerElement, btnElement, modalElement, reward) {
-            let timeLeft = duration;
-            const timerDisplay = document.getElementById(timerElement);
-            const btn = document.getElementById(btnElement);
-
-            const interval = setInterval(() => {
-                timerDisplay.innerText = timeLeft;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    timerDisplay.innerText = "✅ Complete!";
-                    btn.disabled = false;
-                    btn.innerText = `✅ Claim ₹${reward} Reward`;
-                    btn.style.background = "#00ff00";
-                    
-                    // Auto claim after 2 seconds
-                    setTimeout(() => {
-                        totalEarnings += reward;
-                        updateEarnings();
-                        showSuccess(`✅ Ad Watched! You earned ₹${reward}`);
-                        document.getElementById(modalElement).style.display = "none";
-                    }, 2000);
-                }
-                
-                timeLeft--;
-            }, 1000);
-        }
-        
-        function startSilverTask() {
-            const timerSection = document.getElementById("timer-section");
-            timerSection.style.display = "block";
-            
-            let timeLeft = 300; // 5 minutes
-            let earnedAmount = 0;
-            
-            const timerInterval = setInterval(function() {
-                let minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                document.getElementById("timer-display").innerText = 
-                    String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
-                
-                // हर 30 सेकंड में ₹2 कमाए (विज्ञापन देखने से)
-                if (timeLeft % 30 === 0 && timeLeft > 0) {
-                    earnedAmount += 2;
-                    totalEarnings += 2;
-                    updateEarnings();
-                    showSuccess("✅ Ad watched! Earned ₹2");
-                }
-                
-                timeLeft--;
-                
-                if (timeLeft < 0) {
-                    clearInterval(timerInterval);
-                    timerSection.style.display = "none";
-                    
-                    // बोनस
-                    totalEarnings += 5;
-                    updateEarnings();
-                    alert(`🎉 Silver Task Completed!\n\nTotal Earned: ₹${totalEarnings.toFixed(2)}\nBonus: ₹5\n\nThank you for watching our ads!`);
-                }
-            }, 1000);
-        }
-        
-        function updateEarnings() {
-            document.getElementById("total-earnings").innerText = "₹" + totalEarnings.toFixed(2);
-            earnPerMinute = (totalEarnings / ((300 - 0) / 60)).toFixed(2);
-            document.getElementById("per-minute").innerText = "₹" + earnPerMinute + " / minute";
-        }
-        
-        function showSuccess(message) {
-            const msg = document.getElementById("success-msg");
+        function showInfo(message) {
+            const msg = document.getElementById("info-msg");
             msg.innerText = message;
             msg.style.display = "block";
-            setTimeout(() => {
-                msg.style.display = "none";
-            }, 2000);
-        }
-        
-        function goBack() {
-            window.history.back();
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            let modal1 = document.getElementById("adModal1");
-            let modal2 = document.getElementById("adModal2");
-            let modal3 = document.getElementById("adModal3");
-            
-            if (event.target == modal1) modal1.style.display = "none";
-            if (event.target == modal2) modal2.style.display = "none";
-            if (event.target == modal3) modal3.style.display = "none";
+        function goBack() {
+            window.history.back();
         }
     </script>
 
