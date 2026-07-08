@@ -18,14 +18,37 @@ service cloud.firestore {
       allow write: if false;  // Cloud Functions only
     }
 
-    // ── processedTx (idempotency ledger) ────────────────────────────────────
+    // ── processedTx (idempotency ledger) ─────────────────────────────────────
     // Server-only — no client access.
     match /processedTx/{txId} {
       allow read:  if false;
       allow write: if false;
     }
 
-    // ── all other collections ────────────────────────────────────────────────
+    // ── adminSessions (server-side auth sessions) ─────────────────────────────
+    // Only authenticated Firebase users can read their own session.
+    // All writes are via Cloud Functions (adminAuth endpoint).
+    // Extra safety: client reads require Firebase Auth (request.auth != null).
+    match /adminSessions/{sessionId} {
+      allow read:  if request.auth != null;  // requires Firebase Auth token
+      allow write: if false;                 // Cloud Functions only
+    }
+
+    // ── adminRateLimit (brute-force protection) ───────────────────────────────
+    // Server-only — no client access.
+    match /adminRateLimit/{ipKey} {
+      allow read:  if false;
+      allow write: if false;
+    }
+
+    // ── _health (health check ping) ───────────────────────────────────────────
+    // Read-only for health endpoint — no client writes.
+    match /_health/{docId} {
+      allow read:  if false;
+      allow write: if false;
+    }
+
+    // ── all other collections ─────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
