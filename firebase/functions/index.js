@@ -457,3 +457,126 @@ function sendPayPalPayout(accessToken, mode, { email, amount, note, sender_item_
     req.end();
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// adminListWithdrawals  — v9 2026-07-08
+// Protected by ADMIN_SECRET. Returns withdrawal requests filtered by status.
+// Query params: adminSecret (required), status (pending|approved|rejected|all)
+// ═══════════════════════════════════════════════════════════════════════════
+exports.adminListWithdrawals = functions.https.onRequest(async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") { res.status(204).send(""); return; }
+
+  const adminSecret = req.query.adminSecret || req.body?.adminSecret;
+  const expectedSecret = process.env.ADMIN_SECRET;
+  if (!expectedSecret || adminSecret !== expectedSecret) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const statusFilter = req.query.status || "pending"; // pending|approved|rejected|all
+  try {
+    let query = db.collection("withdrawalRequests").orderBy("requestedAt", "desc").limit(200);
+    if (statusFilter !== "all") {
+      query = db.collection("withdrawalRequests")
+        .where("status", "==", statusFilter)
+        .orderBy("requestedAt", "desc")
+        .limit(200);
+    }
+    const snap = await query.get();
+    const requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // Summary stats
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTs = today.getTime() / 1000;
+    const allSnap = await db.collection("withdrawalRequests").get();
+    const all = allSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const stats = {
+      totalPending:       all.filter(r => r.status === "pending").length,
+      approvedToday:      all.filter(r => (r.status === "approved" || r.status === "approved_manual") && r.approvedAt?._seconds >= todayTs).length,
+      rejectedToday:      all.filter(r => r.status === "rejected" && r.rejectedAt?._seconds >= todayTs).length,
+      totalAll:           all.length,
+    };
+
+    res.status(200).json({ requests, stats });
+  } catch (err) {
+    console.error("adminListWithdrawals error:", err);
+    res.status(500).json({ error: "Internal error: " + err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// adminRejectWithdrawal  — v9 2026-07-08
+// Protected by ADMIN_SECRET. Rejects a pending withdrawal request,
+// atomically refunds verifiedRewardPoints to the user, records reason.
+// Body: { withdrawalRequestId, adminSecret, rejectReason? }
+// ═══════════════════════════════════════════════════════════════════════════
+exports.adminRejectWithdrawal = functions.https.onRequest(async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") { res.status(204).send(""); return; }
+  if (req.method !== "POST") { res.status(405).json({ error: "POST only" }); return; }
+
+  const { withdrawalRequestId, adminSecret, rejectReason } = req.body || {};
+
+  // Validate admin secret
+  const expectedSecret = process.env.ADMIN_SECRET;
+  if (!expectedSecret || adminSecret !== expectedSecret) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (!withdrawalRequestId) {
+    res.status(400).json({ error: "withdrawalRequestId required" });
+    return;
+  }
+
+  const reqRef = db.collection("withdrawalRequests").doc(withdrawalRequestId);
+
+  try {
+    let refundedAmount = 0;
+    let userId = null;
+
+    await db.runTransaction(async (tx) => {
+      const reqDoc = await tx.get(reqRef);
+      if (!reqDoc.exists) throw new Error("Withdrawal request not found");
+
+      const data = reqDoc.data();
+      if (data.status !== "pending") {
+        throw new Error(`Cannot reject — status is already '${data.status}'`);
+      }
+
+      userId = data.userId;
+      refundedAmount = data.pointsDeducted || 0;
+
+      // Mark rejected
+      tx.update(reqRef, {
+        status:       "rejected",
+        rejectedAt:   admin.firestore.FieldValue.serverTimestamp(),
+        rejectReason: rejectReason || "Rejected by admin",
+      });
+
+      // Refund points atomically if any were deducted
+      if (userId && refundedAmount > 0) {
+        const walletRef = db.collection("wallets").doc(userId);
+        tx.update(walletRef, {
+          verifiedRewardPoints: admin.firestore.FieldValue.increment(refundedAmount),
+          lastUpdated:          admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    });
+
+    res.status(200).json({
+      success:        true,
+      message:        "Withdrawal rejected and points refunded.",
+      refundedPoints: refundedAmount,
+      userId,
+    });
+  } catch (err) {
+    console.error("adminRejectWithdrawal error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
