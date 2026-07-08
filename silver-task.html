@@ -15,26 +15,33 @@
         .header-title { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 22px; font-weight: 800; letter-spacing: 2px; }
         .header-sub { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        .earnings-box { background: #101010; border: 2px solid #00cccc; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        /* Verified wallet balance (REAL, from Firebase) */
+        .wallet-box { background: #071410; border: 2px solid #00cc66; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
+        .wallet-label { font-size: 12px; color: #7fdcaa; text-transform: uppercase; letter-spacing: 1px; }
+        .wallet-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cc66; margin: 10px 0; }
+        .wallet-note { font-size: 11px; color: #8aa; line-height: 1.5; }
+        .wallet-status { font-size: 10px; color: #567; margin-top: 6px; }
+
+        /* Engagement (activity only) counter */
+        .earnings-box { background: #101010; border: 2px solid #00cccc; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
         .earnings-label { font-size: 12px; color: #888; text-transform: uppercase; }
-        .earnings-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cccc; margin: 10px 0; }
+        .earnings-amount { font-size: 32px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cccc; margin: 8px 0; }
         .earnings-note { font-size: 11px; color: #888; line-height: 1.5; }
 
-        /* कार्य सूची */
+        /* task list */
         .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
         .task-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ffcc00; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-left: 3px solid #ffcc00; padding-left: 8px; }
 
         .task-item { background: #121212; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00cccc; padding-left: 12px; font-size: 12px; }
         .task-reward { color: #ffcc00; font-weight: bold; float: right; }
 
-        /* बटन */
+        /* buttons */
         .btn { display: block; width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; text-align: center; text-decoration: none; box-sizing: border-box; }
         .btn-primary { background: #ffcc00; color: #000; }
         .btn-primary:hover { background: #ffdd33; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
         .btn-secondary { background: #222; color: #fff; }
         .btn-secondary:hover { background: #333; }
 
-        /* सूचना संदेश */
         .info-msg { background: #05121a; border: 1px solid #00cccc; padding: 12px; border-radius: 8px; color: #00cccc; text-align: center; font-size: 12px; margin: 10px 0; }
 
         .disclaimer { background: #0d0d0d; border: 1px solid #333; padding: 12px; border-radius: 8px; color: #999; font-size: 11px; line-height: 1.6; margin: 15px 0; }
@@ -50,37 +57,42 @@
             <div class="header-sub">Ad Revenue Zone · Monetag Powered</div>
         </div>
 
-        <!-- 💰 कमाई का डिस्प्ले (honest: points pending verification, not fixed ₹65) -->
+        <!-- ✅ VERIFIED REWARD BALANCE — the ONLY number that represents real,
+             network-confirmed rewards. Read live from Firebase (server-side verified).
+             Stays 0 until a genuine ad-network S2S postback confirms a conversion. -->
+        <div class="wallet-box">
+            <div class="wallet-label">✅ Verified Reward Balance</div>
+            <div class="wallet-amount" id="verified-balance">0</div>
+            <div class="wallet-note">
+                Credited only after the ad network confirms a genuine view/conversion
+                (via server-side postback). This can take time and is not a guaranteed
+                instant cash payout. Withdrawals are subject to network confirmation and thresholds.
+            </div>
+            <div class="wallet-status" id="wallet-status">Wallet backend not configured yet — showing 0.</div>
+        </div>
+
+        <!-- 📊 Engagement counter = ACTIVITY ONLY (client-side). NOT money, NOT verified reward. -->
         <div class="earnings-box">
-            <div class="earnings-label">Reward Points (This Session)</div>
+            <div class="earnings-label">Engagement / Activity Count</div>
             <div class="earnings-amount" id="reward-points">0</div>
             <div class="earnings-note">
-                Points are provisional and require verification before any payout.
-                Final rewards depend on genuine ad views confirmed by the ad network.
+                Activity only — how many times you opened the sponsor offer on this device.
+                Actual earnings are tracked and confirmed in the Monetag/Adsterra dashboards,
+                not shown here as cash.
             </div>
         </div>
 
-        <!-- 🎯 टास्क करें -->
+        <!-- 🎯 tasks -->
         <div class="task-list">
             <div class="task-title">📋 Silver Tasks — Watch & Support</div>
-
-            <div class="task-item">
-                👁️ View Sponsor Offer #1
-                <span class="task-reward">+1 pt*</span>
-            </div>
-
-            <div class="task-item">
-                👁️ View Sponsor Offer #2
-                <span class="task-reward">+1 pt*</span>
-            </div>
-
-            <div class="task-item">
-                👁️ View Sponsor Offer #3
-                <span class="task-reward">+1 pt*</span>
-            </div>
+            <div class="task-item">👁️ View Sponsor Offer #1 <span class="task-reward">+1 activity*</span></div>
+            <div class="task-item">👁️ View Sponsor Offer #2 <span class="task-reward">+1 activity*</span></div>
+            <div class="task-item">👁️ View Sponsor Offer #3 <span class="task-reward">+1 activity*</span></div>
         </div>
 
-        <!-- 🚀 Smartlink button: voluntary click, opens in NEW TAB -->
+        <!-- 🚀 Smartlink button: voluntary click, opens in NEW TAB.
+             The userId is appended as the network subid so a verified postback can
+             attribute the reward to THIS user. href is set by JS on load. -->
         <a class="btn btn-primary"
            href="https://www.effectivecpmnetwork.com/t2wmd8z5e1?key=b6fd7888ad71cbead0fa77c25665a19f"
            target="_blank"
@@ -88,82 +100,154 @@
            id="silver-task-btn"
            onclick="onOfferOpened()">👁️ Open Sponsor Offer (New Tab)</a>
 
-        <!-- ℹ️ सूचना संदेश -->
         <div class="info-msg" id="info-msg" style="display:none;"></div>
 
         <div class="disclaimer">
-            *⚠️ Clicking the button opens a sponsor offer in a new tab. Whether a reward is
-            credited depends entirely on the ad network verifying a genuine view — we do not
-            guarantee a fixed payout, and the points shown here are not real money until verified.
-            Please do not click repeatedly to inflate views; that violates ad-network policy.
+            *⚠️ Clicking the button opens a sponsor offer in a new tab. A reward is credited to your
+            Verified Reward Balance ONLY if the ad network verifies a genuine view via its server-side
+            postback — the engagement count above is activity only, not money. We do not guarantee a
+            fixed payout. Please do not click repeatedly to inflate views; that violates ad-network policy.
         </div>
 
-        <!-- वापस जाएँ -->
         <button class="btn btn-secondary back-btn" onclick="goBack()">← Back to Dashboard</button>
     </div>
 
-    <!-- Monetag on-page tag (official). Actual reward crediting must be confirmed by the
-         network's server-side postback/callback — never by a client-side timer. -->
-    <!-- MONETAG ON-PAGE TAG (ACTION REQUIRED):
-         The previous script URL (https://monetag.com/showads/pub-11242429.js) returned HTTP 404
-         and has been removed so the page has no dead/broken script request.
-         To enable Monetag on-page ads, paste your EXACT official snippet here, copied from:
-         Monetag Dashboard -> Sites -> (your site) -> Code / Zone tag.
-         Example placement (replace with the real snippet from your dashboard):
-         <script src="https://REPLACE-WITH-OFFICIAL-MONETAG-DOMAIN/tag.min.js" data-zone="YOUR_ZONE_ID" async data-cfasync="false"></script>
-         NOTE: Monetization still works via the voluntary "Open Sponsor Offer" smartlink above. -->
-    <!-- The EffectiveCPMNetwork smartlink (voluntary anchor, new tab) handles monetization for now. -->
+    <!-- =====================================================================
+         AD-NETWORK ON-PAGE ZONE SCRIPTS (ACTION REQUIRED — paste real snippets)
+         The old URL https://monetag.com/showads/pub-11242429.js returned HTTP 404
+         and was removed. Do NOT re-add it. On-page ads serve ONLY after you paste
+         your real official snippets below.
 
+         (a) ADSTERRA: Adsterra Dashboard -> Websites -> Direct Link / Social Bar /
+             Popunder -> "Get code" -> paste the exact code here.
+             <script src="//REPLACE-WITH-OFFICIAL-ADSTERRA-DOMAIN/xxxx/invoke.js"></script>
+
+         (b) MONETAG: Monetag Dashboard -> Sites/Zones -> (your site) -> Code
+             (Multitag / In-Page Push) -> paste the exact snippet here.
+             <script src="https://REPLACE-WITH-OFFICIAL-MONETAG-DOMAIN/tag.min.js" data-zone="YOUR_ZONE_ID" async data-cfasync="false"></script>
+
+         NOTE: Monetization already works via the voluntary "Open Sponsor Offer"
+         smartlink above. No auto-fire, no forced views, no popunder-on-load.
+    ====================================================================== -->
+
+    <!-- ===================================================================== -->
+    <!--  FIREBASE WEB SDK (verified reward wallet). Loaded from official CDN.  -->
+    <!--  These CDN URLs are Firebase's own public SDK — safe to keep as-is.    -->
+    <!-- ===================================================================== -->
+    <script type="module">
+        // ------------------------------------------------------------------
+        //  🔧 WALLET_CONFIG — PASTE YOUR REAL VALUES HERE (do NOT invent keys)
+        //  1) firebaseConfig: Firebase Console -> Project settings -> Your apps
+        //     -> Web app -> SDK setup and configuration -> copy the config object.
+        //  2) BALANCE_ENDPOINT: the `balance` Cloud Function URL printed by
+        //     `firebase deploy` (see firebase/README.md), e.g.
+        //     https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
+        //  3) SUBID_PARAM: the query-param name the ad network reads as subid
+        //     (usually "subid" or "ymid" — check your network's postback docs).
+        //  Until you fill these in, the Verified Reward Balance stays 0 (honest).
+        // ------------------------------------------------------------------
+        const WALLET_CONFIG = {
+            firebaseConfig: {
+                // apiKey: "PASTE_FROM_FIREBASE_CONSOLE",
+                // authDomain: "PASTE_FROM_FIREBASE_CONSOLE",
+                // projectId: "PASTE_FROM_FIREBASE_CONSOLE",
+                // appId: "PASTE_FROM_FIREBASE_CONSOLE"
+            },
+            BALANCE_ENDPOINT: "",   // e.g. https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
+            SUBID_PARAM: "subid"    // change to "ymid" if your network uses that
+        };
+
+        // ---- stable anonymous userId (UUID, persisted in localStorage) ----
+        const UID_KEY = "mendez_user_id";
+        function getUserId() {
+            let id = null;
+            try { id = localStorage.getItem(UID_KEY); } catch (e) {}
+            if (!id) {
+                id = (crypto && crypto.randomUUID)
+                    ? crypto.randomUUID()
+                    : "u-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+                try { localStorage.setItem(UID_KEY, id); } catch (e) {}
+            }
+            return id;
+        }
+        const USER_ID = getUserId();
+        // expose for the non-module script below
+        window.__MENDEZ_USER_ID = USER_ID;
+        window.__WALLET_CONFIG = WALLET_CONFIG;
+
+        // ---- append userId as the network subid on the sponsor link ----
+        // so a verified postback can attribute the reward to THIS user.
+        (function wireSubid() {
+            const a = document.getElementById("silver-task-btn");
+            if (!a) return;
+            try {
+                const url = new URL(a.href);
+                url.searchParams.set(WALLET_CONFIG.SUBID_PARAM, USER_ID);
+                a.href = url.toString();
+            } catch (e) { /* leave href unchanged on failure */ }
+        })();
+
+        // ---- read the REAL verified balance from the backend ----
+        async function refreshVerifiedBalance() {
+            const elBal = document.getElementById("verified-balance");
+            const elStatus = document.getElementById("wallet-status");
+            const ep = (WALLET_CONFIG.BALANCE_ENDPOINT || "").trim();
+            if (!ep) {
+                // No backend configured yet -> honest 0, no fake number.
+                elBal.innerText = "0";
+                elStatus.innerText = "Wallet backend not configured yet — showing 0 (no verified rewards).";
+                return;
+            }
+            try {
+                const res = await fetch(ep + "?userId=" + encodeURIComponent(USER_ID), { cache: "no-store" });
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const data = await res.json();
+                elBal.innerText = String(data.verifiedRewardPoints || 0);
+                elStatus.innerText = data.lastUpdated
+                    ? ("Last verified update: " + new Date(data.lastUpdated).toLocaleString())
+                    : "No verified rewards confirmed yet.";
+            } catch (e) {
+                elBal.innerText = "0";
+                elStatus.innerText = "Could not reach wallet backend — showing 0.";
+            }
+        }
+        window.addEventListener("DOMContentLoaded", refreshVerifiedBalance);
+    </script>
+
+    <!-- Engagement counter (activity only) — client-side, NOT money, NOT verified. -->
     <script>
-        // Provisional reward points only. NOT money. These are a client-side
-        // convenience counter — final rewards are ALWAYS subject to the ad
-        // network's server-side / verified confirmation, and are NOT guaranteed.
-        const POINTS_KEY = "mendez_reward_points";
+        // Engagement/activity counter. This is NOT a reward and NOT money. Real
+        // rewards live in the Verified Reward Balance above (server-verified only).
+        const POINTS_KEY = "mendez_engagement_count";
         let rewardPoints = 0;
-        let offersOpened = 0;
 
-        // ---- localStorage persistence (client-side convenience only) ----
-        // Safely read the saved value; guard against NaN / invalid / negative.
         function loadSavedPoints() {
             let saved = 0;
             try {
                 const raw = localStorage.getItem(POINTS_KEY);
                 const n = parseInt(raw, 10);
                 if (!isNaN(n) && n >= 0) { saved = n; }
-            } catch (e) { saved = 0; } // storage blocked/unavailable -> default 0
+            } catch (e) { saved = 0; }
             return saved;
         }
-
         function savePoints() {
             try { localStorage.setItem(POINTS_KEY, String(rewardPoints)); } catch (e) {}
         }
-
-        // On page load: RESTORE the previously accumulated points instead of
-        // starting at 0. This is a pure read/restore — it does NOT credit any
-        // new point, does NOT run a timer, and does NOT force any ad view.
         function initPoints() {
             rewardPoints = loadSavedPoints();
             updatePoints();
         }
-
-        // Fired ONLY when the user VOLUNTARILY clicks the offer link.
-        // We do NOT force-open, auto-click, auto-refresh, use timers, or inflate impressions.
-        // The point is a provisional on-screen acknowledgement, explicitly "pending verification".
+        // Fired ONLY on a genuine VOLUNTARY user click. No timers, no auto-click,
+        // no forced views, no impression inflation. Increments activity count only.
         function onOfferOpened() {
-            offersOpened++;
-            rewardPoints += 1; // provisional — pending network verification
-            savePoints();      // persist across page refresh/reload (client-side only)
+            rewardPoints += 1;
+            savePoints();
             updatePoints();
-            showInfo("👍 Offer opened in a new tab. If the ad network verifies a genuine view, a reward may be credited (pending verification). Points are saved on this device only and are not a guaranteed cash payout.");
-            // The anchor's native target="_blank" opens the link — no JS navigation,
-            // no popup forcing, no impression inflation.
+            showInfo("👍 Offer opened in a new tab. This adds to your ACTIVITY count only. A real reward is credited to your Verified Reward Balance only if the ad network confirms a genuine view via its server-side postback.");
         }
-
         function updatePoints() {
             document.getElementById("reward-points").innerText = rewardPoints;
         }
-
-        // Restore saved points as soon as the page loads (survives refresh).
         document.addEventListener("DOMContentLoaded", initPoints);
 
         function showInfo(message) {
@@ -171,10 +255,7 @@
             msg.innerText = message;
             msg.style.display = "block";
         }
-
-        function goBack() {
-            window.history.back();
-        }
+        function goBack() { window.history.back(); }
     </script>
 
 </body>
