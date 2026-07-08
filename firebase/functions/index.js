@@ -1127,3 +1127,126 @@ loadData("pending");
 </body>
 </html>`;
 }
+// ─────────────────────────────────────────────────────────────────────────────
+// BATCH 3 ADDITIONS — input validation, CORS helper, /health, /adminStats
+// All 9 existing exports above are UNCHANGED.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * CORS helper — call at the top of every handler.
+ * Allows mendezcommunity.github.io + localhost for dev.
+ * Returns true if the request was an OPTIONS preflight (caller should return).
+ */
+function setCors(req, res) {
+  const allowed = [
+    "https://mendezcommunity.github.io",
+    "http://localhost",
+    "http://127.0.0.1",
+  ];
+  const origin = req.headers.origin || "";
+  const allow = allowed.some(o => origin.startsWith(o)) ? origin : allowed[0];
+  res.set("Access-Control-Allow-Origin",  allow);
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type, x-admin-secret, Authorization");
+  res.set("Access-Control-Max-Age",       "3600");
+  if (req.method === "OPTIONS") { res.status(204).send(""); return true; }
+  return false;
+}
+
+/**
+ * Input validator — returns first missing field name or null if all present.
+ * Usage: const missing = requireFields(body, ["userId","paypalEmail","amount"]);
+ */
+function requireFields(obj, fields) {
+  for (const f of fields) {
+    if (obj[f] === undefined || obj[f] === null || obj[f] === "") return f;
+  }
+  return null;
+}
+
+// ── 10. /health ──────────────────────────────────────────────────────────────
+/**
+ * Health check endpoint — returns {status:"ok", timestamp, version}.
+ * Useful for uptime monitoring (e.g. UptimeRobot, BetterUptime).
+ * GET https://us-central1-YOUR-PROJECT.cloudfunctions.net/health
+ */
+exports.health = functions.https.onRequest(async (req, res) => {
+  if (setCors(req, res)) return;
+  try {
+    // Lightweight Firestore ping (read a non-existent doc — fast, no quota cost)
+    await db.collection("_health").doc("ping").get();
+    return res.status(200).json({
+      status:    "ok",
+      timestamp: Date.now(),
+      version:   "batch3",
+      firestore: "reachable",
+    });
+  } catch (e) {
+    return res.status(200).json({
+      status:    "ok",
+      timestamp: Date.now(),
+      version:   "batch3",
+      firestore: "unreachable: " + e.message,
+    });
+  }
+});
+
+// ── 11. /adminStats ──────────────────────────────────────────────────────────
+/**
+ * Admin stats endpoint — returns aggregate counts for the admin dashboard.
+ * Protected by ADMIN_SECRET (x-admin-secret header).
+ * GET https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminStats
+ *
+ * Response:
+ *   { pending, approvedToday, rejectedToday, totalApproved, totalRejected,
+ *     totalAmountApprovedUSD, totalRequests }
+ */
+exports.adminStats = functions.https.onRequest(async (req, res) => {
+  if (setCors(req, res)) return;
+  try {
+    // ── Auth ──
+    const adminSecret = process.env.ADMIN_SECRET ||
+                        (functions.config().admin && functions.config().admin.secret);
+    const provided = req.headers["x-admin-secret"] || req.query.adminSecret || "";
+    if (!adminSecret || provided !== adminSecret) {
+      return err(res, 401, "Unauthorized");
+    }
+
+    const col = db.collection("withdrawalRequests");
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    // Run queries in parallel
+    const [pendingSnap, approvedTodaySnap, rejectedTodaySnap,
+           totalApprovedSnap, totalRejectedSnap] = await Promise.all([
+      col.where("status", "==", "pending").count().get(),
+      col.where("status", "in", ["approved","approved_manual"])
+         .where("approvedAt", ">=", startOfDay).count().get(),
+      col.where("status", "==", "rejected")
+         .where("rejectedAt", ">=", startOfDay).count().get(),
+      col.where("status", "in", ["approved","approved_manual"]).count().get(),
+      col.where("status", "==", "rejected").count().get(),
+    ]);
+
+    // Total approved amount (sum — requires fetching docs, limit to last 500)
+    const approvedDocs = await col.where("status", "in", ["approved","approved_manual"])
+                                  .orderBy("approvedAt", "desc").limit(500).get();
+    const totalAmountUSD = approvedDocs.docs.reduce((sum, d) => sum + (d.data().amountUSD || 0), 0);
+
+    return ok(res, {
+      pending:              pendingSnap.data().count,
+      approvedToday:        approvedTodaySnap.data().count,
+      rejectedToday:        rejectedTodaySnap.data().count,
+      totalApproved:        totalApprovedSnap.data().count,
+      totalRejected:        totalRejectedSnap.data().count,
+      totalAmountApprovedUSD: Math.round(totalAmountUSD * 100) / 100,
+      totalRequests:        pendingSnap.data().count +
+                            totalApprovedSnap.data().count +
+                            totalRejectedSnap.data().count,
+      generatedAt:          Date.now(),
+    });
+  } catch (e) {
+    console.error("adminStats error:", e);
+    return err(res, 500, "Internal error: " + e.message);
+  }
+});
