@@ -108,3 +108,51 @@ curl "http://localhost:5001/<project>/us-central1/postback?secret=YOUR_SECRET&su
 # read it back:
 curl "http://localhost:5001/<project>/us-central1/balance?userId=test-user"
 ```
+
+---
+
+## Admin Withdrawal Panel (v9 — 2026-07-08)
+
+A password-protected admin panel (`admin.html`) is now included in the repo root.
+It lets the site admin review, approve, and reject withdrawal requests without
+touching the Firestore console.
+
+### New Cloud Function endpoints (v9)
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `adminListWithdrawals` | GET | `adminSecret` query param | List all withdrawal requests (filter by status) |
+| `adminRejectWithdrawal` | POST | `adminSecret` in body | Reject a pending request + atomically refund points |
+
+### How to use admin.html
+
+1. Open `https://mendezcommunity.github.io/Mendezmind/admin.html` in your browser.
+2. Enter your `ADMIN_SECRET` (same secret set in Firebase Functions secrets).
+3. The panel fetches pending requests from `adminListWithdrawals`.
+4. Click **✅ Approve** → calls `adminApproveWithdrawal` (triggers PayPal if configured).
+5. Click **❌ Reject** → enter optional reason → calls `adminRejectWithdrawal` (refunds user points).
+
+### Configure admin.html
+
+Open `admin.html`, find the `ADMIN_CONFIG` block in the `<script>` section, and paste:
+```js
+const ADMIN_CONFIG = {
+  LIST_ENDPOINT:    "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminListWithdrawals",
+  APPROVE_ENDPOINT: "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminApproveWithdrawal",
+  REJECT_ENDPOINT:  "https://us-central1-YOUR-PROJECT.cloudfunctions.net/adminRejectWithdrawal",
+};
+```
+
+### Set ADMIN_SECRET in Firebase
+
+```bash
+firebase functions:secrets:set ADMIN_SECRET
+# Enter a strong random string when prompted
+firebase deploy --only functions
+```
+
+### Security notes
+
+- `ADMIN_SECRET` is **never stored in admin.html** — admin types it each session.
+- All write operations go through Cloud Functions (Firestore rules deny client writes).
+- The panel shows demo data when endpoints are not configured (no real data exposed).
