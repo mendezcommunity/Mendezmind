@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mendez Silver Task - Ad Revenue Zone</title>
-    <!-- VERIFIED REWARD WALLET RE-CONFIRMED 2026-07-08: Firebase S2S postback wiring intact
-         (UUID userId + subid passthrough, Verified Reward Balance UI reading Firebase via
-         BALANCE_ENDPOINT, commented firebaseConfig/BALANCE_ENDPOINT/SUBID_PARAM placeholders).
-         Backend lives in /firebase/ (functions/index.js, firestore.rules, README.md).
-         Verified balance stays 0 until the user deploys Firebase + configures the network
-         postback URL. No fake/guaranteed cash; credit ONLY on network-verified postback. -->
+    <!-- WITHDRAWAL SYSTEM v8 2026-07-08:
+         Added full Withdrawal Request section with:
+         - User tier display (New / Regular) + next eligible date
+         - PayPal email input (saved to localStorage)
+         - Request Withdrawal button (calls requestWithdrawal Cloud Function)
+         - Salary cycle selector (15-day / 25-day) for regular users
+         - Withdrawal history list (calls withdrawalHistory Cloud Function)
+         - Honest copy: not a guaranteed salary; payouts from real ad revenue only
+         - CONFIG placeholders for WITHDRAWAL_ENDPOINT, HISTORY_ENDPOINT, CYCLE_ENDPOINT
+         All existing features intact: verified balance, engagement counter,
+         ad safety notice, curated offers, smartlink, UUID/subid. -->
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -22,39 +27,74 @@
         .header-title { font-family: 'Orbitron', sans-serif; color: #ffcc00; font-size: 22px; font-weight: 800; letter-spacing: 2px; }
         .header-sub { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
 
-        /* Verified wallet balance (REAL, from Firebase) */
         .wallet-box { background: #071410; border: 2px solid #00cc66; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
         .wallet-label { font-size: 12px; color: #7fdcaa; text-transform: uppercase; letter-spacing: 1px; }
         .wallet-amount { font-size: 40px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cc66; margin: 10px 0; }
         .wallet-note { font-size: 11px; color: #8aa; line-height: 1.5; }
         .wallet-status { font-size: 10px; color: #567; margin-top: 6px; }
 
-        /* Engagement (activity only) counter */
         .earnings-box { background: #101010; border: 2px solid #00cccc; padding: 18px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
         .earnings-label { font-size: 12px; color: #888; text-transform: uppercase; }
         .earnings-amount { font-size: 32px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00cccc; margin: 8px 0; }
         .earnings-note { font-size: 11px; color: #888; line-height: 1.5; }
 
-        /* task list */
         .task-list { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 10px; margin: 20px 0; }
         .task-title { font-family: 'Orbitron', sans-serif; font-size: 11px; color: #ffcc00; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; border-left: 3px solid #ffcc00; padding-left: 8px; }
-
         .task-item { background: #121212; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00cccc; padding-left: 12px; font-size: 12px; }
         .task-reward { color: #ffcc00; font-weight: bold; float: right; }
 
-        /* buttons */
         .btn { display: block; width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; font-size: 13px; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; text-align: center; text-decoration: none; box-sizing: border-box; }
         .btn-primary { background: #ffcc00; color: #000; }
         .btn-primary:hover { background: #ffdd33; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
         .btn-secondary { background: #222; color: #fff; }
         .btn-secondary:hover { background: #333; }
+        .btn-green { background: #00cc66; color: #000; }
+        .btn-green:hover { background: #00dd77; }
+        .btn-sm { padding: 10px 14px; font-size: 12px; width: auto; display: inline-block; margin: 5px 0; }
 
         .info-msg { background: #05121a; border: 1px solid #00cccc; padding: 12px; border-radius: 8px; color: #00cccc; text-align: center; font-size: 12px; margin: 10px 0; }
+        .error-msg { background: #1a0505; border: 1px solid #cc3300; padding: 12px; border-radius: 8px; color: #ff6644; font-size: 12px; margin: 10px 0; }
+        .success-msg { background: #051a0a; border: 1px solid #00cc66; padding: 12px; border-radius: 8px; color: #00cc66; font-size: 12px; margin: 10px 0; }
 
         .disclaimer { background: #0d0d0d; border: 1px solid #333; padding: 12px; border-radius: 8px; color: #999; font-size: 11px; line-height: 1.6; margin: 15px 0; }
-
         .ad-safety-notice { background: #071410; border: 1px solid #00cc66; padding: 12px; border-radius: 8px; color: #9ad; font-size: 11px; line-height: 1.6; margin: 15px 0; }
         .ad-safety-notice strong { color: #7fdcaa; }
+
+        /* WITHDRAWAL SECTION */
+        .withdrawal-section { background: #0a0d14; border: 2px solid #4466ff; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .withdrawal-title { font-family: 'Orbitron', sans-serif; font-size: 13px; color: #88aaff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-left: 3px solid #4466ff; padding-left: 8px; }
+
+        .tier-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .tier-new { background: #1a2a00; color: #aaff44; border: 1px solid #aaff44; }
+        .tier-regular { background: #001a2a; color: #44aaff; border: 1px solid #44aaff; }
+
+        .tier-info { font-size: 11px; color: #778; line-height: 1.6; margin-bottom: 14px; }
+        .tier-info strong { color: #aab; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; display: block; }
+        .form-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 10px 12px; border-radius: 8px; font-size: 13px; box-sizing: border-box; }
+        .form-input:focus { outline: none; border-color: #4466ff; }
+        .form-input::placeholder { color: #555; }
+
+        .cycle-selector { display: flex; gap: 10px; margin-bottom: 14px; }
+        .cycle-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #333; color: #888; border-radius: 8px; font-size: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .cycle-btn.active { background: #001a2a; border-color: #44aaff; color: #44aaff; font-weight: 700; }
+        .cycle-btn:hover { border-color: #4466ff; color: #88aaff; }
+
+        .withdrawal-disclaimer { font-size: 11px; color: #667; line-height: 1.6; margin: 12px 0; padding: 10px; background: #080808; border-radius: 6px; border-left: 3px solid #334; }
+
+        .history-section { margin-top: 16px; }
+        .history-title { font-size: 11px; color: #778; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .history-item { background: #0d0d0d; border: 1px solid #222; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 11px; }
+        .history-item .h-amount { color: #ffcc00; font-weight: 700; font-size: 13px; }
+        .history-item .h-status { float: right; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .status-pending { background: #1a1a00; color: #ffcc00; border: 1px solid #ffcc00; }
+        .status-approved_manual { background: #001a0a; color: #00cc66; border: 1px solid #00cc66; }
+        .status-paid { background: #001a0a; color: #00ff88; border: 1px solid #00ff88; }
+        .status-rejected { background: #1a0000; color: #ff4444; border: 1px solid #ff4444; }
+        .history-item .h-date { color: #556; font-size: 10px; margin-top: 4px; }
+        .history-empty { color: #445; font-size: 12px; text-align: center; padding: 10px; }
 
         .back-btn { margin-top: 20px; }
     </style>
@@ -63,106 +103,165 @@
 
     <div class="container">
         <div class="header">
-            <div class="header-title">🥈 SILVER TASK</div>
-            <div class="header-sub">Ad Revenue Zone · Monetag Powered</div>
+            <div class="header-title">&#129352; SILVER TASK</div>
+            <div class="header-sub">Ad Revenue Zone &middot; Monetag Powered</div>
         </div>
 
-        <!-- ✅ VERIFIED REWARD BALANCE — the ONLY number that represents real,
-             network-confirmed rewards. Read live from Firebase (server-side verified).
-             Stays 0 until a genuine ad-network S2S postback confirms a conversion. -->
+        <!-- VERIFIED REWARD BALANCE -->
         <div class="wallet-box">
-            <div class="wallet-label">✅ Verified Reward Balance</div>
+            <div class="wallet-label">&#10003; Verified Reward Balance</div>
             <div class="wallet-amount" id="verified-balance">0</div>
             <div class="wallet-note">
                 Credited only after the ad network confirms a genuine view/conversion
                 (via server-side postback). This can take time and is not a guaranteed
                 instant cash payout. Withdrawals are subject to network confirmation and thresholds.
             </div>
-            <div class="wallet-status" id="wallet-status">Wallet backend not configured yet — showing 0.</div>
+            <div class="wallet-status" id="wallet-status">Wallet backend not configured yet &mdash; showing 0.</div>
         </div>
 
-        <!-- 📊 Engagement counter = ACTIVITY ONLY (client-side). NOT money, NOT verified reward. -->
+        <!-- ENGAGEMENT COUNTER (activity only) -->
         <div class="earnings-box">
             <div class="earnings-label">Engagement / Activity Count</div>
             <div class="earnings-amount" id="reward-points">0</div>
             <div class="earnings-note">
-                Activity only — how many times you opened the sponsor offer on this device.
+                Activity only &mdash; how many times you opened the sponsor offer on this device.
                 Actual earnings are tracked and confirmed in the Monetag/Adsterra dashboards,
                 not shown here as cash.
             </div>
         </div>
 
-        <!-- 🎯 tasks -->
+        <!-- TASK LIST -->
         <div class="task-list">
-            <div class="task-title">📋 Silver Tasks — Watch & Support</div>
-            <div class="task-item">👁️ View Sponsor Offer #1 <span class="task-reward">+1 activity*</span></div>
-            <div class="task-item">👁️ View Sponsor Offer #2 <span class="task-reward">+1 activity*</span></div>
-            <div class="task-item">👁️ View Sponsor Offer #3 <span class="task-reward">+1 activity*</span></div>
+            <div class="task-title">&#128203; Silver Tasks &mdash; Watch &amp; Support</div>
+            <div class="task-item">&#128065; View Sponsor Offer #1 <span class="task-reward">+1 activity*</span></div>
+            <div class="task-item">&#128065; View Sponsor Offer #2 <span class="task-reward">+1 activity*</span></div>
+            <div class="task-item">&#128065; View Sponsor Offer #3 <span class="task-reward">+1 activity*</span></div>
         </div>
 
-        <!-- 🚀 Smartlink button: voluntary click, opens in NEW TAB.
-             The userId is appended as the network subid so a verified postback can
-             attribute the reward to THIS user. href is set by JS on load. -->
+        <!-- SMARTLINK BUTTON: voluntary click, new tab, userId as subid -->
         <a class="btn btn-primary"
            href="https://www.effectivecpmnetwork.com/t2wmd8z5e1?key=b6fd7888ad71cbead0fa77c25665a19f"
            target="_blank"
            rel="noopener noreferrer"
            id="silver-task-btn"
-           onclick="onOfferOpened()">👁️ Open Sponsor Offer (New Tab)</a>
+           onclick="onOfferOpened()">&#128065; Open Sponsor Offer (New Tab)</a>
 
         <div class="info-msg" id="info-msg" style="display:none;"></div>
 
         <div class="disclaimer">
-            *⚠️ Clicking the button opens a sponsor offer in a new tab. A reward is credited to your
+            *&#9888; Clicking the button opens a sponsor offer in a new tab. A reward is credited to your
             Verified Reward Balance ONLY if the ad network verifies a genuine view via its server-side
-            postback — the engagement count above is activity only, not money. We do not guarantee a
+            postback &mdash; the engagement count above is activity only, not money. We do not guarantee a
             fixed payout. Please do not click repeatedly to inflate views; that violates ad-network policy.
         </div>
 
-        <!-- 🛡️ AD-QUALITY / SAFETY NOTICE (legitimately code-controllable) -->
+        <!-- AD SAFETY NOTICE -->
         <div class="ad-safety-notice" id="ad-safety-notice">
-            🛡️ <strong>Ad Safety Notice:</strong> Sponsored offers are served by third-party ad networks
+            &#128737; <strong>Ad Safety Notice:</strong> Sponsored offers are served by third-party ad networks
             (Monetag / Adsterra) and may rotate. We ask these networks to show only clean, mainstream ads
-            and to block gambling, adult, and scam/"fake alert" categories. If you ever see an inappropriate
+            and to block gambling, adult, and scam/&ldquo;fake alert&rdquo; categories. If you ever see an inappropriate
             or scammy ad, please report it to <strong>ads@mendezcommunity.com</strong> so we can blacklist
             that advertiser. See <strong>AD_QUALITY_GUIDELINES.md</strong> in our repo for details.
         </div>
 
-        <button class="btn btn-secondary back-btn" onclick="goBack()">← Back to Dashboard</button>
+        <!-- ══════════════════════════════════════════════════════════════════
+             WITHDRAWAL REQUEST SECTION
+             - New users: eligible after 2 days of joining
+             - Regular users: eligible every 15 or 25 days (chosen cycle)
+             - Minimum: $1.00 | Payouts from REAL ad revenue only
+             ══════════════════════════════════════════════════════════════════ -->
+        <div class="withdrawal-section">
+            <div class="withdrawal-title">&#128184; Withdrawal Request</div>
+
+            <div id="tier-badge-container">
+                <span class="tier-badge tier-new" id="tier-badge">&#8987; Loading...</span>
+            </div>
+            <div class="tier-info" id="tier-info">Loading your account status...</div>
+
+            <!-- Salary cycle selector (shown for regular users) -->
+            <div id="cycle-selector-container" style="display:none;">
+                <div class="form-label">Payout Cycle (choose your preferred schedule)</div>
+                <div class="cycle-selector">
+                    <div class="cycle-btn" id="cycle-15" onclick="selectCycle(15)">&#9201; 15-Day Cycle</div>
+                    <div class="cycle-btn" id="cycle-25" onclick="selectCycle(25)">&#128197; 25-Day Cycle</div>
+                </div>
+            </div>
+
+            <!-- PayPal email -->
+            <div class="form-group">
+                <label class="form-label" for="paypal-email">&#128179; Your PayPal Email</label>
+                <input type="email" id="paypal-email" class="form-input"
+                       placeholder="yourname@example.com"
+                       oninput="savePaypalEmail()" />
+                <div style="font-size:10px;color:#556;margin-top:4px;">
+                    Payouts are sent to this PayPal email by the site admin after approval.
+                </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="form-group">
+                <label class="form-label" for="withdrawal-amount">&#128181; Amount (USD) &mdash; min $1.00</label>
+                <input type="number" id="withdrawal-amount" class="form-input"
+                       placeholder="1.00" min="1" step="0.01" />
+            </div>
+
+            <!-- Request button -->
+            <button class="btn btn-green" id="withdrawal-btn" onclick="submitWithdrawal()">
+                &#128228; Request Withdrawal
+            </button>
+
+            <div id="withdrawal-msg" style="display:none;"></div>
+
+            <!-- Honest disclaimer -->
+            <div class="withdrawal-disclaimer">
+                &#9888; <strong>Important:</strong> Withdrawals are processed from actual ad revenue earned
+                through verified network postbacks &mdash; this is NOT a guaranteed salary or fixed income.
+                Payout requests are reviewed by the site admin before processing. Processing time may
+                vary. Minimum withdrawal is $1.00. Points are deducted when you submit a request;
+                they are refunded if the request is rejected. Payouts are subject to PayPal fees and
+                network confirmation thresholds.
+            </div>
+
+            <!-- Withdrawal history -->
+            <div class="history-section">
+                <div class="history-title">&#128220; Your Withdrawal History</div>
+                <div id="withdrawal-history">
+                    <div class="history-empty">Loading history...</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="loadWithdrawalHistory()" style="margin-top:8px;">
+                    &#128260; Refresh History
+                </button>
+            </div>
+        </div>
+        <!-- END WITHDRAWAL SECTION -->
+
+        <button class="btn btn-secondary back-btn" onclick="goBack()">&#8592; Back to Dashboard</button>
     </div>
 
     <!-- =====================================================================
-         AD-NETWORK ON-PAGE ZONE SCRIPTS (ACTION REQUIRED — paste real snippets)
+         AD-NETWORK ON-PAGE ZONE SCRIPTS (ACTION REQUIRED - paste real snippets)
          The old URL https://monetag.com/showads/pub-11242429.js returned HTTP 404
          and was removed. Do NOT re-add it. On-page ads serve ONLY after you paste
          your real official snippets below.
 
          (a) ADSTERRA: Adsterra Dashboard -> Websites -> Direct Link / Social Bar /
              Popunder -> "Get code" -> paste the exact code here.
-             <script src="//REPLACE-WITH-OFFICIAL-ADSTERRA-DOMAIN/xxxx/invoke.js"></script>
 
          (b) MONETAG: Monetag Dashboard -> Sites/Zones -> (your site) -> Code
              (Multitag / In-Page Push) -> paste the exact snippet here.
-             <script src="https://REPLACE-WITH-OFFICIAL-MONETAG-DOMAIN/tag.min.js" data-zone="YOUR_ZONE_ID" async data-cfasync="false"></script>
 
          NOTE: Monetization already works via the voluntary "Open Sponsor Offer"
          smartlink above. No auto-fire, no forced views, no popunder-on-load.
     ====================================================================== -->
 
-    <!-- ===================================================================== -->
-    <!--  FIREBASE WEB SDK (verified reward wallet). Loaded from official CDN.  -->
-    <!--  These CDN URLs are Firebase's own public SDK — safe to keep as-is.    -->
-    <!-- ===================================================================== -->
     <script type="module">
         // ------------------------------------------------------------------
-        //  🔧 WALLET_CONFIG — PASTE YOUR REAL VALUES HERE (do NOT invent keys)
-        //  1) firebaseConfig: Firebase Console -> Project settings -> Your apps
-        //     -> Web app -> SDK setup and configuration -> copy the config object.
-        //  2) BALANCE_ENDPOINT: the `balance` Cloud Function URL printed by
-        //     `firebase deploy` (see firebase/README.md), e.g.
-        //     https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
-        //  3) SUBID_PARAM: the query-param name the ad network reads as subid
-        //     (usually "subid" or "ymid" — check your network's postback docs).
+        //  WALLET_CONFIG - PASTE YOUR REAL VALUES HERE (do NOT invent keys)
+        //  1) BALANCE_ENDPOINT:    https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
+        //  2) WITHDRAWAL_ENDPOINT: https://us-central1-YOUR-PROJECT.cloudfunctions.net/requestWithdrawal
+        //  3) HISTORY_ENDPOINT:    https://us-central1-YOUR-PROJECT.cloudfunctions.net/withdrawalHistory
+        //  4) CYCLE_ENDPOINT:      https://us-central1-YOUR-PROJECT.cloudfunctions.net/setSalaryCycle
+        //  5) SUBID_PARAM: "subid" or "ymid" (check your network postback docs)
         //  Until you fill these in, the Verified Reward Balance stays 0 (honest).
         // ------------------------------------------------------------------
         const WALLET_CONFIG = {
@@ -172,140 +271,252 @@
                 // projectId: "PASTE_FROM_FIREBASE_CONSOLE",
                 // appId: "PASTE_FROM_FIREBASE_CONSOLE"
             },
-            BALANCE_ENDPOINT: "",   // e.g. https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
-            SUBID_PARAM: "subid"    // change to "ymid" if your network uses that
+            BALANCE_ENDPOINT:     "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/balance
+            WITHDRAWAL_ENDPOINT:  "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/requestWithdrawal
+            HISTORY_ENDPOINT:     "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/withdrawalHistory
+            CYCLE_ENDPOINT:       "",  // https://us-central1-YOUR-PROJECT.cloudfunctions.net/setSalaryCycle
+            SUBID_PARAM: "subid"
         };
 
-        // ---- stable anonymous userId (UUID, persisted in localStorage) ----
+        // stable anonymous userId
         const UID_KEY = "mendez_user_id";
         function getUserId() {
             let id = null;
-            try { id = localStorage.getItem(UID_KEY); } catch (e) {}
+            try { id = localStorage.getItem(UID_KEY); } catch(e) {}
             if (!id) {
-                id = (crypto && crypto.randomUUID)
-                    ? crypto.randomUUID()
-                    : "u-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
-                try { localStorage.setItem(UID_KEY, id); } catch (e) {}
+                id = (crypto && crypto.randomUUID) ? crypto.randomUUID()
+                   : "u-" + Date.now() + "-" + Math.random().toString(36).slice(2,10);
+                try { localStorage.setItem(UID_KEY, id); } catch(e) {}
             }
             return id;
         }
         const USER_ID = getUserId();
-        // expose for the non-module script below
         window.__MENDEZ_USER_ID = USER_ID;
-        window.__WALLET_CONFIG = WALLET_CONFIG;
+        window.__WALLET_CONFIG  = WALLET_CONFIG;
 
-        // ------------------------------------------------------------------
-        //  🧹 CURATED_OFFERS — OPTIONAL self-curated CLEAN offer whitelist.
-        //  Ad-CATEGORY blocking (scam/gambling/adult/aggressive) is done in your
-        //  Monetag & Adsterra DASHBOARDS, not here (see AD_QUALITY_GUIDELINES.md).
-        //  This array is an EXTRA, code-side safety control:
-        //   - Leave it EMPTY (default) -> the button uses the real Monetag Smartlink.
-        //   - Paste YOUR OWN vetted, clean offer URLs (that you personally checked
-        //     are legitimate, non-gambling, non-adult, non-scam) -> the button
-        //     rotates through your curated links instead of the raw rotating smartlink.
-        //  RULES: only clean links; keep target=_blank + rel=noopener noreferrer;
-        //  opens ONE offer per VOLUNTARY click only (no auto-open). Do NOT paste
-        //  gambling/adult/scam links. Do NOT fabricate offers.
-        //  Example (commented — replace with your real vetted links, then uncomment):
-        //  const CURATED_OFFERS = [
-        //      "https://example-brand.com/clean-offer-1",
-        //      "https://example-shop.com/clean-offer-2"
-        //  ];
-        // ------------------------------------------------------------------
-        const CURATED_OFFERS = [];   // empty by default -> smartlink fallback
+        // CURATED_OFFERS - optional clean offer whitelist (empty = smartlink fallback)
+        const CURATED_OFFERS = [];
 
-        // ---- choose the offer URL: curated clean list if provided, else smartlink ----
-        // then append userId as the network subid so a verified postback can
-        // attribute the reward to THIS user.
+        // wire offer link with userId as subid
         (function wireOfferLink() {
             const a = document.getElementById("silver-task-btn");
             if (!a) return;
             try {
-                // Fallback = the real Monetag Smartlink already in the href.
                 let target = a.href;
                 if (Array.isArray(CURATED_OFFERS) && CURATED_OFFERS.length > 0) {
-                    // pick one curated clean offer (rotate by time) — voluntary click only
-                    const pick = CURATED_OFFERS[Math.floor(Date.now() / 60000) % CURATED_OFFERS.length];
-                    if (pick && /^https?:\/\//i.test(pick)) { target = pick; }
+                    const pick = CURATED_OFFERS[Math.floor(Date.now()/60000) % CURATED_OFFERS.length];
+                    if (pick && /^https?:\/\//i.test(pick)) target = pick;
                 }
                 const url = new URL(target);
                 url.searchParams.set(WALLET_CONFIG.SUBID_PARAM, USER_ID);
                 a.href = url.toString();
-                // enforce safe link attributes regardless of source
-                a.setAttribute("target", "_blank");
-                a.setAttribute("rel", "noopener noreferrer");
-            } catch (e) { /* leave href unchanged on failure */ }
+                a.setAttribute("target","_blank");
+                a.setAttribute("rel","noopener noreferrer");
+            } catch(e) {}
         })();
 
-        // ---- read the REAL verified balance from the backend ----
+        // read verified balance from backend
         async function refreshVerifiedBalance() {
-            const elBal = document.getElementById("verified-balance");
+            const elBal    = document.getElementById("verified-balance");
             const elStatus = document.getElementById("wallet-status");
             const ep = (WALLET_CONFIG.BALANCE_ENDPOINT || "").trim();
             if (!ep) {
-                // No backend configured yet -> honest 0, no fake number.
-                elBal.innerText = "0";
-                elStatus.innerText = "Wallet backend not configured yet — showing 0 (no verified rewards).";
+                elBal.innerText    = "0";
+                elStatus.innerText = "Wallet backend not configured yet - showing 0 (no verified rewards).";
+                window.__loadTierInfo({ tier:"new", salaryCycle:15, joinedAt:null, lastPayoutAt:null });
                 return;
             }
             try {
-                const res = await fetch(ep + "?userId=" + encodeURIComponent(USER_ID), { cache: "no-store" });
+                const res  = await fetch(ep + "?userId=" + encodeURIComponent(USER_ID), { cache:"no-store" });
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 const data = await res.json();
-                elBal.innerText = String(data.verifiedRewardPoints || 0);
+                elBal.innerText    = String(data.verifiedRewardPoints || 0);
                 elStatus.innerText = data.lastUpdated
-                    ? ("Last verified update: " + new Date(data.lastUpdated).toLocaleString())
+                    ? "Last verified update: " + new Date(data.lastUpdated).toLocaleString()
                     : "No verified rewards confirmed yet.";
-            } catch (e) {
-                elBal.innerText = "0";
-                elStatus.innerText = "Could not reach wallet backend — showing 0.";
+                window.__loadTierInfo(data);
+            } catch(e) {
+                elBal.innerText    = "0";
+                elStatus.innerText = "Could not reach wallet backend - showing 0.";
+                window.__loadTierInfo({ tier:"new", salaryCycle:15, joinedAt:null, lastPayoutAt:null });
             }
         }
         window.addEventListener("DOMContentLoaded", refreshVerifiedBalance);
+
+        // submit withdrawal request
+        window.__submitWithdrawalRequest = async function(paypalEmail, amountUSD) {
+            const ep = (WALLET_CONFIG.WITHDRAWAL_ENDPOINT || "").trim();
+            if (!ep) throw new Error("WITHDRAWAL_ENDPOINT not configured - paste your Cloud Function URL in WALLET_CONFIG.");
+            const res  = await fetch(ep, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: USER_ID, paypalEmail, amountUSD: parseFloat(amountUSD) })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || "Request failed");
+            return data;
+        };
+
+        // load withdrawal history
+        window.__loadWithdrawalHistory = async function() {
+            const ep = (WALLET_CONFIG.HISTORY_ENDPOINT || "").trim();
+            if (!ep) return null;
+            const res  = await fetch(ep + "?userId=" + encodeURIComponent(USER_ID), { cache:"no-store" });
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || "History fetch failed");
+            return data.requests;
+        };
+
+        // set salary cycle preference
+        window.__setSalaryCycle = async function(cycle) {
+            const ep = (WALLET_CONFIG.CYCLE_ENDPOINT || "").trim();
+            if (!ep) return;
+            await fetch(ep, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: USER_ID, cycle })
+            });
+        };
     </script>
 
-    <!-- Engagement counter (activity only) — client-side, NOT money, NOT verified. -->
     <script>
-        // Engagement/activity counter. This is NOT a reward and NOT money. Real
-        // rewards live in the Verified Reward Balance above (server-verified only).
+        // Engagement/activity counter
         const POINTS_KEY = "mendez_engagement_count";
         let rewardPoints = 0;
-
         function loadSavedPoints() {
-            let saved = 0;
-            try {
-                const raw = localStorage.getItem(POINTS_KEY);
-                const n = parseInt(raw, 10);
-                if (!isNaN(n) && n >= 0) { saved = n; }
-            } catch (e) { saved = 0; }
-            return saved;
+            try { const n = parseInt(localStorage.getItem(POINTS_KEY),10); return (!isNaN(n)&&n>=0)?n:0; } catch(e) { return 0; }
         }
-        function savePoints() {
-            try { localStorage.setItem(POINTS_KEY, String(rewardPoints)); } catch (e) {}
-        }
-        function initPoints() {
-            rewardPoints = loadSavedPoints();
-            updatePoints();
-        }
-        // Fired ONLY on a genuine VOLUNTARY user click. No timers, no auto-click,
-        // no forced views, no impression inflation. Increments activity count only.
+        function savePoints() { try { localStorage.setItem(POINTS_KEY, String(rewardPoints)); } catch(e) {} }
+        function initPoints() { rewardPoints = loadSavedPoints(); updatePoints(); }
         function onOfferOpened() {
-            rewardPoints += 1;
-            savePoints();
-            updatePoints();
-            showInfo("👍 Offer opened in a new tab. This adds to your ACTIVITY count only. A real reward is credited to your Verified Reward Balance only if the ad network confirms a genuine view via its server-side postback.");
+            rewardPoints++; savePoints(); updatePoints();
+            showInfo("Offer opened in a new tab. This adds to your ACTIVITY count only. A real reward is credited to your Verified Reward Balance only if the ad network confirms a genuine view via its server-side postback.");
         }
-        function updatePoints() {
-            document.getElementById("reward-points").innerText = rewardPoints;
-        }
+        function updatePoints() { document.getElementById("reward-points").innerText = rewardPoints; }
         document.addEventListener("DOMContentLoaded", initPoints);
-
-        function showInfo(message) {
-            const msg = document.getElementById("info-msg");
-            msg.innerText = message;
-            msg.style.display = "block";
-        }
+        function showInfo(msg) { const m=document.getElementById("info-msg"); m.innerText=msg; m.style.display="block"; }
         function goBack() { window.history.back(); }
+
+        // PayPal email persistence
+        const PP_KEY = "mendez_paypal_email";
+        function savePaypalEmail() { try { localStorage.setItem(PP_KEY, document.getElementById("paypal-email").value.trim()); } catch(e) {} }
+        function loadPaypalEmail() { try { const v=localStorage.getItem(PP_KEY); if(v) document.getElementById("paypal-email").value=v; } catch(e) {} }
+        document.addEventListener("DOMContentLoaded", loadPaypalEmail);
+
+        // Salary cycle selector
+        const CYCLE_KEY = "mendez_salary_cycle";
+        let selectedCycle = 15;
+        function selectCycle(days) {
+            selectedCycle = days;
+            document.getElementById("cycle-15").classList.toggle("active", days===15);
+            document.getElementById("cycle-25").classList.toggle("active", days===25);
+            try { localStorage.setItem(CYCLE_KEY, String(days)); } catch(e) {}
+            if (window.__setSalaryCycle) window.__setSalaryCycle(days).catch(()=>{});
+        }
+        function initCycle() {
+            try { const v=parseInt(localStorage.getItem(CYCLE_KEY),10); if([15,25].includes(v)) selectedCycle=v; } catch(e) {}
+            document.getElementById("cycle-15").classList.toggle("active", selectedCycle===15);
+            document.getElementById("cycle-25").classList.toggle("active", selectedCycle===25);
+        }
+        document.addEventListener("DOMContentLoaded", initCycle);
+
+        // Tier info display
+        window.__loadTierInfo = function(data) {
+            const badge    = document.getElementById("tier-badge");
+            const infoEl   = document.getElementById("tier-info");
+            const cycleDiv = document.getElementById("cycle-selector-container");
+            const tier     = (data && data.tier) || "new";
+            const cycle    = (data && data.salaryCycle) || selectedCycle;
+            if (tier === "new") {
+                badge.className = "tier-badge tier-new";
+                badge.innerText = "New User";
+                let msg = "";
+                if (data && data.joinedAt) {
+                    const eligible = new Date(new Date(data.joinedAt).getTime() + 2*86400000);
+                    msg = (new Date() >= eligible)
+                        ? "You are eligible to request a withdrawal now!"
+                        : "Eligible from: " + eligible.toLocaleDateString() + " (2 days after joining).";
+                } else {
+                    msg = "New users can request a withdrawal after 2 days of joining.";
+                }
+                infoEl.innerHTML = "<strong>New User:</strong> " + msg + "<br>After your first payout is approved, you will be promoted to Regular User with a salary cycle.";
+                cycleDiv.style.display = "none";
+            } else {
+                badge.className = "tier-badge tier-regular";
+                badge.innerText = "Regular User";
+                let msg = "";
+                if (data && data.lastPayoutAt) {
+                    const next = new Date(new Date(data.lastPayoutAt).getTime() + cycle*86400000);
+                    msg = (new Date() >= next)
+                        ? "You are eligible to request a withdrawal now!"
+                        : "Next eligible: " + next.toLocaleDateString() + " (" + cycle + "-day cycle).";
+                } else {
+                    msg = "No previous payout - you can request now.";
+                }
+                infoEl.innerHTML = "<strong>Regular User:</strong> " + msg + "<br>Choose your preferred payout cycle below.";
+                cycleDiv.style.display = "block";
+                if ([15,25].includes(cycle)) { selectedCycle=cycle; initCycle(); }
+            }
+        };
+
+        // Submit withdrawal
+        async function submitWithdrawal() {
+            const btn    = document.getElementById("withdrawal-btn");
+            const msgEl  = document.getElementById("withdrawal-msg");
+            const email  = document.getElementById("paypal-email").value.trim();
+            const amount = parseFloat(document.getElementById("withdrawal-amount").value);
+            msgEl.style.display = "none";
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showWMsg("error","Please enter a valid PayPal email address."); return;
+            }
+            if (isNaN(amount) || amount < 1) {
+                showWMsg("error","Minimum withdrawal amount is $1.00."); return;
+            }
+            btn.disabled = true; btn.innerText = "Submitting...";
+            try {
+                if (!window.__submitWithdrawalRequest) throw new Error("Withdrawal function not loaded yet.");
+                const r = await window.__submitWithdrawalRequest(email, amount);
+                showWMsg("success","Withdrawal request submitted! ID: " + r.withdrawalId + " | Amount: $" + r.amountUSD.toFixed(2) + " | Admin will review and process.");
+                setTimeout(() => { loadWithdrawalHistory(); }, 1500);
+            } catch(e) {
+                showWMsg("error", e.message || "Request failed. Please try again.");
+            } finally {
+                btn.disabled = false; btn.innerText = "Request Withdrawal";
+            }
+        }
+        function showWMsg(type, text) {
+            const el = document.getElementById("withdrawal-msg");
+            el.className = type==="error" ? "error-msg" : "success-msg";
+            el.innerText = text; el.style.display = "block";
+        }
+
+        // Load withdrawal history
+        async function loadWithdrawalHistory() {
+            const c = document.getElementById("withdrawal-history");
+            c.innerHTML = '<div class="history-empty">Loading...</div>';
+            try {
+                if (!window.__loadWithdrawalHistory) throw new Error("not ready");
+                const reqs = await window.__loadWithdrawalHistory();
+                if (reqs === null) {
+                    c.innerHTML = '<div class="history-empty">History endpoint not configured yet. Deploy Firebase functions to see history.</div>';
+                    return;
+                }
+                if (!reqs || reqs.length === 0) {
+                    c.innerHTML = '<div class="history-empty">No withdrawal requests yet.</div>';
+                    return;
+                }
+                c.innerHTML = reqs.map(r => {
+                    const sc = "status-" + (r.status||"pending");
+                    const dt = r.requestedAt ? new Date(r.requestedAt).toLocaleDateString() : "-";
+                    return '<div class="history-item"><span class="h-amount">$' + parseFloat(r.amountUSD).toFixed(2) + '</span>'
+                         + '<span class="h-status ' + sc + '">' + (r.status||"pending").replace(/_/g," ") + '</span>'
+                         + '<div class="h-date">Requested: ' + dt + ' | ID: ' + r.withdrawalId.slice(0,8) + '...</div></div>';
+                }).join("");
+            } catch(e) {
+                c.innerHTML = '<div class="history-empty">Could not load history. Deploy Firebase functions first.</div>';
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => setTimeout(loadWithdrawalHistory, 800));
     </script>
 
 </body>
