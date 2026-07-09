@@ -17,6 +17,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+    <!-- Three.js r128 CDN — 3D hero canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         /* ================= LUXURY DESIGN SYSTEM v12 (2026-07-08) =================
            Honest premium redesign. Dark obsidian theme + gold/amber accents,
@@ -90,8 +92,32 @@
         .verified-chip{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
             border:1px solid var(--line);padding:5px 9px;border-radius:20px;background:rgba(255,255,255,.02);}
 
+        /* ---------- 3D Hero Scene ---------- */
+        .hero-scene{
+            position:relative; overflow:hidden;
+            border-radius:0 0 28px 28px;
+        }
+        #hero-canvas{
+            position:absolute; inset:0; width:100%; height:100%;
+            z-index:0; display:block; pointer-events:none;
+        }
+        .hero-overlay{
+            position:absolute; inset:0; z-index:1;
+            background:linear-gradient(180deg,rgba(6,6,6,0.52) 0%,rgba(6,6,6,0.38) 60%,rgba(6,6,6,0.62) 100%);
+            pointer-events:none;
+        }
+        .hero-content{
+            position:relative; z-index:2;
+            padding:72px 16px 56px;
+            text-align:center;
+        }
+        /* Fallback: if WebGL fails, aurora shows through naturally */
+        .hero-scene.no-webgl #hero-canvas{ display:none; }
+        .hero-scene.no-webgl .hero-overlay{ display:none; }
+        .hero-scene.no-webgl .hero-content{ padding:14px 6px 8px; }
+
         /* ---------- Hero ---------- */
-        .hero{text-align:center; padding:14px 6px 8px;}
+        .hero{text-align:center; padding:0;}
         .eyebrow{display:inline-block; font-size:10px; letter-spacing:3px; text-transform:uppercase;
             color:var(--gold-deep); border:1px solid var(--line); border-radius:20px;
             padding:6px 14px; margin-bottom:18px; background:rgba(232,198,106,.04);}
@@ -229,14 +255,20 @@
             </div>
         </div>
 
-        <!-- HERO -->
-        <div class="hero reveal">
-            <span class="eyebrow">Real Rewards &middot; Real Revenue</span>
-            <h1>Earn with <span class="grad">Integrity.</span><br>Get paid with <span class="grad">Confidence.</span></h1>
-            <p>A premium rewards experience where every point is earned honestly &mdash; credited only after the ad network verifies a genuine engagement. No fake numbers. No empty promises.</p>
-            <div class="hero-cta">
-                <a class="btn btn-gold" href="silver-task.html" onclick="ripple(event)">&#128176; Enter Reward Zone</a>
-                <a class="btn btn-ghost" href="#how" onclick="ripple(event)">How it works</a>
+        <!-- HERO — 3D Canvas Background (Three.js r128) -->
+        <div class="hero-scene">
+            <canvas id="hero-canvas" aria-hidden="true"></canvas>
+            <div class="hero-overlay" aria-hidden="true"></div>
+            <div class="hero-content">
+                <div class="hero reveal">
+                    <span class="eyebrow">Real Rewards &middot; Real Revenue</span>
+                    <h1>Earn with <span class="grad">Integrity.</span><br>Get paid with <span class="grad">Confidence.</span></h1>
+                    <p>A premium rewards experience where every point is earned honestly &mdash; credited only after the ad network verifies a genuine engagement. No fake numbers. No empty promises.</p>
+                    <div class="hero-cta">
+                        <a class="btn btn-gold" href="silver-task.html" onclick="ripple(event)">&#128176; Enter Reward Zone</a>
+                        <a class="btn btn-ghost" href="#how" onclick="ripple(event)">How it works</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -531,6 +563,210 @@
           });
         }
       })();
+    </script>
+
+    <!-- ── Three.js 3D Hero Animation ─────────────────────────────────────── -->
+    <script>
+    (function(){
+        'use strict';
+        var canvas = document.getElementById('hero-canvas');
+        var scene_el = canvas ? canvas.closest('.hero-scene') : null;
+        if(!canvas || !scene_el){ return; }
+
+        /* Mobile/low-end: reduce particle count */
+        var isMobile = (screen.width < 768) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4);
+        var PARTICLE_COUNT = isMobile ? 28 : 60;
+        var GEO_COUNT      = isMobile ? 6  : 14;
+
+        /* WebGL availability check */
+        var testCanvas = document.createElement('canvas');
+        var gl = null;
+        try{ gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl'); }catch(e){}
+        if(!gl || typeof THREE === 'undefined'){
+            scene_el.classList.add('no-webgl');
+            return; /* graceful fallback — aurora CSS shows through */
+        }
+
+        /* ── Renderer ── */
+        var W = scene_el.offsetWidth  || window.innerWidth;
+        var H = Math.max(scene_el.offsetHeight, 420);
+        canvas.width  = W;
+        canvas.height = H;
+
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(W, H);
+        renderer.setClearColor(0x060606, 1);
+
+        /* ── Scene / Camera ── */
+        var scene  = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 200);
+        camera.position.set(0, 0, 22);
+
+        /* ── Lighting ── */
+        scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+
+        var ptLight1 = new THREE.PointLight(0xe8c66a, 2.2, 60);
+        ptLight1.position.set(10, 12, 10);
+        scene.add(ptLight1);
+
+        var ptLight2 = new THREE.PointLight(0xb8912f, 1.4, 50);
+        ptLight2.position.set(-12, -8, 8);
+        scene.add(ptLight2);
+
+        var ptLight3 = new THREE.PointLight(0x4fd39a, 0.6, 40);
+        ptLight3.position.set(0, -14, 6);
+        scene.add(ptLight3);
+
+        /* ── Gold material ── */
+        function goldMat(opacity){
+            return new THREE.MeshStandardMaterial({
+                color: 0xe8c66a,
+                metalness: 0.82,
+                roughness: 0.22,
+                transparent: true,
+                opacity: opacity || 0.82,
+                wireframe: false
+            });
+        }
+        function wireMat(){
+            return new THREE.MeshBasicMaterial({
+                color: 0xb8912f,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.28
+            });
+        }
+
+        /* ── Geometric objects (icosahedrons + torus knots) ── */
+        var objects = [];
+        var geometries = [
+            new THREE.IcosahedronGeometry(1.1, 0),
+            new THREE.IcosahedronGeometry(0.7, 1),
+            new THREE.TorusKnotGeometry(0.6, 0.18, 64, 8),
+            new THREE.OctahedronGeometry(0.9, 0),
+            new THREE.TetrahedronGeometry(0.8, 0)
+        ];
+
+        for(var i = 0; i < GEO_COUNT; i++){
+            var geoIdx = i % geometries.length;
+            var useWire = (i % 3 === 2);
+            var mesh = new THREE.Mesh(
+                geometries[geoIdx],
+                useWire ? wireMat() : goldMat(0.55 + Math.random() * 0.35)
+            );
+            var spread = 18;
+            mesh.position.set(
+                (Math.random() - 0.5) * spread,
+                (Math.random() - 0.5) * (spread * 0.6),
+                (Math.random() - 0.5) * 10 - 4
+            );
+            var s = 0.4 + Math.random() * 1.1;
+            mesh.scale.setScalar(s);
+            mesh.userData = {
+                rotX: (Math.random() - 0.5) * 0.008,
+                rotY: (Math.random() - 0.5) * 0.012,
+                rotZ: (Math.random() - 0.5) * 0.006,
+                floatAmp: 0.3 + Math.random() * 0.5,
+                floatSpeed: 0.4 + Math.random() * 0.6,
+                floatOffset: Math.random() * Math.PI * 2,
+                baseY: mesh.position.y
+            };
+            scene.add(mesh);
+            objects.push(mesh);
+        }
+
+        /* ── Particle field ── */
+        var pPositions = new Float32Array(PARTICLE_COUNT * 3);
+        var pSpeeds    = [];
+        for(var p = 0; p < PARTICLE_COUNT; p++){
+            pPositions[p*3]   = (Math.random() - 0.5) * 40;
+            pPositions[p*3+1] = (Math.random() - 0.5) * 24;
+            pPositions[p*3+2] = (Math.random() - 0.5) * 16 - 6;
+            pSpeeds.push({
+                x: (Math.random() - 0.5) * 0.012,
+                y: (Math.random() - 0.5) * 0.008
+            });
+        }
+        var pGeo = new THREE.BufferGeometry();
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+        var pMat = new THREE.PointsMaterial({
+            color: 0xf4d98b, size: 0.12, transparent: true, opacity: 0.65,
+            sizeAttenuation: true
+        });
+        var particles = new THREE.Points(pGeo, pMat);
+        scene.add(particles);
+
+        /* ── Camera drift ── */
+        var camDrift = { x: 0, y: 0, targetX: 0, targetY: 0 };
+        document.addEventListener('mousemove', function(e){
+            camDrift.targetX = (e.clientX / window.innerWidth  - 0.5) * 2.5;
+            camDrift.targetY = (e.clientY / window.innerHeight - 0.5) * -1.5;
+        }, { passive: true });
+
+        /* ── Resize handler ── */
+        var resizeTimer;
+        window.addEventListener('resize', function(){
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function(){
+                var nW = scene_el.offsetWidth || window.innerWidth;
+                var nH = Math.max(scene_el.offsetHeight, 420);
+                camera.aspect = nW / nH;
+                camera.updateProjectionMatrix();
+                renderer.setSize(nW, nH);
+            }, 150);
+        });
+
+        /* ── Animation loop ── */
+        var clock = new THREE.Clock();
+        var animId;
+        function animate(){
+            animId = requestAnimationFrame(animate);
+            var t = clock.getElapsedTime();
+
+            /* Rotate + float each object */
+            for(var j = 0; j < objects.length; j++){
+                var o = objects[j];
+                var d = o.userData;
+                o.rotation.x += d.rotX;
+                o.rotation.y += d.rotY;
+                o.rotation.z += d.rotZ;
+                o.position.y = d.baseY + Math.sin(t * d.floatSpeed + d.floatOffset) * d.floatAmp;
+            }
+
+            /* Drift particles */
+            var pos = pGeo.attributes.position.array;
+            for(var k = 0; k < PARTICLE_COUNT; k++){
+                pos[k*3]   += pSpeeds[k].x;
+                pos[k*3+1] += pSpeeds[k].y;
+                if(pos[k*3]   >  20) pos[k*3]   = -20;
+                if(pos[k*3]   < -20) pos[k*3]   =  20;
+                if(pos[k*3+1] >  12) pos[k*3+1] = -12;
+                if(pos[k*3+1] < -12) pos[k*3+1] =  12;
+            }
+            pGeo.attributes.position.needsUpdate = true;
+
+            /* Smooth camera drift */
+            camDrift.x += (camDrift.targetX - camDrift.x) * 0.04;
+            camDrift.y += (camDrift.targetY - camDrift.y) * 0.04;
+            camera.position.x = camDrift.x;
+            camera.position.y = camDrift.y;
+            camera.lookAt(0, 0, 0);
+
+            /* Pulsing point lights */
+            ptLight1.intensity = 2.2 + Math.sin(t * 0.7) * 0.4;
+            ptLight2.intensity = 1.4 + Math.cos(t * 0.5) * 0.3;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        /* Pause when tab hidden (battery/perf) */
+        document.addEventListener('visibilitychange', function(){
+            if(document.hidden){ cancelAnimationFrame(animId); }
+            else { animate(); }
+        });
+    })();
     </script>
 </body>
 </html>
