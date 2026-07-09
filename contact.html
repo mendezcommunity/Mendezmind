@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact / Join — Mendez Community</title>
+<meta name="description" content="Join Mendez Community, advertise with us, or send feedback. Multi-step luxury form.">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#1a1200">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── ROOT TOKENS ── */
+:root{
+  --bg:#060606; --bg2:#0b0b0d;
+  --panel:rgba(20,20,24,0.72);
+  --panel-solid:#101013;
+  --line:rgba(212,175,55,0.18);
+  --gold:#e8c66a; --gold-2:#f4d98b; --gold-deep:#b8912f;
+  --gold-glow:rgba(232,198,106,0.28);
+  --ink:#f4f1e8; --muted:#9a968c; --muted-2:#6c6a63;
+  --red:#e05555; --green:#4fd39a;
+  --radius:20px; --radius-sm:12px;
+  --transition:0.38s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── AURORA BACKGROUND ── */
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;
+  background:radial-gradient(1200px 600px at 50% -10%,#17140c 0%,#060606 55%);}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.13;animation:drift 18s ease-in-out infinite alternate;}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,#e8c66a,transparent 70%);top:-200px;left:-150px;animation-duration:22s;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,#b8912f,transparent 70%);top:30%;right:-100px;animation-duration:17s;animation-delay:-6s;}
+.orb3{width:400px;height:400px;background:radial-gradient(circle,#f4d98b,transparent 70%);bottom:-100px;left:30%;animation-duration:25s;animation-delay:-12s;}
+@keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(40px,30px) scale(1.08);}}
+
+/* ── SPLASH ── */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);gap:16px;
+  transition:opacity 0.6s ease,visibility 0.6s ease;
+}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.splash-monogram{
+  font-family:'Playfair Display',serif;font-size:72px;font-weight:900;
+  color:var(--gold);line-height:1;
+  text-shadow:0 0 40px var(--gold-glow);
+}
+.splash-ring{
+  width:90px;height:90px;border-radius:50%;
+  border:2px solid transparent;
+  border-top-color:var(--gold);border-right-color:var(--gold-deep);
+  animation:spin 1s linear infinite;
+  position:absolute;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.splash-txt{font-size:13px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:60px;}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(16px,4vw,48px);height:64px;
+  background:rgba(6,6,6,0.82);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;font-size:18px;font-weight:700;
+  color:var(--gold);letter-spacing:1px;text-decoration:none;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo span{
+  font-family:'Orbitron',sans-serif;font-size:10px;font-weight:600;
+  color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+}
+.nav-links{display:flex;align-items:center;gap:24px;}
+.nav-links a{
+  color:var(--muted);font-size:13px;font-weight:500;text-decoration:none;
+  letter-spacing:0.5px;transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a.active{color:var(--gold);}
+.nav-cta{
+  background:linear-gradient(135deg,var(--gold-deep),var(--gold));
+  color:#0a0800;font-size:12px;font-weight:700;
+  padding:8px 18px;border-radius:50px;text-decoration:none;
+  letter-spacing:0.5px;transition:transform 0.2s,box-shadow 0.2s;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--gold-glow);}
+
+/* ── MAIN WRAPPER ── */
+.page-wrap{
+  min-height:calc(100vh - 64px - 200px);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:60px 16px 80px;
+}
+
+/* ── FORM CARD (entrance animation) ── */
+.form-card{
+  width:100%;max-width:560px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  padding:clamp(28px,5vw,52px);
+  box-shadow:0 8px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(232,198,106,0.06);
+  animation:cardEntrance 0.7s cubic-bezier(.4,0,.2,1) both;
+  animation-delay:0.1s;
+}
+@keyframes cardEntrance{
+  from{opacity:0;transform:translateY(32px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{margin-bottom:32px;}
+.progress-dots{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:12px;}
+.dot-step{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  flex:1;position:relative;
+}
+.dot-step:not(:last-child)::after{
+  content:'';position:absolute;top:14px;left:calc(50% + 14px);
+  width:calc(100% - 28px);height:1px;
+  background:var(--line);transition:background var(--transition);
+}
+.dot-step.done:not(:last-child)::after{background:var(--gold-deep);}
+.dot-circle{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--muted);
+  transition:all var(--transition);background:var(--bg2);
+  position:relative;z-index:1;
+}
+.dot-step.active .dot-circle{
+  border-color:var(--gold);color:var(--gold);
+  box-shadow:0 0 12px var(--gold-glow);
+}
+.dot-step.done .dot-circle{
+  background:var(--gold-deep);border-color:var(--gold);color:#0a0800;
+}
+.dot-label{font-size:10px;color:var(--muted-2);letter-spacing:0.5px;text-align:center;}
+.dot-step.active .dot-label{color:var(--gold);}
+.dot-step.done .dot-label{color:var(--gold-deep);}
+
+.progress-bar-wrap{
+  height:3px;background:rgba(255,255,255,0.06);
+  border-radius:99px;overflow:hidden;margin-top:4px;
+}
+.progress-bar-fill{
+  height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold));
+  transition:width 0.5s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px var(--gold-glow);
+}
+
+/* ── STEP HEADING ── */
+.step-heading{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(22px,4vw,30px);font-weight:700;
+  color:var(--gold-2);margin-bottom:6px;line-height:1.2;
+}
+.step-sub{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.5;}
+
+/* ── STEPS CONTAINER ── */
+.steps-container{position:relative;overflow:hidden;}
+.step{
+  display:none;
+  animation-duration:0.4s;
+  animation-fill-mode:both;
+  animation-timing-function:cubic-bezier(.4,0,.2,1);
+}
+.step.active{display:block;}
+.step.slide-in-right{animation-name:slideInRight;}
+.step.slide-in-left{animation-name:slideInLeft;}
+.step.slide-out-left{animation-name:slideOutLeft;}
+.step.slide-out-right{animation-name:slideOutRight;}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideOutLeft{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}
+@keyframes slideOutRight{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(40px);}}
+
+/* ── FLOATING LABEL INPUTS ── */
+.field-wrap{position:relative;margin-bottom:22px;}
+.field-wrap input,
+.field-wrap textarea{
+  width:100%;background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;
+  padding:20px 16px 8px;outline:none;
+  transition:border-color 0.25s,box-shadow 0.25s;
+  resize:none;
+}
+.field-wrap textarea{min-height:110px;padding-top:24px;}
+.field-wrap input:focus,
+.field-wrap textarea:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px var(--gold-glow);
+}
+.field-wrap input.error,
+.field-wrap textarea.error{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(224,85,85,0.18);
+}
+.field-label{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-size:14px;color:var(--muted);pointer-events:none;
+  transition:all 0.22s cubic-bezier(.4,0,.2,1);
+  background:transparent;
+}
+.field-wrap textarea ~ .field-label{top:20px;transform:none;}
+.field-wrap input:focus ~ .field-label,
+.field-wrap input:not(:placeholder-shown) ~ .field-label,
+.field-wrap textarea:focus ~ .field-label,
+.field-wrap textarea:not(:placeholder-shown) ~ .field-label{
+  top:8px;transform:translateY(0);font-size:10px;
+  color:var(--gold);letter-spacing:0.5px;font-weight:600;
+}
+.field-wrap textarea:focus ~ .field-label,
+.field-wrap textarea:not(:placeholder-shown) ~ .field-label{
+  top:8px;
+}
+.field-error{font-size:11px;color:var(--red);margin-top:4px;display:none;}
+.field-wrap.has-error .field-error{display:block;}
+
+/* ── RADIO CARDS ── */
+.radio-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.radio-card{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;border-radius:var(--radius-sm);
+  border:1px solid var(--line);background:rgba(255,255,255,0.03);
+  cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;
+}
+.radio-card:hover{border-color:var(--gold-deep);background:rgba(232,198,106,0.05);}
+.radio-card.selected{
+  border-color:var(--gold);background:rgba(232,198,106,0.08);
+  box-shadow:0 0 0 1px var(--gold),0 4px 20px var(--gold-glow);
+}
+.radio-card input[type="radio"]{display:none;}
+.radio-dot{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--line);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.radio-card.selected .radio-dot{
+  border-color:var(--gold);background:var(--gold);
+}
+.radio-dot::after{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:#0a0800;opacity:0;transition:opacity 0.2s;
+}
+.radio-card.selected .radio-dot::after{opacity:1;}
+.radio-card-text{flex:1;}
+.radio-card-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+.radio-card-desc{font-size:12px;color:var(--muted);}
+.radio-card-icon{font-size:22px;flex-shrink:0;}
+
+/* ── BUTTONS ── */
+.btn-row{display:flex;gap:12px;margin-top:8px;}
+.btn-next{
+  flex:1;padding:14px 24px;border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--gold-deep),var(--gold));
+  color:#0a0800;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;letter-spacing:0.5px;
+  transition:transform 0.2s,box-shadow 0.2s;
+  position:relative;overflow:hidden;
+}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 6px 24px var(--gold-glow);}
+.btn-next:active{transform:scale(0.98);}
+.btn-back{
+  padding:14px 20px;border-radius:50px;
+  border:1px solid var(--line);background:transparent;
+  color:var(--muted);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-back:hover{border-color:var(--gold-deep);color:var(--gold);}
+
+/* Ripple */
+.ripple{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  transform:scale(0);animation:rippleAnim 0.55s linear;
+  pointer-events:none;
+}
+@keyframes rippleAnim{to{transform:scale(4);opacity:0;}}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen{
+  display:none;text-align:center;padding:20px 0;
+  animation:cardEntrance 0.5s ease both;
+}
+.success-screen.active{display:block;}
+.check-svg{width:80px;height:80px;margin:0 auto 24px;}
+.check-circle{
+  fill:none;stroke:var(--gold);stroke-width:3;
+  stroke-dasharray:200;stroke-dashoffset:200;
+  animation:drawCircle 0.7s ease forwards 0.2s;
+}
+.check-tick{
+  fill:none;stroke:var(--gold-2);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:50;stroke-dashoffset:50;
+  animation:drawTick 0.4s ease forwards 0.85s;
+}
+@keyframes drawCircle{to{stroke-dashoffset:0;}}
+@keyframes drawTick{to{stroke-dashoffset:0;}}
+.success-title{
+  font-family:'Playfair Display',serif;font-size:28px;font-weight:700;
+  color:var(--gold-2);margin-bottom:10px;
+}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:28px;}
+.btn-download{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;border-radius:50px;
+  border:1px solid var(--gold-deep);background:transparent;
+  color:var(--gold);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
+  position:relative;overflow:hidden;
+}
+.btn-download:hover{background:rgba(232,198,106,0.08);box-shadow:0 4px 16px var(--gold-glow);}
+.btn-home{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 28px;border-radius:50px;
+  background:linear-gradient(135deg,var(--gold-deep),var(--gold));
+  color:#0a0800;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;margin-left:12px;
+}
+.btn-home:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--gold-glow);}
+.success-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--line);
+  padding:40px clamp(16px,4vw,48px) 28px;
+  text-align:center;
+}
+.foot-brand{
+  font-family:'Playfair Display',serif;font-size:20px;
+  color:var(--gold);margin-bottom:6px;
+}
+.social{display:flex;justify-content:center;gap:16px;margin:14px 0;}
+.social a{font-size:20px;text-decoration:none;transition:transform 0.2s;}
+.social a:hover{transform:scale(1.2);}
+.foot-links{font-size:12px;color:var(--muted-2);margin-bottom:12px;}
+.foot-links a{color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.foot-links a:hover{color:var(--gold);}
+.foot-fine{font-size:11px;color:var(--muted-2);max-width:600px;margin:0 auto;line-height:1.6;}
+
+/* ── OPTIONAL BADGE ── */
+.optional-badge{
+  font-size:10px;font-weight:600;letter-spacing:0.5px;
+  color:var(--muted-2);background:rgba(255,255,255,0.05);
+  border:1px solid var(--line);border-radius:4px;
+  padding:2px 6px;margin-left:8px;vertical-align:middle;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .form-card{padding:24px 18px;}
+  .btn-row{flex-direction:column-reverse;}
+  .btn-back{text-align:center;}
+  .success-btns{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- Aurora -->
+<div class="aurora">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- Splash -->
+<div id="splash">
+  <div class="splash-monogram">M</div>
+  <div class="splash-ring"></div>
+  <div class="splash-txt">Mendez Community</div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    Mendez Community
+    <span>Premium</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="silver-task.html">Reward Zone</a>
+    <a href="contact.html" class="active">Contact</a>
+    <a href="silver-task.html" class="nav-cta">Join Now</a>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="page-wrap">
+  <div class="form-card" id="formCard">
+
+    <!-- Progress dots + bar -->
+    <div class="progress-wrap">
+      <div class="progress-dots">
+        <div class="dot-step active" id="dot1">
+          <div class="dot-circle">1</div>
+          <div class="dot-label">You</div>
+        </div>
+        <div class="dot-step" id="dot2">
+          <div class="dot-circle">2</div>
+          <div class="dot-label">Purpose</div>
+        </div>
+        <div class="dot-step" id="dot3">
+          <div class="dot-circle">3</div>
+          <div class="dot-label">Details</div>
+        </div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill" style="width:33%"></div>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps-container" id="stepsContainer">
+
+      <!-- STEP 1 -->
+      <div class="step active" id="step1">
+        <div class="step-heading">Who are you?</div>
+        <div class="step-sub">Let's start with the basics — we promise to keep it short.</div>
+
+        <div class="field-wrap" id="fw-name">
+          <input type="text" id="inp-name" placeholder=" " autocomplete="name">
+          <label class="field-label" for="inp-name">Full Name</label>
+          <div class="field-error">Please enter your name.</div>
+        </div>
+
+        <div class="field-wrap" id="fw-email">
+          <input type="email" id="inp-email" placeholder=" " autocomplete="email">
+          <label class="field-label" for="inp-email">Email Address</label>
+          <div class="field-error">Please enter a valid email.</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-next" id="btn1" onclick="goNext(1)">Next &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" id="step2">
+        <div class="step-heading">What brings you here?</div>
+        <div class="step-sub">Choose the option that best describes your visit.</div>
+
+        <div class="radio-cards" id="radioCards">
+          <label class="radio-card" id="rc1" onclick="selectCard('join')">
+            <input type="radio" name="purpose" value="join">
+            <div class="radio-dot"></div>
+            <div class="radio-card-text">
+              <div class="radio-card-title">Join as Member</div>
+              <div class="radio-card-desc">Earn verified reward points by completing tasks</div>
+            </div>
+            <div class="radio-card-icon">🏅</div>
+          </label>
+          <label class="radio-card" id="rc2" onclick="selectCard('advertise')">
+            <input type="radio" name="purpose" value="advertise">
+            <div class="radio-dot"></div>
+            <div class="radio-card-text">
+              <div class="radio-card-title">Advertise with Us</div>
+              <div class="radio-card-desc">Reach our verified, engaged community audience</div>
+            </div>
+            <div class="radio-card-icon">📢</div>
+          </label>
+          <label class="radio-card" id="rc3" onclick="selectCard('feedback')">
+            <input type="radio" name="purpose" value="feedback">
+            <div class="radio-dot"></div>
+            <div class="radio-card-text">
+              <div class="radio-card-title">General Feedback</div>
+              <div class="radio-card-desc">Share ideas, suggestions, or report an issue</div>
+            </div>
+            <div class="radio-card-icon">💬</div>
+          </label>
+        </div>
+        <div class="field-error" id="radio-error" style="margin-bottom:12px;">Please select an option.</div>
+
+        <div class="btn-row">
+          <button class="btn-back" onclick="goBack(2)">&#8592; Back</button>
+          <button class="btn-next" id="btn2" onclick="goNext(2)">Next &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" id="step3">
+        <div class="step-heading">Tell us more</div>
+        <div class="step-sub">A little context helps us respond faster and better.</div>
+
+        <div class="field-wrap" id="fw-msg">
+          <textarea id="inp-msg" placeholder=" "></textarea>
+          <label class="field-label" for="inp-msg">Your Message</label>
+          <div class="field-error">Please write a short message.</div>
+        </div>
+
+        <div class="field-wrap">
+          <input type="email" id="inp-paypal" placeholder=" " autocomplete="off">
+          <label class="field-label" for="inp-paypal">PayPal Email for Rewards <span class="optional-badge">OPTIONAL</span></label>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-back" onclick="goBack(3)">&#8592; Back</button>
+          <button class="btn-next" id="btn3" onclick="submitForm()">Submit ✓</button>
+        </div>
+      </div>
+
+    </div><!-- /steps-container -->
+
+    <!-- SUCCESS SCREEN -->
+    <div class="success-screen" id="successScreen">
+      <svg class="check-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle class="check-circle" cx="40" cy="40" r="36"/>
+        <polyline class="check-tick" points="24,40 35,52 56,28"/>
+      </svg>
+      <div class="success-title" id="successTitle">Thank you!</div>
+      <div class="success-sub" id="successSub">
+        We've received your message and will be in touch soon.<br>
+        <span style="color:var(--muted-2);font-size:12px;">Your response has been saved locally on this device.</span>
+      </div>
+      <div class="success-btns">
+        <button class="btn-download" onclick="downloadResponse()">&#11015; Download Response</button>
+        <a href="index.html" class="btn-home">&#8592; Back to Home</a>
+      </div>
+    </div>
+
+  </div><!-- /form-card -->
+</div><!-- /page-wrap -->
+
+<!-- Footer -->
+<footer>
+  <div class="foot-brand">Mendez Community</div>
+  <div style="font-size:11px;color:var(--muted-2);">Premium &middot; Honest &middot; Verified Rewards</div>
+  <div class="social">
+    <a href="#" aria-label="Community" title="Community">&#128172;</a>
+    <a href="#" aria-label="Updates" title="Updates">&#128227;</a>
+    <a href="mailto:ads@mendezcommunity.com" aria-label="Email">&#9993;&#65039;</a>
+  </div>
+  <div class="foot-links">
+    <a href="silver-task.html">Reward Zone</a> &middot;
+    <a href="index.html">Home</a> &middot;
+    <a href="mailto:ads@mendezcommunity.com">Email Us</a>
+  </div>
+  <div class="foot-fine">
+    Mendez Community is an honest rewards platform. Reward points are credited only after the ad
+    network verifies a genuine view via server-side postback. This is not a guaranteed salary or
+    fixed income &mdash; payouts are made from actual ad revenue after admin review. &copy; 2026 Mendez Community.
+  </div>
+</footer>
+
+<script>
+/* ── STATE ── */
+let currentStep = 1;
+let selectedPurpose = null;
+let formData = {};
+
+const STORAGE_KEY = 'mendez_form_draft';
+const SUBMISSIONS_KEY = 'mendez_form_submissions';
+
+/* ── SPLASH ── */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hidden');
+  }, 900);
+  loadDraft();
+});
+
+/* ── DRAFT PERSISTENCE ── */
+function saveDraft() {
+  const draft = {
+    name: document.getElementById('inp-name').value,
+    email: document.getElementById('inp-email').value,
+    purpose: selectedPurpose,
+    msg: document.getElementById('inp-msg').value,
+    paypal: document.getElementById('inp-paypal').value,
+    step: currentStep
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.name) document.getElementById('inp-name').value = d.name;
+    if (d.email) document.getElementById('inp-email').value = d.email;
+    if (d.msg) document.getElementById('inp-msg').value = d.msg;
+    if (d.paypal) document.getElementById('inp-paypal').value = d.paypal;
+    if (d.purpose) selectCard(d.purpose);
+  } catch(e) {}
+}
+
+/* Auto-save on input */
+['inp-name','inp-email','inp-msg','inp-paypal'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', saveDraft);
+});
+
+/* ── RADIO CARD SELECTION ── */
+function selectCard(val) {
+  selectedPurpose = val;
+  document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+  const map = {join:'rc1', advertise:'rc2', feedback:'rc3'};
+  if (map[val]) document.getElementById(map[val]).classList.add('selected');
+  document.getElementById('radio-error').style.display = 'none';
+  saveDraft();
+}
+
+/* ── VALIDATION ── */
+function validateStep(step) {
+  let ok = true;
+  if (step === 1) {
+    const name = document.getElementById('inp-name').value.trim();
+    const email = document.getElementById('inp-email').value.trim();
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setFieldError('fw-name', !name);
+    setFieldError('fw-email', !emailRe.test(email));
+    if (!name || !emailRe.test(email)) ok = false;
+  }
+  if (step === 2) {
+    if (!selectedPurpose) {
+      document.getElementById('radio-error').style.display = 'block';
+      ok = false;
+    }
+  }
+  if (step === 3) {
+    const msg = document.getElementById('inp-msg').value.trim();
+    setFieldError('fw-msg', !msg);
+    if (!msg) ok = false;
+  }
+  return ok;
+}
+
+function setFieldError(wrapId, hasError) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  const inp = wrap.querySelector('input,textarea');
+  if (hasError) {
+    wrap.classList.add('has-error');
+    if (inp) inp.classList.add('error');
+  } else {
+    wrap.classList.remove('has-error');
+    if (inp) inp.classList.remove('error');
+  }
+}
+
+/* ── NAVIGATION ── */
+function goNext(fromStep) {
+  if (!validateStep(fromStep)) return;
+  const nextStep = fromStep + 1;
+  animateStep(fromStep, nextStep, 'forward');
+  currentStep = nextStep;
+  updateProgress(nextStep);
+  saveDraft();
+}
+
+function goBack(fromStep) {
+  const prevStep = fromStep - 1;
+  animateStep(fromStep, prevStep, 'backward');
+  currentStep = prevStep;
+  updateProgress(prevStep);
+}
+
+function animateStep(from, to, dir) {
+  const fromEl = document.getElementById('step' + from);
+  const toEl = document.getElementById('step' + to);
+  if (!fromEl || !toEl) return;
+
+  fromEl.classList.remove('active');
+  toEl.classList.add('active');
+
+  if (dir === 'forward') {
+    toEl.classList.add('slide-in-right');
+    setTimeout(() => toEl.classList.remove('slide-in-right'), 400);
+  } else {
+    toEl.classList.add('slide-in-left');
+    setTimeout(() => toEl.classList.remove('slide-in-left'), 400);
+  }
+}
+
+function updateProgress(step) {
+  const pct = {1:33, 2:66, 3:100};
+  document.getElementById('progressFill').style.width = (pct[step] || 33) + '%';
+
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot' + i);
+    dot.classList.remove('active','done');
+    if (i < step) dot.classList.add('done');
+    else if (i === step) dot.classList.add('active');
+    // Update dot circle content
+    const circle = dot.querySelector('.dot-circle');
+    if (i < step) circle.innerHTML = '&#10003;';
+    else circle.textContent = i;
+  }
+}
+
+/* ── SUBMIT ── */
+function submitForm() {
+  if (!validateStep(3)) return;
+
+  formData = {
+    name: document.getElementById('inp-name').value.trim(),
+    email: document.getElementById('inp-email').value.trim(),
+    purpose: selectedPurpose,
+    message: document.getElementById('inp-msg').value.trim(),
+    paypal: document.getElementById('inp-paypal').value.trim(),
+    submittedAt: new Date().toISOString()
+  };
+
+  // Save to localStorage
+  try {
+    const existing = JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || '[]');
+    existing.push(formData);
+    localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(existing));
+    localStorage.removeItem(STORAGE_KEY); // clear draft
+  } catch(e) {}
+
+  // Show success
+  document.getElementById('stepsContainer').style.display = 'none';
+  document.getElementById('progressFill').style.width = '100%';
+  document.querySelectorAll('.dot-step').forEach(d => {
+    d.classList.remove('active');
+    d.classList.add('done');
+    d.querySelector('.dot-circle').innerHTML = '&#10003;';
+  });
+
+  const successEl = document.getElementById('successScreen');
+  successEl.classList.add('active');
+  document.getElementById('successTitle').textContent = 'Thank you, ' + formData.name.split(' ')[0] + '! 🎉';
+
+  const purposeMap = {
+    join: "We'll review your membership request and reach out soon.",
+    advertise: "Our team will contact you about advertising opportunities.",
+    feedback: "Your feedback means a lot — we'll review it carefully."
+  };
+  document.getElementById('successSub').innerHTML =
+    (purposeMap[formData.purpose] || "We've received your message.") +
+    '<br><span style="color:var(--muted-2);font-size:12px;">Your response has been saved locally on this device.</span>';
+}
+
+/* ── DOWNLOAD RESPONSE ── */
+function downloadResponse() {
+  if (!formData.name) return;
+  const purposeLabel = {join:'Join as Member', advertise:'Advertise with Us', feedback:'General Feedback'};
+  const txt = [
+    '=== Mendez Community — Form Submission ===',
+    'Date: ' + new Date(formData.submittedAt).toLocaleString(),
+    '',
+    'Name:    ' + formData.name,
+    'Email:   ' + formData.email,
+    'Purpose: ' + (purposeLabel[formData.purpose] || formData.purpose),
+    'Message: ' + formData.message,
+    formData.paypal ? 'PayPal:  ' + formData.paypal : '',
+    '',
+    '--- Mendez Community | ads@mendezcommunity.com ---'
+  ].filter(Boolean).join('\n');
+
+  const blob = new Blob([txt], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mendez-form-' + Date.now() + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ── RIPPLE EFFECT ── */
+document.querySelectorAll('.btn-next').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+    this.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  });
+});
+
+/* ── KEYBOARD: Enter advances step ── */
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const tag = document.activeElement.tagName;
+  if (tag === 'TEXTAREA') return; // allow newlines in textarea
+  e.preventDefault();
+  if (currentStep === 1) goNext(1);
+  else if (currentStep === 2) goNext(2);
+  else if (currentStep === 3) submitForm();
+});
+
+/* ── SERVICE WORKER ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  });
+}
+
+/* ── PWA INSTALL BUTTON ── */
+let deferredPrompt;
+const installBtn = document.createElement('button');
+installBtn.id = 'installBtn';
+installBtn.textContent = '📲 Install App';
+installBtn.style.cssText = `
+  display:none;position:fixed;bottom:24px;right:24px;z-index:500;
+  padding:12px 20px;border-radius:50px;border:1px solid var(--gold);
+  background:rgba(10,8,0,0.9);color:var(--gold);
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;backdrop-filter:blur(12px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  transition:transform 0.2s,box-shadow 0.2s;
+`;
+document.body.appendChild(installBtn);
+installBtn.addEventListener('mouseenter', () => {
+  installBtn.style.transform = 'translateY(-2px)';
+  installBtn.style.boxShadow = '0 6px 24px rgba(232,198,106,0.3)';
+});
+installBtn.addEventListener('mouseleave', () => {
+  installBtn.style.transform = '';
+  installBtn.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5)';
+});
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'block';
+});
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const {outcome} = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') installBtn.style.display = 'none';
+  deferredPrompt = null;
+});
+window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; });
+</script>
+</body>
+</html>
