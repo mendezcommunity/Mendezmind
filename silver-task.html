@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Content Security Policy: block mixed content, restrict scripts to known safe CDNs only -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https:;
+        connect-src 'self' https://us-central1-mendez-community.cloudfunctions.net;
+        frame-src 'none';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mendez Silver Task &mdash; Premium Reward Zone</title>
     <!-- LUXURY REDESIGN v12 2026-07-08:
@@ -180,7 +193,7 @@
         <div class="header reveal">
             <div class="brand-mark">M</div>
             <div class="header-title">&#129352; <span class="grad">Silver Task</span></div>
-            <div class="header-sub">Premium Reward Zone &middot; Monetag Powered</div>
+            <div class="header-sub">Premium Reward Zone &middot; Verified Offers Only</div>
         </div>
 
         <!-- VERIFIED REWARD BALANCE -->
@@ -202,7 +215,7 @@
             <div class="earnings-amount" id="reward-points">0</div>
             <div class="earnings-note">
                 Activity only &mdash; how many times you opened the sponsor offer on this device.
-                Actual earnings are tracked and confirmed in the Monetag/Adsterra dashboards,
+                Actual earnings are tracked and confirmed in the ad-network publisher dashboards,
                 not shown here as cash.
             </div>
         </div>
@@ -234,11 +247,12 @@
 
         <!-- AD SAFETY NOTICE -->
         <div class="ad-safety-notice" id="ad-safety-notice">
-            &#128737; <strong>Ad Safety Notice:</strong> Sponsored offers are served by third-party ad networks
-            (Monetag / Adsterra) and may rotate. We ask these networks to show only clean, mainstream ads
-            and to block gambling, adult, and scam/&ldquo;fake alert&rdquo; categories. If you ever see an inappropriate
-            or scammy ad, please report it to <strong>ads@mendezcommunity.com</strong> so we can blacklist
-            that advertiser. See <strong>AD_QUALITY_GUIDELINES.md</strong> in our repo for details.
+            &#128737; <strong>Ad Safety Notice:</strong> This page uses only a voluntary, user-initiated
+            smartlink (the button above). <strong>No auto-fire ads, no popunders, no forced views.</strong>
+            We block gambling, adult, scam/&ldquo;fake alert&rdquo;, and aggressive ad categories at the
+            network-dashboard level. If you ever see a misleading or scammy offer, please report it to
+            <strong>ads@mendezcommunity.com</strong> and we will blacklist that advertiser immediately.
+            See <strong>AD_QUALITY_GUIDELINES.md</strong> in our repo for full blocking instructions.
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════════════════
