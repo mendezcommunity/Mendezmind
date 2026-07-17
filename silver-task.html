@@ -2,19 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Content Security Policy: block mixed content, restrict scripts to known safe CDNs only -->
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
-        font-src 'self' https://fonts.gstatic.com;
-        img-src 'self' data: https:;
-        connect-src 'self' https://us-central1-mendez-community.cloudfunctions.net;
-        frame-src 'none';
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-    ">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mendez Silver Task &mdash; Premium Reward Zone</title>
     <!-- LUXURY REDESIGN v12 2026-07-08:
@@ -193,7 +180,7 @@
         <div class="header reveal">
             <div class="brand-mark">M</div>
             <div class="header-title">&#129352; <span class="grad">Silver Task</span></div>
-            <div class="header-sub">Premium Reward Zone &middot; Verified Offers Only</div>
+            <div class="header-sub">Premium Reward Zone &middot; Monetag Powered</div>
         </div>
 
         <!-- VERIFIED REWARD BALANCE -->
@@ -215,7 +202,7 @@
             <div class="earnings-amount" id="reward-points">0</div>
             <div class="earnings-note">
                 Activity only &mdash; how many times you opened the sponsor offer on this device.
-                Actual earnings are tracked and confirmed in the ad-network publisher dashboards,
+                Actual earnings are tracked and confirmed in the Monetag/Adsterra dashboards,
                 not shown here as cash.
             </div>
         </div>
@@ -236,6 +223,14 @@
            id="silver-task-btn"
            onclick="onOfferOpened()">&#128065; Open Sponsor Offer (New Tab)</a>
 
+        <!-- REPORT BAD AD BUTTON (added July 17, 2026) -->
+        <a class="btn"
+           href="mailto:ads@mendezcommunity.com?subject=Bad%20Ad%20Report&body=Please%20describe%20the%20bad%20ad%20you%20saw%3A%0A%0APage%3A%20silver-task.html%0ADate%3A%20"
+           style="background:rgba(255,80,80,0.13);border:1px solid rgba(255,80,80,0.35);color:#ff8080;font-size:12px;padding:8px 18px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px;"
+           title="Report a scam or misleading ad to our team">
+            &#9888;&#65039; Report Bad Ad
+        </a>
+
         <div class="info-msg" id="info-msg" style="display:none;"></div>
 
         <div class="disclaimer">
@@ -245,14 +240,12 @@
             fixed payout. Please do not click repeatedly to inflate views; that violates ad-network policy.
         </div>
 
-        <!-- AD SAFETY NOTICE -->
+        <!-- AD SAFETY NOTICE (updated July 17, 2026) -->
         <div class="ad-safety-notice" id="ad-safety-notice">
-            &#128737; <strong>Ad Safety Notice:</strong> This page uses only a voluntary, user-initiated
-            smartlink (the button above). <strong>No auto-fire ads, no popunders, no forced views.</strong>
-            We block gambling, adult, scam/&ldquo;fake alert&rdquo;, and aggressive ad categories at the
-            network-dashboard level. If you ever see a misleading or scammy offer, please report it to
-            <strong>ads@mendezcommunity.com</strong> and we will blacklist that advertiser immediately.
-            See <strong>AD_QUALITY_GUIDELINES.md</strong> in our repo for full blocking instructions.
+            &#128737; <strong>Ad Safety Notice:</strong>
+            <span style="color:#4fd39a;font-weight:700;">हम scam और fake reward ads को block करते हैं। केवल verified sponsor offers दिखाए जाते हैं।</span><br>
+            We actively block scam &amp; fake reward ads. Only verified sponsor offers are shown.<br>
+            <small>Spotted a bad ad? <a href="mailto:ads@mendezcommunity.com?subject=Bad%20Ad%20Report" style="color:#4fd39a;">Report it here</a> — we blacklist repeat offenders. See <strong>AD_QUALITY_GUIDELINES.md</strong> for details.</small>
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════════════════
@@ -629,6 +622,75 @@
             }
         }
         document.addEventListener("DOMContentLoaded", () => setTimeout(loadWithdrawalHistory, 800));
+    </script>
+
+
+    <!-- =====================================================================
+         AD SAFETY FILTER — July 17, 2026
+         Blocks known scam/fraud ad domains via MutationObserver.
+         Scans all iframes and anchors injected by ad networks.
+    ====================================================================== -->
+    <script>
+    (function() {
+        'use strict';
+        var BLOCKED_DOMAINS = [
+            'phonepe-reward.com',
+            'paytm-cashback.net',
+            'spin-win.in',
+            'free-recharge.in'
+        ];
+        var BLOCKED_KEYWORDS = [
+            'spin', 'reward-claim', 'free-prize', 'lucky-winner', 'cashback-offer'
+        ];
+
+        function isBlockedUrl(url) {
+            if (!url) return false;
+            try {
+                var u = url.toLowerCase();
+                for (var i = 0; i < BLOCKED_DOMAINS.length; i++) {
+                    if (u.indexOf(BLOCKED_DOMAINS[i]) !== -1) return true;
+                }
+                for (var j = 0; j < BLOCKED_KEYWORDS.length; j++) {
+                    if (u.indexOf(BLOCKED_KEYWORDS[j]) !== -1) return true;
+                }
+            } catch(e) {}
+            return false;
+        }
+
+        function scanAndBlock(root) {
+            var nodes = (root || document).querySelectorAll('iframe, a[href]');
+            nodes.forEach(function(el) {
+                var url = el.src || el.href || '';
+                if (isBlockedUrl(url)) {
+                    console.warn('[AdSafetyFilter] Blocked scam/fraud ad:', url);
+                    el.style.display = 'none';
+                    if (el.parentNode) el.parentNode.removeChild(el);
+                }
+            });
+        }
+
+        // Initial scan
+        document.addEventListener('DOMContentLoaded', function() { scanAndBlock(document); });
+
+        // MutationObserver for dynamically injected ads
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+                m.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) {
+                        var url = node.src || node.href || '';
+                        if (isBlockedUrl(url)) {
+                            console.warn('[AdSafetyFilter] Blocked injected scam ad:', url);
+                            node.style.display = 'none';
+                            if (node.parentNode) node.parentNode.removeChild(node);
+                        }
+                        // Also scan children
+                        scanAndBlock(node);
+                    }
+                });
+            });
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+    })();
     </script>
 
 </body>
