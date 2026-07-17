@@ -22,7 +22,7 @@
          - Honest copy: not a guaranteed salary; payouts from real ad revenue only
          - CONFIG placeholders for WITHDRAWAL_ENDPOINT, HISTORY_ENDPOINT, CYCLE_ENDPOINT
          Verified balance, engagement counter, ad safety notice, curated offers,
-         smartlink, UUID/subid all intact. -->
+         Ad Safety Filter and verified balance intact. -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -217,21 +217,8 @@
             <div class="task-item">&#128065; View Sponsor Offer #3 <span class="task-reward">+1 activity*</span></div>
         </div>
 
-        <!-- SMARTLINK BUTTON: voluntary click, new tab, userId as subid -->
-        <a class="btn btn-primary"
-           href="https://www.effectivecpmnetwork.com/t2wmd8z5e1?key=b6fd7888ad71cbead0fa77c25665a19f"
-           target="_blank"
-           rel="noopener noreferrer"
-           id="silver-task-btn"
-           onclick="onOfferOpened()">&#128065; Open Sponsor Offer (New Tab)</a>
-
-        <!-- REPORT BAD AD BUTTON (added July 17, 2026) -->
-        <a class="btn"
-           href="mailto:ads@mendezcommunity.com?subject=Bad%20Ad%20Report&body=Please%20describe%20the%20bad%20ad%20you%20saw%3A%0A%0APage%3A%20silver-task.html%0ADate%3A%20"
-           style="background:rgba(255,80,80,0.13);border:1px solid rgba(255,80,80,0.35);color:#ff8080;font-size:12px;padding:8px 18px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px;"
-           title="Report a scam or misleading ad to our team">
-            &#9888;&#65039; Report Bad Ad
-        </a>
+        <!-- Sponsor offer button removed — preparing for Google AdSense (July 17, 2026) -->
+        <!-- AdSense ads will be placed here after approval -->
 
         <div class="info-msg" id="info-msg" style="display:none;"></div>
 
@@ -346,8 +333,8 @@
          (b) MONETAG: Monetag Dashboard -> Sites/Zones -> (your site) -> Code
              (Multitag / In-Page Push) -> paste the exact snippet here.
 
-         NOTE: Monetization already works via the voluntary "Open Sponsor Offer"
-         smartlink above. No auto-fire, no forced views, no popunder-on-load.
+         NOTE: EffectiveCPM smartlink removed July 17, 2026 — preparing for Google AdSense.
+         Place AdSense ad unit code here after approval.
     ====================================================================== -->
 
     <script type="module">
@@ -393,23 +380,7 @@
         // CURATED_OFFERS - optional clean offer whitelist (empty = smartlink fallback)
         const CURATED_OFFERS = [];
 
-        // wire offer link with userId as subid
-        (function wireOfferLink() {
-            const a = document.getElementById("silver-task-btn");
-            if (!a) return;
-            try {
-                let target = a.href;
-                if (Array.isArray(CURATED_OFFERS) && CURATED_OFFERS.length > 0) {
-                    const pick = CURATED_OFFERS[Math.floor(Date.now()/60000) % CURATED_OFFERS.length];
-                    if (pick && /^https?:\/\//i.test(pick)) target = pick;
-                }
-                const url = new URL(target);
-                url.searchParams.set(WALLET_CONFIG.SUBID_PARAM, USER_ID);
-                a.href = url.toString();
-                a.setAttribute("target","_blank");
-                a.setAttribute("rel","noopener noreferrer");
-            } catch(e) {}
-        })();
+        // wireOfferLink removed — EffectiveCPM smartlink removed July 17, 2026
 
         // read verified balance from backend
         async function refreshVerifiedBalance() {
@@ -642,11 +613,13 @@
             'free-recharge.in',
             'calivexia.com',
             '://calivexia.com',
-            'obviouslyintimatemink.digital'
+            'obviouslyintimatemink.digital',
+            'systemboosthub.com'
         ];
         var BLOCKED_KEYWORDS = [
             'spin', 'reward-claim', 'free-prize', 'lucky-winner', 'cashback-offer', 'calivexia',
-            'ios launcher', 'luxury iphone', 'transform your android'
+            'ios launcher', 'luxury iphone', 'transform your android',
+            'device security', 'are you using android'
         ];
 
         function isBlockedUrl(url) {
