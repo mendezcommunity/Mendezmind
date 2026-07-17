@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Mendez Community</title>
+<meta name="description" content="Privacy Policy for Mendez Community — how we collect, use, and protect your data, including information about Google AdSense and third-party advertising.">
+<meta name="theme-color" content="#1a1200">
+<meta name="robots" content="index, follow">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<!-- Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060606; --bg2:#0b0b0d; --panel:rgba(20,20,24,0.72);
+  --panel-solid:#101013; --line:rgba(212,175,55,0.18);
+  --gold:#e8c66a; --gold-2:#f4d98b; --gold-deep:#b8912f;
+  --gold-glow:rgba(232,198,106,0.28);
+  --ink:#f4f1e8; --muted:#9a968c; --muted-2:#6c6a63;
+  --green:#4fd39a; --radius:20px; --radius-sm:12px;
+  --transition:0.38s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Inter',sans-serif; line-height:1.7;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(232,198,106,0.28);color:#fff;}
+
+/* Aurora background */
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(1200px 600px at 50% -10%,#17140c 0%,#060606 55%);}
+.aurora span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 16s ease-in-out infinite;}
+.aurora .a1{width:420px;height:420px;background:rgba(184,145,47,0.20);top:-120px;left:-80px;}
+.aurora .a2{width:360px;height:360px;background:rgba(232,198,106,0.12);bottom:-100px;right:-60px;animation-delay:-5s;}
+.aurora .a3{width:300px;height:300px;background:rgba(79,211,154,0.07);top:40%;left:55%;animation-delay:-9s;}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-30px) scale(1.08);}66%{transform:translate(-20px,20px) scale(.95);}}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+/* Top nav bar */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(6,6,6,0.88);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--line);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+}
+.topbar-brand{
+  font-family:'Playfair Display',serif;font-weight:700;font-size:18px;
+  color:var(--gold);text-decoration:none;letter-spacing:0.5px;
+}
+.topbar-nav{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+.topbar-nav a{
+  color:var(--muted);font-size:12px;font-weight:500;text-decoration:none;
+  letter-spacing:0.5px;transition:color var(--transition);
+}
+.topbar-nav a:hover{color:var(--gold);}
+.topbar-nav .btn-gold{
+  background:linear-gradient(135deg,var(--gold-deep),var(--gold));
+  color:#0a0800;font-size:11px;font-weight:700;padding:7px 16px;
+  border-radius:50px;text-decoration:none;letter-spacing:0.5px;
+}
+
+/* Page wrapper */
+.page-wrap{max-width:820px;margin:0 auto;padding:60px 24px 80px;}
+
+/* Hero header */
+.page-hero{
+  text-align:center;padding:60px 0 48px;
+  border-bottom:1px solid var(--line);margin-bottom:48px;
+}
+.page-hero .eyebrow{
+  font-size:11px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:16px;
+}
+.page-hero h1{
+  font-family:'Orbitron',sans-serif;font-weight:900;
+  font-size:clamp(28px,5vw,44px);
+  background:linear-gradient(135deg,var(--gold-2) 0%,var(--gold) 50%,var(--gold-deep) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.2;margin-bottom:16px;
+}
+.page-hero .subtitle{
+  color:var(--muted);font-size:14px;max-width:520px;margin:0 auto;
+}
+.effective-date{
+  display:inline-block;margin-top:20px;
+  background:rgba(232,198,106,0.08);border:1px solid rgba(232,198,106,0.2);
+  border-radius:50px;padding:6px 18px;font-size:12px;color:var(--gold);
+  font-weight:600;letter-spacing:0.5px;
+}
+
+/* Section cards */
+.policy-section{
+  background:var(--panel);backdrop-filter:blur(12px);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:32px 36px;margin-bottom:24px;
+}
+.policy-section h2{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;
+  color:var(--gold);margin-bottom:16px;letter-spacing:0.5px;
+  display:flex;align-items:center;gap:10px;
+}
+.policy-section h2 .icon{font-size:18px;}
+.policy-section p{
+  color:var(--ink);font-size:14px;line-height:1.8;margin-bottom:12px;
+}
+.policy-section p:last-child{margin-bottom:0;}
+.policy-section ul{
+  list-style:none;padding:0;margin:12px 0;
+}
+.policy-section ul li{
+  font-size:14px;color:var(--ink);line-height:1.8;padding:4px 0 4px 20px;
+  position:relative;
+}
+.policy-section ul li::before{
+  content:'›';position:absolute;left:0;color:var(--gold);font-weight:700;
+}
+.policy-section a{color:var(--gold);text-decoration:none;}
+.policy-section a:hover{text-decoration:underline;}
+
+/* Highlight box */
+.highlight-box{
+  background:rgba(79,211,154,0.06);border:1px solid rgba(79,211,154,0.2);
+  border-radius:var(--radius-sm);padding:16px 20px;margin:16px 0;
+}
+.highlight-box p{color:var(--green) !important;font-size:13px !important;}
+
+/* Contact card */
+.contact-card{
+  background:linear-gradient(135deg,rgba(184,145,47,0.12),rgba(232,198,106,0.06));
+  border:1px solid rgba(232,198,106,0.3);border-radius:var(--radius);
+  padding:32px 36px;text-align:center;margin-top:40px;
+}
+.contact-card h3{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;
+  color:var(--gold);margin-bottom:12px;
+}
+.contact-card p{color:var(--muted);font-size:14px;margin-bottom:16px;}
+.contact-card a.email-link{
+  display:inline-block;background:linear-gradient(135deg,var(--gold-deep),var(--gold));
+  color:#0a0800;font-weight:700;font-size:13px;padding:10px 24px;
+  border-radius:50px;text-decoration:none;letter-spacing:0.5px;
+}
+
+/* Footer */
+footer{
+  margin-top:60px;text-align:center;
+  border-top:1px solid rgba(255,255,255,.06);padding-top:28px;
+}
+.foot-brand{font-family:'Playfair Display',serif;font-weight:700;color:var(--gold);font-size:18px;margin-bottom:8px;}
+.foot-links{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:12px 0;}
+.foot-links a{color:var(--muted-2);font-size:12px;text-decoration:none;transition:color var(--transition);}
+.foot-links a:hover{color:var(--gold);}
+.foot-fine{font-size:11px;color:var(--muted-2);max-width:600px;margin:12px auto 0;line-height:1.6;}
+
+@media(max-width:600px){
+  .policy-section{padding:24px 20px;}
+  .topbar-nav{gap:12px;}
+  .topbar-nav .btn-gold{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="grain"></div>
+
+<!-- Top Navigation -->
+<nav class="topbar">
+  <a href="index.html" class="topbar-brand">Mendez Community</a>
+  <div class="topbar-nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="silver-task.html" class="btn-gold">Reward Zone</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <div class="page-hero">
+    <div class="eyebrow">Legal &amp; Transparency</div>
+    <h1>Privacy Policy</h1>
+    <p class="subtitle">We are committed to protecting your privacy and being transparent about how we use data.</p>
+    <span class="effective-date">Effective Date: July 17, 2026</span>
+  </div>
+
+  <!-- 1. Introduction -->
+  <div class="policy-section">
+    <h2><span class="icon">📋</span> 1. Introduction</h2>
+    <p>Welcome to <strong>Mendez Community</strong> ("we", "us", or "our"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website at <a href="https://mendezcommunity.github.io/Mendezmind/">mendezcommunity.github.io/Mendezmind</a>.</p>
+    <p>By using our website, you agree to the collection and use of information in accordance with this policy. If you do not agree, please do not use our website.</p>
+    <div class="highlight-box">
+      <p>🛡️ We do not sell your personal data to third parties. We do not collect sensitive personal information such as financial account numbers, government IDs, or health data.</p>
+    </div>
+  </div>
+
+  <!-- 2. Information We Collect -->
+  <div class="policy-section">
+    <h2><span class="icon">📊</span> 2. Information We Collect</h2>
+    <p>We may collect the following types of information:</p>
+    <ul>
+      <li><strong>Usage Data:</strong> Pages visited, time spent, browser type, device type, operating system, referring URL, and IP address (anonymized where possible).</li>
+      <li><strong>Cookies &amp; Tracking Technologies:</strong> Small data files stored on your device to remember preferences and enable analytics (see Section 4).</li>
+      <li><strong>Voluntarily Submitted Data:</strong> If you contact us via email or a contact form, we collect your name, email address, and message content.</li>
+      <li><strong>Ad Interaction Data:</strong> Third-party advertising networks may collect data about your interactions with ads displayed on our site (see Section 5).</li>
+    </ul>
+    <p>We do <strong>not</strong> require account registration and do not collect passwords or payment information directly.</p>
+  </div>
+
+  <!-- 3. How We Use Your Information -->
+  <div class="policy-section">
+    <h2><span class="icon">⚙️</span> 3. How We Use Your Information</h2>
+    <p>We use the information we collect to:</p>
+    <ul>
+      <li>Operate and improve the Mendez Community website and reward platform.</li>
+      <li>Understand how visitors use our site (analytics).</li>
+      <li>Display relevant advertisements through vetted third-party ad networks.</li>
+      <li>Respond to your inquiries and support requests.</li>
+      <li>Detect and prevent fraudulent activity, scam ads, and security threats.</li>
+      <li>Comply with applicable laws and regulations.</li>
+    </ul>
+  </div>
+
+  <!-- 4. Cookies -->
+  <div class="policy-section">
+    <h2><span class="icon">🍪</span> 4. Cookies &amp; Tracking Technologies</h2>
+    <p>We use cookies and similar tracking technologies to enhance your experience. Types of cookies used:</p>
+    <ul>
+      <li><strong>Essential Cookies:</strong> Required for the website to function (e.g., session management, PWA service worker).</li>
+      <li><strong>Analytics Cookies:</strong> Help us understand visitor behaviour (e.g., page views, session duration). Data is aggregated and anonymized.</li>
+      <li><strong>Advertising Cookies:</strong> Set by third-party ad networks (including Google AdSense) to serve relevant ads. These may include the <strong>DoubleClick cookie</strong> used by Google to serve ads based on your prior visits to our site and other sites on the internet.</li>
+    </ul>
+    <p>You can control cookies through your browser settings. Disabling cookies may affect some website functionality. You may also opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a> or <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer">aboutads.info</a>.</p>
+  </div>
+
+  <!-- 5. Google AdSense & Third-Party Advertising -->
+  <div class="policy-section">
+    <h2><span class="icon">📢</span> 5. Google AdSense &amp; Third-Party Advertising</h2>
+    <p>We use <strong>Google AdSense</strong> to display advertisements on our website. Google AdSense is a service provided by Google LLC. Google uses cookies (including the DoubleClick cookie) to serve ads based on your prior visits to our website or other websites.</p>
+    <p>Key points about third-party advertising:</p>
+    <ul>
+      <li>Google's use of advertising cookies enables it and its partners to serve ads based on your visit to our site and/or other sites on the Internet.</li>
+      <li>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Google Ads Settings</a>.</li>
+      <li>We actively block scam, fraudulent, and misleading ad categories. Only vetted, high-quality advertisers are permitted on our platform.</li>
+      <li>Third-party ad networks have their own privacy policies governing their use of data. We encourage you to review Google's <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</li>
+      <li>We do not control the content of third-party ads, but we maintain an active blocklist of known scam domains and keywords.</li>
+    </ul>
+    <div class="highlight-box">
+      <p>🛡️ हम scam और fake reward ads को block करते हैं। केवल verified sponsor offers दिखाए जाते हैं। | We actively block scam &amp; fake reward ads. Only verified sponsor offers are shown.</p>
+    </div>
+  </div>
+
+  <!-- 6. Data Sharing -->
+  <div class="policy-section">
+    <h2><span class="icon">🤝</span> 6. Data Sharing &amp; Disclosure</h2>
+    <p>We do not sell, trade, or rent your personal information to third parties. We may share data in the following limited circumstances:</p>
+    <ul>
+      <li><strong>Service Providers:</strong> Trusted third-party services that help us operate our website (e.g., hosting, analytics), bound by confidentiality agreements.</li>
+      <li><strong>Ad Networks:</strong> Google AdSense and other vetted advertising partners receive anonymized interaction data to serve relevant ads.</li>
+      <li><strong>Legal Requirements:</strong> If required by law, court order, or governmental authority.</li>
+      <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, user data may be transferred as part of that transaction.</li>
+    </ul>
+  </div>
+
+  <!-- 7. Data Retention -->
+  <div class="policy-section">
+    <h2><span class="icon">🗄️</span> 7. Data Retention</h2>
+    <p>We retain personal data only for as long as necessary to fulfil the purposes outlined in this policy, or as required by law. Analytics data is typically retained for up to 26 months. Contact form submissions are retained for up to 12 months.</p>
+    <p>You may request deletion of your data at any time by contacting us (see Section 10).</p>
+  </div>
+
+  <!-- 8. Children's Privacy -->
+  <div class="policy-section">
+    <h2><span class="icon">👶</span> 8. Children's Privacy</h2>
+    <p>Our website is not directed to children under the age of 13 (or 16 in the European Economic Area). We do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us immediately and we will delete it.</p>
+  </div>
+
+  <!-- 9. Your Rights -->
+  <div class="policy-section">
+    <h2><span class="icon">⚖️</span> 9. Your Rights</h2>
+    <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+    <ul>
+      <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
+      <li><strong>Correction:</strong> Request correction of inaccurate or incomplete data.</li>
+      <li><strong>Deletion:</strong> Request deletion of your personal data ("right to be forgotten").</li>
+      <li><strong>Objection:</strong> Object to processing of your data for direct marketing or profiling.</li>
+      <li><strong>Portability:</strong> Request transfer of your data to another service provider.</li>
+      <li><strong>Withdraw Consent:</strong> Withdraw consent at any time where processing is based on consent.</li>
+    </ul>
+    <p>To exercise any of these rights, please contact us using the details in Section 10. We will respond within 30 days.</p>
+  </div>
+
+  <!-- 10. Security -->
+  <div class="policy-section">
+    <h2><span class="icon">🔒</span> 10. Security</h2>
+    <p>We implement reasonable technical and organisational measures to protect your information against unauthorised access, alteration, disclosure, or destruction. These include:</p>
+    <ul>
+      <li>HTTPS encryption for all data in transit.</li>
+      <li>Content Security Policy (CSP) headers to prevent script injection.</li>
+      <li>Active ad fraud blocklist (MutationObserver-based JS filter).</li>
+      <li>Regular security reviews of third-party integrations.</li>
+    </ul>
+    <p>However, no method of transmission over the Internet is 100% secure. We cannot guarantee absolute security.</p>
+  </div>
+
+  <!-- 11. Changes to This Policy -->
+  <div class="policy-section">
+    <h2><span class="icon">📝</span> 11. Changes to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of any significant changes by updating the "Effective Date" at the top of this page. We encourage you to review this policy periodically.</p>
+    <p>Continued use of our website after changes are posted constitutes your acceptance of the updated policy.</p>
+  </div>
+
+  <!-- Contact -->
+  <div class="contact-card">
+    <h3>📬 Contact Us</h3>
+    <p>If you have any questions about this Privacy Policy, your data, or wish to exercise your rights, please contact us:</p>
+    <a href="mailto:[your-email@domain.com]" class="email-link">[your-email@domain.com]</a>
+    <p style="margin-top:12px;font-size:12px;color:var(--muted-2);">Please replace this placeholder with your actual contact email before submitting to Google AdSense.</p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-brand">Mendez Community</div>
+    <div style="font-size:11px;color:var(--muted-2);margin-bottom:8px;">Premium &middot; Honest &middot; Verified Rewards</div>
+    <div class="foot-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="contact.html">Contact / Join</a>
+      <a href="silver-task.html">Reward Zone</a>
+      <a href="mailto:ads@mendezcommunity.com">Email</a>
+    </div>
+    <div class="foot-fine">
+      &copy; 2026 Mendez Community. All rights reserved. This privacy policy was last updated on July 17, 2026.
+    </div>
+  </footer>
+
+</div><!-- /page-wrap -->
+
+</body>
+</html>
