@@ -14,6 +14,19 @@
     <meta name="apple-mobile-web-app-title" content="Mendez">
     <link rel="apple-touch-icon" href="icon-192.svg">
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- Content Security Policy: block mixed content, restrict scripts to known safe CDNs only -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https:;
+        connect-src 'self' https://us-central1-mendez-community.cloudfunctions.net;
+        frame-src 'none';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
@@ -352,10 +365,11 @@
 
             <!-- AD SAFETY NOTICE -->
             <div class="notice">
-                &#128737; <strong>Ad Safety Notice:</strong> Ads on this site are served by third-party networks
-                (Monetag / Adsterra) and may rotate. We configure these networks to show only clean,
-                mainstream ads and to block gambling, adult, and scam/&ldquo;fake alert&rdquo; categories. Spotted a
-                bad ad? Report it to <strong>ads@mendezcommunity.com</strong> and we'll blacklist that advertiser.
+                &#128737; <strong>Ad Safety Notice:</strong> This site uses only voluntary, user-initiated
+                sponsor offers &mdash; <strong>no auto-fire ads, no popunders, no forced views.</strong>
+                We block gambling, adult, scam/&ldquo;fake alert&rdquo;, and aggressive ad categories at the
+                network-dashboard level. Spotted a misleading or scammy offer? Report it to
+                <strong>ads@mendezcommunity.com</strong> and we will blacklist that advertiser immediately.
             </div>
 
             <button class="btn btn-gold" id="coach-btn" style="width:100%;justify-content:center;" onclick="ripple(event);startMendezFreeTrial()">Preview the Reward Zone</button>
@@ -482,7 +496,7 @@
         });
 
         /* NOTE: No client-side timer credits the wallet. Real reward crediting happens
-           on the backend via Monetag/Adsterra server-side postbacks (verified views).
+           on the backend via ad-network server-side postbacks (verified views).
            The wallet display stays at the real balance (0.00 until backend confirms). */
     </script>
 
