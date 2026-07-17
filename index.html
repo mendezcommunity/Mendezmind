@@ -14,6 +14,8 @@
     <meta name="apple-mobile-web-app-title" content="Mendez">
     <link rel="apple-touch-icon" href="icon-192.svg">
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- Content Security Policy: block mixed content, restrict scripts to known safe CDNs only -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://us-central1-mendez-community.cloudfunctions.net; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
