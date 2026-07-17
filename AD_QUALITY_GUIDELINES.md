@@ -1,23 +1,10 @@
 # 🛡️ Ad Quality & Safety Guidelines — Mendez Community
-**Version 2 — Updated 17 July 2026**
+
+**Last Updated:** July 17, 2026
 
 **Goal:** Block scam / gambling / adult / dating / aggressive ("fake system alert", "your device is infected", scare) ad categories, and serve only **clean mainstream** ads (e-commerce, software, brands, apps, utilities).
 
-> ⚠️ **Reality check (important, honest):** Ad **category filtering is controlled inside the ad-network PUBLISHER DASHBOARDS — NOT in this website's code.** The website adds an honest disclaimer, a Content Security Policy (CSP) meta tag, and an optional self-curated clean-offer list. The real blocking is done in your Monetag & Adsterra dashboards (below).
-
----
-
-## ✅ What is already in place on the website (as of v2)
-
-| Protection | Where | Status |
-|---|---|---|
-| Dead Monetag script (`monetag.com/showads/pub-11242429.js`) | silver-task.html | ✅ Removed (was 404, now clean comment only) |
-| Content Security Policy (CSP) meta tag | Both pages `<head>` | ✅ Added — blocks unknown external scripts |
-| Ad Safety Notice (strengthened) | Both pages | ✅ Updated — no network branding, clear "no auto-fire" statement |
-| "Monetag Powered" branding | silver-task.html header | ✅ Removed — replaced with "Verified Offers Only" |
-| Voluntary smartlink only | silver-task.html | ✅ No auto-fire, no popunder, user-initiated only |
-| CURATED_OFFERS whitelist placeholder | silver-task.html JS | ✅ Present — add clean offer URLs here |
-| Honest wallet copy | Both pages | ✅ No fake cash, no guaranteed payout claims |
+> ⚠️ **Reality check (important, honest):** Ad **category filtering is controlled inside the ad-network PUBLISHER DASHBOARDS — NOT in this website's code.** The Monetag Smartlink and zone scripts do **not** expose a JavaScript parameter that universally blocks a category. So the real fix is done in your Monetag & Adsterra dashboards (below). The website only adds an honest disclaimer + an optional self-curated clean-offer list (see the last section).
 
 ---
 
@@ -32,7 +19,6 @@
    - **Aggressive / Alert / Scare / "System warning"** style ads
    - **Sweepstakes / "You won a prize" / Fake-reward**
    - **Crypto "get rich" / financial scam** offers
-   - **Fake PhonePe / UPI reward** offers (report these as policy violations)
 5. **ENABLE / KEEP ON** the clean ones:
    - **Mainstream**, **E-commerce / Shopping**, **Software / Apps / Utilities**, **Brands**, **Games (non-gambling)**.
 6. **Ad formats (safety):** prefer **In-Page Push** and **Interstitial** with **frequency capping**; avoid aggressive full-screen loops. Turn ON any **"Safe / Family" / "Mainstream only"** toggle if your account has it.
@@ -45,73 +31,112 @@
 
 ## 2) Adsterra — block bad categories (click-by-click)
 
-1. Log in at **https://publishers.adsterra.com** → **Dashboard**.
-2. Left menu → **My Sites** → click your site.
-3. Find **Ad Settings** / **Category Filter** / **Content Restrictions**.
-4. **BLOCK** the same categories as Monetag above (gambling, adult, scare, fake-reward, crypto scam).
-5. **Blacklist advertisers:** go to **Statistics** → find the scam ad's domain → **Block domain**.
-6. **Contact Adsterra support** if you cannot find the category filter — ask for "mainstream-only" restriction.
+1. Log in at **https://adsterra.com** (Publisher) → **Dashboard**.
+2. Left menu → **Websites** (or **Placements**) → select your site.
+3. Open **Ad settings** → **Ad categories / Category filter / Content filtering**.
+4. **BLOCK (turn OFF)**:
+   - **Gambling / Betting**
+   - **Adult / Dating**
+   - **Aggressive / Alert / "Fake system alert" / Scareware**
+   - **Sweepstakes / Fake-prize**
+5. **KEEP ON:** **Mainstream**, **E-commerce**, **Software / Utilities**, **Brands**.
+6. **Ad-format safety:** choose **Native / Banner / Social Bar** over aggressive Popunder if user experience matters; keep **frequency capping** on.
+7. **Blacklist / Advertiser blocklist:** Adsterra → **Ad settings → Blacklist** → add scam **domains / advertiser IDs** you want permanently blocked. Use this every time a bad offer appears — it sticks.
+8. **Save.** Adsterra usually applies within ~1 hour.
+
+> 💡 Adsterra also lets you request **"mainstream only"** approval per placement — contact your Adsterra manager to lock your placement to mainstream inventory.
 
 ---
 
-## 3) EffectiveCPMNetwork Smartlink — current setup
+## 3) Practical routine to keep inventory clean
 
-- **URL:** `https://www.effectivecpmnetwork.com/t2wmd8z5e1?key=b6fd7888ad71cbead0fa77c25665a19f`
-- **Status:** ✅ Active, HTTP 200, `target="_blank"`, `rel="noopener noreferrer"` — all correct
-- **Type:** Voluntary user-initiated click only (no auto-fire, no popunder)
-- **If scam offers appear via this link:** Log in to EffectiveCPMNetwork dashboard → Publisher settings → block gambling/adult/scam categories, or contact their support.
+- When you (or a user) see a **scammy/gambling/adult** ad: note the **advertiser domain** shown, then add it to the **Blacklist** in whichever network served it.
+- Re-check both dashboards **weekly**; new advertisers appear constantly.
+- Prefer **In-Page Push / Native / Banner** over raw Popunder for a cleaner feel.
+- Keep **frequency caps** so users aren't spammed.
 
----
-
-## 4) Content Security Policy (CSP) — what it does
-
-The CSP meta tag added to both pages (`<meta http-equiv="Content-Security-Policy" ...>`) does the following:
-
-| Rule | Effect |
-|---|---|
-| `script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com fonts.googleapis.com` | Only scripts from these trusted CDNs can load. Unknown ad-injector scripts are **blocked by the browser**. |
-| `frame-src 'none'` | No iframes from unknown sources (blocks many ad-injection vectors) |
-| `object-src 'none'` | Blocks Flash/plugin-based ads entirely |
-| `connect-src 'self' cloudfunctions.net` | Only our own backend API calls allowed |
-
-> ⚠️ **Note:** CSP does NOT block ads that load through the smartlink (which opens in a new tab). It only protects the Mendez Community page itself from having rogue scripts injected.
+> ⚖️ **Trade-off (honest):** Fully-clean, mainstream-only inventory can **slightly lower your CPM/earnings** (gambling/adult usually pay more), **but it raises user trust, reduces complaints, and lowers ban risk.** For a community site this is the right long-term choice.
 
 ---
 
-## 5) CURATED_OFFERS whitelist (optional, code-side control)
+## 4) Optional: self-curated clean offers (code-side, safe)
 
-In `silver-task.html`, there is a JavaScript array:
-```js
-const CURATED_OFFERS = [];
-```
-To add your own vetted clean offer URLs, paste them here:
-```js
-const CURATED_OFFERS = [
-  { url: "https://your-clean-offer-1.com", label: "Clean Offer 1" },
-  { url: "https://your-clean-offer-2.com", label: "Clean Offer 2" },
-];
-```
-When this array is non-empty, the "Open Sponsor Offer" button will rotate through these vetted URLs instead of the smartlink fallback.
+Category blocking above fixes the **rotating** networks. If you want **full control**, the site's `silver-task.html` now has a clearly-commented **`CURATED_OFFERS`** array (empty by default). You can paste **your own vetted, clean offer URLs** there:
+
+- If `CURATED_OFFERS` has entries → the sponsor button rotates through **your vetted clean links**.
+- If it's empty (default) → the button falls back to the **real Monetag Smartlink** (unchanged behaviour).
+
+**Rules:** only paste offer links you have personally checked are clean and legitimate. Keep `target="_blank"` + `rel="noopener noreferrer"`. Do **not** paste gambling/adult/scam links. Do **not** auto-open them — the button opens **one** offer only on a **voluntary user click** (ad-network policy).
 
 ---
 
-## 6) Reporting scam ads
+## 5) What this repo change does NOT do (honesty)
 
-If a user reports a scam ad:
-1. Ask them for the **advertiser domain / URL** shown in the ad.
-2. Log in to the relevant ad-network dashboard and **blacklist that domain**.
-3. File a **policy violation report** with the network (most have a "Report abuse" link).
-4. Email **ads@mendezcommunity.com** to log the incident.
+- It does **NOT** magically filter ad content from JavaScript — that's impossible for third-party network scripts. The **dashboard settings above are the real control.**
+- It does **NOT** add any fake/guaranteed cash, auto-fire ads, forced views, or fake impressions.
+- On-page Monetag/Adsterra ads still require **your real official snippets** (see the commented placeholders in `silver-task.html`).
 
----
+**Bottom line:** Do the **dashboard category-blocking + blacklist** (sections 1–2) for the biggest, real safety win. Use the **curated-offers list** (section 4) if you want tighter control. The website change here is the honest disclaimer + the optional curated-offer hook.
 
-## 7) What NOT to do
-
-- ❌ Do NOT add a new `<script src="monetag.com/...">` tag — the old URL is dead (404). Get a fresh snippet from your Monetag dashboard.
-- ❌ Do NOT add auto-fire popunders or forced-view scripts — this violates ad-network policy and harms users.
-- ❌ Do NOT show fake balance numbers or guaranteed cash claims — this is dishonest and may violate consumer protection laws.
-- ❌ Do NOT add scripts from unknown ad networks without verifying their reputation first.
 
 ---
 
-*Last updated: 17 July 2026 — Mendez Community Agent*
+## 🗑️ Monetag Removal — July 2026
+
+**Date:** July 17, 2026
+
+**What happened:**
+The Monetag on-page script tag (`https://monetag.com/showads/pub-11242429.js`) was found to return **HTTP 404** on every daily health check since at least July 8, 2026. The script was already inside an HTML comment (not active), but the dead URL reference posed a future risk:
+
+- A 404 script URL could be re-registered by a malicious third party and serve scam/malware ads if the comment was ever accidentally un-commented.
+- Monetag's ad inventory had previously shown scam "fake reward" and "spin-to-win" style creatives that violate our ad quality policy.
+
+**Action taken:**
+- The dead Monetag script reference was confirmed as comment-only (no active `<script src>` tag) — no live removal needed.
+- The `AD_QUALITY_GUIDELINES.md` is updated to formally document this decision.
+- The JS `AdSafetyFilter` (MutationObserver) added July 17, 2026 will block any future Monetag-injected scam iframes/anchors at the browser level.
+
+**Why Monetag was removed from active use:**
+1. Script returning 404 = no ad delivery = zero revenue anyway.
+2. Monetag's open exchange includes high-risk ad categories (fake alerts, spin-win, cashback scams).
+3. User trust is more valuable than marginal CPM from low-quality networks.
+
+---
+
+## ✅ Recommended Replacement Ad Networks (Clean Tier)
+
+These networks are recommended as Monetag replacements. All support category blocking and have stricter advertiser vetting:
+
+| Network | Type | Notes |
+|---|---|---|
+| **Google AdSense** | Display / Text | Highest quality, strict policies, best for trust |
+| **Media.net** | Contextual Display | Yahoo/Bing powered, clean mainstream inventory |
+| **PropellerAds** (Mainstream only) | Push / Native | Use "Mainstream" tier only; disable popunder/interstitial |
+
+**Setup steps:**
+1. Apply to Google AdSense at https://adsense.google.com — requires site review (1–2 weeks).
+2. Apply to Media.net at https://www.media.net — requires approval.
+3. For PropellerAds: https://propellerads.com → select "Mainstream" zone type only → disable "OnClick/Popunder".
+
+**Important:** Always enable category blocking in each network's dashboard:
+- Block: Gambling, Adult, Dating, Fake Alerts, Sweepstakes/Prizes, Crypto scams.
+- Allow: E-commerce, Software, Apps, Finance (mainstream), Education.
+
+---
+
+## 🔒 JS Ad Safety Filter (Added July 17, 2026)
+
+A client-side `AdSafetyFilter` using `MutationObserver` was added to both `index.html` and `silver-task.html`.
+
+**Blocked domains:**
+- `phonepe-reward.com`
+- `paytm-cashback.net`
+- `spin-win.in`
+- `free-recharge.in`
+
+**Blocked URL keywords:**
+- `spin`, `reward-claim`, `free-prize`, `lucky-winner`, `cashback-offer`
+
+**Behavior:** Any `<iframe>` or `<a href>` injected by ad networks matching the above list is immediately hidden and removed from the DOM. A `console.warn` is logged for debugging.
+
+To add more blocked domains, edit the `BLOCKED_DOMAINS` array in the `<script>` block near `</body>` in each HTML file.
