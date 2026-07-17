@@ -140,3 +140,14 @@ A client-side `AdSafetyFilter` using `MutationObserver` was added to both `index
 **Behavior:** Any `<iframe>` or `<a href>` injected by ad networks matching the above list is immediately hidden and removed from the DOM. A `console.warn` is logged for debugging.
 
 To add more blocked domains, edit the `BLOCKED_DOMAINS` array in the `<script>` block near `</body>` in each HTML file.
+
+
+---
+
+## Calivexia.com — Blocked Domain (Added July 17, 2026)
+
+**Domain:** `calivexia.com` and `://calivexia.com`
+**Reason:** Identified as a fraudulent/scam ad domain. Serves misleading ads, fake reward offers, and potentially malicious content.
+**Action taken:** Added to `BLOCKED_DOMAINS` array in `AdSafetyFilter` JS in both `index.html` and `silver-task.html`. Also added `calivexia` to `BLOCKED_KEYWORDS`.
+**Date added:** July 17, 2026
+**Commit message:** `security: add calivexia.com to AdSafetyFilter blocklist`
