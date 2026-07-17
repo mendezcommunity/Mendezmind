@@ -151,3 +151,23 @@ To add more blocked domains, edit the `BLOCKED_DOMAINS` array in the `<script>` 
 **Action taken:** Added to `BLOCKED_DOMAINS` array in `AdSafetyFilter` JS in both `index.html` and `silver-task.html`. Also added `calivexia` to `BLOCKED_KEYWORDS`.
 **Date added:** July 17, 2026
 **Commit message:** `security: add calivexia.com to AdSafetyFilter blocklist`
+
+---
+
+## Fake iOS Launcher Scam Block — July 17, 2026
+
+### New Blocked Domain
+- `obviouslyintimatemink.digital`
+
+### New Blocked Keywords
+- `iOS Launcher`
+- `Luxury iPhone`
+- `Transform Your Android`
+
+**Reason:** Fake iOS Launcher scam ad — prompts users to download malware disguised as an iOS theme/launcher app. These ads falsely claim to transform Android devices into iPhones, tricking users into installing potentially harmful APKs or visiting phishing pages.
+
+**Action taken:** Added `obviouslyintimatemink.digital` to `BLOCKED_DOMAINS` array and `ios launcher`, `luxury iphone`, `transform your android` to `BLOCKED_KEYWORDS` in `AdSafetyFilter` JS in both `index.html` and `silver-task.html`.
+
+**Date added:** July 17, 2026
+
+**Commit message:** `security: block obviouslyintimatemink.digital + fake iOS Launcher keywords`
